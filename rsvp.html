@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP — Mayank & Neha</title>
+  <meta name="description" content="Claim your spot on the hill. RSVP by 31 October 2026.">
+  <meta property="og:title" content="RSVP — Mayank & Neha, Pawna 2026">
+  <meta property="og:description" content="Claim your spot on the hill. RSVP by 31 October 2026.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 8 8%27%3E%3Crect x=%271%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%275%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%271%27 y=%273%27 width=%276%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%272%27 y=%275%27 width=%274%27 height=%271%27 fill=%27%23e85d75%27/%3E%3Crect x=%273%27 y=%276%27 width=%272%27 height=%271%27 fill=%27%23a4133c%27/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-night">
+
+  <div class="stars" aria-hidden="true"></div>
+  <div class="deadline-banner">RSVP by 31 October 2026</div>
+
+  <header class="invite-hero wrap" style="padding-top:2.8rem;padding-bottom:1.2rem">
+    <div class="bonfire" aria-hidden="true">
+      <svg viewBox="0 0 8 8" shape-rendering="crispEdges" class="flicker"><rect x="3" y="1" width="1" height="2" fill="#ffd23f"/><rect x="2" y="2" width="3" height="2" fill="#fb8500"/><rect x="2" y="4" width="4" height="2" fill="#e85d75"/><rect x="1" y="6" width="6" height="1" fill="#7b4a12"/></svg>
+    </div>
+    <h1 class="names reveal" style="font-size:clamp(1.7rem,7vw,2.6rem)">Claim your spot<br>on the hill</h1>
+    <div class="divider reveal"></div>
+    <p class="lead muted reveal" style="font-size:.95rem">One form per family — bring everyone.</p>
+  </header>
+
+  <main class="section wrap" style="padding-top:.6rem">
+    <div class="saved-banner" id="savedBanner" role="status" aria-live="polite"></div>
+
+    <form id="rsvpForm" class="card-dark" novalidate>
+      <div class="form-group">
+        <label for="name">Your name</label>
+        <input type="text" id="name" maxlength="40" autocomplete="name" placeholder="Sharma ji's beta" required>
+      </div>
+
+      <div class="form-group">
+        <label>Are you coming?</label>
+        <div class="choice-row" id="attendRow">
+          <label class="choice"><input type="radio" name="attending" value="yes">Obviously. Save me a bonfire seat.</label>
+          <label class="choice"><input type="radio" name="attending" value="no">Can't make it &#128148;</label>
+        </div>
+      </div>
+
+      <div id="detailsBlock">
+        <div class="form-group">
+          <label>When are you arriving?</label>
+          <div class="choice-row" id="arrivalRow">
+            <label class="choice"><input type="radio" name="arrivalDay" value="2">2 Dec — coming up early (good choice)</label>
+            <label class="choice"><input type="radio" name="arrivalDay" value="3">3 Dec — straight to the wedding</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>How many of you? <span class="muted" style="font-weight:400">(+1s and family welcome)</span></label>
+          <div class="stepper">
+            <button type="button" id="minus" aria-label="Fewer guests">&minus;</button>
+            <span class="count" id="count">1</span>
+            <button type="button" id="plus" aria-label="More guests">+</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="partyNamesGroup" style="display:none">
+          <label>Who's coming with you?</label>
+          <div id="partyNames"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="song">Pick one song for the bonfire playlist &#127925;</label>
+          <input type="text" id="song" maxlength="80" placeholder="The one you'll actually dance to">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="note">Anything else?</label>
+        <textarea id="note" maxlength="300" placeholder="Dietary stuff, travel plans, unsolicited advice…"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%">Claim my spot &#128293;</button>
+      <p class="tent-line">No RSVP by 31 October? You sleep in the camp tent. On the floor.</p>
+    </form>
+
+    <div class="leaderboard-teaser" style="margin-top:2.2rem">
+      <p class="lead" style="font-size:1rem"><b>&#127942; The Baraati Leaderboard</b></p>
+      <p class="muted" style="font-size:.88rem;margin-top:.4rem;line-height:1.6">Opens when the game does. RSVP now — crowned players get bragging rights forever.</p>
+    </div>
+  </main>
+
+  <nav class="wrap page-nav" aria-label="Continue">
+    <a class="btn btn-ghost" href="invite.html">&larr; Back to the invitation</a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/story.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/rsvp.js"></script>
+</body>
+</html>
