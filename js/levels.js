@@ -1,16 +1,23 @@
-/* DATA ONLY — acts, obstacles, chapter cards, taunts. Tuning happens here,
+/* DATA ONLY — acts, obstacles, chapter cards, signs. Tuning happens here,
    never in game.js. x = world distance in logical px. Ground top = y 400.
-   Obstacle types: chair (jump), excel (low slide, jump), door (tall, jump tight).
-   laddoo dy / token dy = height above ground top (negative = up). */
+   Act 1 (him): Mumbai — chair/excel/door. He clears it and WAITS at the flag.
+   Act 2 (her): Japan — suitcase/lantern/traindoor; Fuji + Lake Kawaguchiko +
+   shinkansen; she made his ring at the studio; rings exchanged at the flag.
+   laddoo / token / ring dy = height above ground top (negative = up). */
 window.LEVELS = {
+  acts: ['act1', 'act2'],
+
   act1: {
     id: 'act1',
+    style: 'mumbai',
+    player: 'mayank',
     name: 'ACT 1 \u2014 MUMBAI',
-    chapter: ['2018. TWO STRANGERS', 'AT ENDEAVOUR,', 'GRINDING THROUGH', 'MBA PREP.'],
-    clearLine: ['"I TOLD EVERYONE SHE WAS', 'JUST A GOOD FRIEND.', 'NOBODY BELIEVED ME."'],
+    chapter: ['ACT 1 \u2014 MUMBAI', '', '2018. TWO STRANGERS', 'AT ENDEAVOUR,', 'GRINDING THROUGH', 'MBA PREP.'],
+    clearLine: ['ACT 1 CLEAR \u2726', '', 'HE REACHED THE FLAG.', 'AND HE WAITED.'],
     speed: 175,
     flagX: 3600,
     tokenIndex: 0,
+    tokenToast: '\u2726 Memory unlocked: 2018 \u2014 where it all began',
     items: [
       { t: 'chair',  x: 380 },
       { t: 'laddoo', x: 520,  dy: -46 },
@@ -49,6 +56,61 @@ window.LEVELS = {
       { x: 1550, text: 'LOG KYA KAHENGE?' },
       { x: 2500, text: 'EXCEL BHEJ DO' },
       { x: 3200, text: 'ALMOST THERE!' }
+    ]
+  },
+
+  act2: {
+    id: 'act2',
+    style: 'japan',
+    player: 'neha',
+    name: 'ACT 2 \u2014 JAPAN',
+    chapter: ['MEANWHILE, IN', 'NEHA\u2019S WORLD\u2026', '', 'BANGALORE. THEN CANADA, 2024.', 'AN OCEAN AWAY \u2014', 'UNTIL JAPAN.'],
+    clearLine: ['THE RINGS THEY MADE', 'FOR EACH OTHER \u2014', 'EXCHANGED. FINALLY. \u2726'],
+    speed: 180,
+    flagX: 3600,
+    tokenIndex: 7,
+    tokenToast: '\u2726 Memory unlocked: Lake Kawaguchiko',
+    hasRing: true,
+    groomAtFlag: true,
+    items: [
+      { t: 'suitcase',  x: 400 },
+      { t: 'laddoo',    x: 540,  dy: -46 },
+      { t: 'laddoo',    x: 580,  dy: -70 },
+      { t: 'laddoo',    x: 620,  dy: -46 },
+      { t: 'lantern',   x: 760 },
+      { t: 'traindoor', x: 940 },
+      { t: 'laddoo',    x: 1070, dy: -40 },
+      { t: 'laddoo',    x: 1110, dy: -40 },
+      { t: 'laddoo',    x: 1150, dy: -40 },
+      { t: 'suitcase',  x: 1280 },
+      { t: 'ring',      x: 1500, dy: -60 },
+      { t: 'traindoor', x: 1660 },
+      { t: 'laddoo',    x: 1790, dy: -46 },
+      { t: 'laddoo',    x: 1830, dy: -70 },
+      { t: 'laddoo',    x: 1870, dy: -46 },
+      { t: 'suitcase',  x: 1990 },
+      { t: 'lantern',   x: 2150 },
+      { t: 'token',     x: 2195, dy: -96 },
+      { t: 'traindoor', x: 2350 },
+      { t: 'laddoo',    x: 2470, dy: -44 },
+      { t: 'laddoo',    x: 2510, dy: -44 },
+      { t: 'laddoo',    x: 2550, dy: -44 },
+      { t: 'lantern',   x: 2680 },
+      { t: 'suitcase',  x: 2850 },
+      { t: 'laddoo',    x: 2980, dy: -50 },
+      { t: 'laddoo',    x: 3020, dy: -74 },
+      { t: 'laddoo',    x: 3060, dy: -50 },
+      { t: 'traindoor', x: 3200 },
+      { t: 'lantern',   x: 3360 },
+      { t: 'laddoo',    x: 3450, dy: -44 },
+      { t: 'laddoo',    x: 3490, dy: -44 }
+    ],
+    taunts: [
+      { x: 320,  text: 'JAPAN, FINALLY' },
+      { x: 900,  text: 'SHINKANSEN \u2192' },
+      { x: 1440, text: 'RING STUDIO \u2726' },
+      { x: 2280, text: 'LAKE KAWAGUCHIKO \u2192' },
+      { x: 3320, text: 'HE\u2019S WAITING\u2026' }
     ]
   }
 };

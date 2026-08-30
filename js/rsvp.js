@@ -58,7 +58,7 @@
       var input = document.createElement('input');
       input.type = 'text';
       input.maxLength = 40;
-      input.placeholder = 'Guest ' + (i + 2);
+      input.placeholder = 'Their name';
       input.style.marginBottom = '.6rem';
       input.className = 'party-name';
       if (existing && existing[i]) input.value = existing[i];
@@ -67,10 +67,10 @@
   }
 
   function setPartySize(n, existingNames) {
-    partySize = Math.max(1, Math.min(6, n));
+    partySize = Math.max(1, Math.min(2, n)); // intimate wedding: +1 max
     countEl.textContent = String(partySize);
     minusBtn.disabled = partySize <= 1;
-    plusBtn.disabled = partySize >= 6;
+    plusBtn.disabled = partySize >= 2;
     renderPartyNames(existingNames);
   }
 

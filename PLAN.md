@@ -45,6 +45,18 @@ Locked with Mayank:
   `https://maps.google.com/?q=Khanna+Pawna+Estate`); **no external RSVP
   fallback** — offline RSVP saves to localStorage and auto-syncs when
   Firebase is reachable; story beats draft v1 written.
+- 2026-08-31 (v2.3, Mayank's answers): **intimate wedding — +1 max** (party
+  stepper 1–2, one +1 name, "bring everyone" copy removed); **50-50 rule** —
+  the site must represent both sides equally (Act 1 = him, Act 2 = her; story
+  beats alternate who speaks first; splash says NEHA ♥ MAYANK, invite says
+  Mayank ♥ Neha); **act structure changed**: Act 1 him in Mumbai → reaches
+  the flag and WAITS; Act 2 her — narrative Bangalore → Canada 2024 → Japan,
+  visuals fully Japan-themed (Fuji over Lake Kawaguchiko, sakura, torii,
+  shinkansen crossing the sky, suitcase/lantern/train-door obstacles), she
+  collects the ring she made for him at the **ring studio**, and at the flag
+  they exchange the rings they made for each other; Act 3 (together, dragon,
+  road to Pawna) remains P2. Eggs E1 (havaldar) and E3 (CP billboard) re-home
+  to Act 3 when it's built.
 - 2026-08-31 (v2.2, Mayank's answers): **photos are OUT of the design
   entirely** — no photo slots, no fill-in-later contract; the site is
   illustration/pixel-art only (couple has few matching photos; unrelated
@@ -78,28 +90,29 @@ tokens → scrapbook); the site's palette follows the wedding day (→ day-arc).
 **The journey:**
 
 1. **Splash** (`index.html`) — pixel *morning* sky over a hill, marigold
-   border, "MAYANK ♥ NEHA — PRESS START". Skip link: *"In a hurry? Walk
-   straight to the mandap →"*.
-2. **Chapter card:** *"2018. Two strangers at Endeavour, grinding through MBA
-   prep."* → **Act 1 — Mayank, Mumbai (morning):** flying Excel sheets, office
-   chairs, closing local-train doors, "Beta, shaadi kab?" taunt bubbles;
-   laddoos = points; hidden **memory tokens** in hard-to-reach spots.
-   Act ends: **memory postcard** — pixel frame de-rezzes into an illustrated
-   postcard panel (Endeavour-era beat, one line of story).
-3. **Handoff cutscene:** *"Meanwhile, in Neha's world…"*
-4. **Chapter card:** *"Different cities. Different time zones. Same 2 AM
-   calls."* → **Act 2 — Neha, the expressway (afternoon):** planes, clocks,
-   missed-call icons; **Khopoli toll checkpoint** with havaldar barricade
-   (easter egg: wait 5 s instead of jumping → he waves you through, "patience
-   pays" bonus); a background billboard hides the **CP kiss frame** (tappable
-   token). Act ends: postcard — *"September 30, 2025. Delhi. She picked him up
-   at the station."*
-5. **Chapter card:** *"This time, nobody let go."* → **Act 3 — Together, up the
-   ghat (golden hour):** both sprites side by side, one tap jumps both;
-   double-jump unlocked. Boss: **Log-Kya-Kahenge Dragon** — fireballs are real
-   taunts ("log kya kahenge", "beta, shaadi kab?", "long distance kabhi
-   chalta hai?"); collect hearts to fill the **pyaar-meter** → dragon retreats
-   → both jump the flag.
+   border, "NEHA ♥ MAYANK — PRESS START" (50-50 rule: splash leads with her,
+   invite leads with him). Skip link: *"In a hurry? Walk straight to the
+   mandap →"*.
+2. **Chapter card:** *"2018. Two strangers at Endeavour."* → **Act 1 — Mayank,
+   Mumbai (morning):** flying Excel sheets, office chairs, closing local-train
+   doors, "Beta, shaadi kab?" taunt bubbles; laddoos = points; the **2018
+   memory token** hidden in a hard-to-reach spot. Act ends at the flag:
+   *"He reached the flag. And he waited."* (v2.3 — he stays there for all of
+   Act 2.)
+3. **Handoff:** *"Meanwhile, in Neha's world… Bangalore. Then Canada, 2024. An
+   ocean away — until Japan."*
+4. **Act 2 — Neha, Japan (sunset, v2.3):** fully Japan-themed — sakura trees,
+   torii gates, **Mt Fuji rising over Lake Kawaguchiko** with reflections, a
+   **shinkansen** streaking across the sky; obstacles: suitcase stacks,
+   lanterns, bullet-train doors. Set piece: the **RING STUDIO ✦** where she
+   collects the ring she made for him (+150). The **Kawaguchiko memory token**
+   floats above a lantern. The whole act she is running toward Mayank, who is
+   **visibly waiting at the flag** with a heart bobbing over his head.
+5. **The flag:** she reaches him — a short in-engine scene: she walks the last
+   steps, **the two rings they made for each other sparkle between them**,
+   pixel hearts rise. *"The rings they made for each other — exchanged.
+   Finally. ✦"* (P2 adds **Act 3 — together, the Log-Kya-Kahenge Dragon, the
+   road up to Pawna** — eggs E1/E2/E3 live there.)
 6. **Unlock** — "IT'S NOT GAME OVER. IT'S GAME START." → 8-bit shehnai sting →
    full-screen de-rez into sundowner palette → "You have
    unlocked your invitation" → `invite.html`.
@@ -295,7 +308,8 @@ never touches engine code.
   name: "", bestScore: 0, plays: 0,
   unlocked: false, hardMode: false,
   tokens: [false×8],           // memory tokens, index = year 2018+i
-  rsvp: null | { attending, arrivalDay:"2"|"3", partySize:1, partyNames:[],
+  rsvp: null | { attending, arrivalDay:"2"|"3", partySize:1,   // 1–2, +1 max (v2.3)
+                 partyNames:[],                                 // at most one name
                  song:"", note:"" },
   updatedAt: 0 }
 ```
@@ -305,7 +319,7 @@ Every load path through `sanitizeState()`; new fields must be added there.
 
 Fields: name (required, prefilled) · attending (yes/no) · arrival day (radio:
 "2 Dec — come up early" / "3 Dec — straight to the wedding") · party size
-(stepper 1–6, default 1, "+1/+2") · party names · **song for the bonfire
+(stepper 1–2, default 1, +1 max — v2.3) · +1 name · **song for the bonfire
 playlist** (text, optional) · note. One submission per family (edit-in-place
 on revisit). Deadline banner "RSVP by 31 October 2026". Camp-tent line below
 submit. Offline/blocked Firebase: save to localStorage, show "RSVP saved on

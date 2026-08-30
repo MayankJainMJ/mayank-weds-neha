@@ -43,7 +43,7 @@
     if (p.rsvp && typeof p.rsvp === 'object') {
       var names = [];
       if (Array.isArray(p.rsvp.partyNames)) {
-        for (var j = 0; j < 5; j++) {
+        for (var j = 0; j < 1; j++) { // intimate wedding: +1 max
           if (typeof p.rsvp.partyNames[j] === 'string' && p.rsvp.partyNames[j].trim()) {
             names.push(str(p.rsvp.partyNames[j].trim(), 40));
           }
@@ -52,7 +52,7 @@
       d.rsvp = {
         attending: p.rsvp.attending === true,
         arrivalDay: p.rsvp.arrivalDay === '3' ? '3' : '2',
-        partySize: int(p.rsvp.partySize, 1, 6),
+        partySize: int(p.rsvp.partySize, 1, 2),
         partyNames: names,
         song: str(p.rsvp.song, 80),
         note: str(p.rsvp.note, 300)
