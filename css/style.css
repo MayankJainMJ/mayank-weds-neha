@@ -461,6 +461,46 @@ textarea { min-height: 84px; resize: vertical; }
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ---------- game shell ---------- */
+#game {
+  position: fixed; inset: 0;
+  background: #16324a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+#game[hidden] { display: none; }
+#gc {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+  background: #8ecae6;
+}
+.hud {
+  position: absolute;
+  top: 10px; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: .68rem;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .5);
+  pointer-events: none;
+}
+.hud #hudLives { color: #e85d75; }
+.game-overlay {
+  position: absolute; inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.4rem;
+  background: rgba(20, 12, 5, .55);
+}
+.game-overlay .pixel-dialog { width: 100%; max-width: 380px; }
+.game-overlay .btn { display: block; width: 100%; margin: .6rem auto 0; }
+
 /* ---------- footer nav ---------- */
 .page-nav {
   display: flex;

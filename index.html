@@ -17,7 +17,7 @@
 
   <div class="garland"></div>
 
-  <main class="splash">
+  <main class="splash" id="splash">
     <!-- original pixel scene: sun over Pawna hills, flag on the tabletop -->
     <svg class="pixel-scene" viewBox="0 0 64 36" shape-rendering="crispEdges" role="img" aria-label="Pixel art: sunrise over a hilltop with a wedding flag">
       <!-- sun -->
@@ -60,25 +60,25 @@
     <a class="skip-link" href="invite.html">In a hurry? Walk straight to the mandap &rarr;</a>
   </main>
 
-  <!-- press-start dialog (game ships soon; invite is never gated) -->
-  <div class="pixel-dialog-backdrop" id="dialog">
-    <div class="pixel-dialog" role="dialog" aria-modal="true" aria-label="Game coming soon">
-      <p>LEVEL 1-1 IS STILL UNDER CONSTRUCTION.<br><br>THE MANDAP, HOWEVER, IS READY.</p>
-      <a class="btn btn-primary" href="invite.html">See the invitation &rarr;</a>
-      <a class="btn btn-ghost" href="story.html" style="color:#2b2118">Read our story</a>
+  <!-- game shell (hidden until PRESS START; invite is never gated) -->
+  <div id="game" hidden>
+    <canvas id="gc" width="320" height="480" aria-label="Road to Pawna — Act 1: Mumbai. Tap to jump."></canvas>
+    <div class="hud">
+      <span id="hudLives" aria-label="Lives">&hearts;&hearts;&hearts;</span>
+      <span id="hudScore">LADDOOS 0</span>
     </div>
+    <div id="gameOverlay" class="game-overlay"></div>
   </div>
 
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/store.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
   <script>
-    (function () {
-      var dialog = document.getElementById('dialog');
-      document.getElementById('pressStart').addEventListener('click', function () {
-        dialog.classList.add('open');
-      });
-      dialog.addEventListener('click', function (e) {
-        if (e.target === dialog) dialog.classList.remove('open');
-      });
-    })();
+    document.getElementById('pressStart').addEventListener('click', function () {
+      window.GAME.begin();
+    });
   </script>
 </body>
 </html>
