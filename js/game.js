@@ -84,6 +84,7 @@
   function hideOverlay() { overlay.style.display = 'none'; }
 
   overlay.addEventListener('click', function (e) {
+    window.MUSIC.unlock();
     var a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
     if (!a && mode === 'chapter') { startAct(); return; } // tap anywhere to GO
     if (!a) return;
@@ -206,6 +207,7 @@
   }
   canvas.addEventListener('pointerdown', function (e) {
     e.preventDefault();
+    window.MUSIC.unlock();
     if (mode === 'monster') shoot(); else jump();
   });
   if (shootBtn) {
@@ -396,12 +398,23 @@
         scenery.push({ t: 'bldg', x: x, w: 30 + Math.random() * 50, h: 50 + Math.random() * 90 });
         x += 40 + Math.random() * 70;
       }
+      scenery.push({ t: 'gateway', x: 260 });
+      scenery.push({ t: 'cst', x: 680 });
+      scenery.push({ t: 'tajdome', x: 1040 });
+      scenery.push({ t: 'sealink', x: 1420 });
+      scenery.push({ t: 'sealink', x: 1600 });
+      scenery.push({ t: 'cst', x: 1960 });
+      scenery.push({ t: 'gateway', x: 2320 });
     } else if (act.style === 'calgary') {
       scenery.push({ t: 'rockies', x: 60 });
       scenery.push({ t: 'rockies', x: 700 });
       scenery.push({ t: 'rockies', x: 1400 });
       scenery.push({ t: 'tower', x: 420 });
       scenery.push({ t: 'tower', x: 1700 });
+      scenery.push({ t: 'saddledome', x: 760 });
+      scenery.push({ t: 'saddledome', x: 2100 });
+      scenery.push({ t: 'peacebridge', x: 1200 });
+      scenery.push({ t: 'peacebridge', x: 2400 });
       x = 0;
       while (x < (act.flagX + 800) * 0.55 + W) {
         scenery.push({ t: 'pine', x: x, h: 34 + Math.random() * 26 });
@@ -418,6 +431,10 @@
       }
       scenery.push({ t: 'torii', x: 320 });
       scenery.push({ t: 'torii', x: 980 });
+      scenery.push({ t: 'pagoda', x: 520 });
+      scenery.push({ t: 'tokyotower', x: 840 });
+      scenery.push({ t: 'castle', x: 1140 });
+      scenery.push({ t: 'pagoda', x: 2260 });
       scenery.push({ t: 'fuji', x: 1560 });
       scenery.push({ t: 'lake', x: 1290, w: 830 });
       x = 1300;
@@ -661,6 +678,122 @@
       if (s.t === 'bldg') {
         ctx.fillStyle = 'rgba(140, 160, 195, .38)';
         ctx.fillRect(sx, GROUND - s.h, s.w, s.h);
+      } else if (s.t === 'gateway') {
+        // Gateway of India
+        ctx.fillStyle = 'rgba(172, 138, 104, .5)';
+        ctx.fillRect(sx, GROUND - 58, 12, 58);          // left tower
+        ctx.fillRect(sx + 42, GROUND - 58, 12, 58);     // right tower
+        ctx.fillRect(sx + 8, GROUND - 46, 38, 46);      // body
+        ctx.fillStyle = 'rgba(120, 92, 66, .55)';
+        ctx.fillRect(sx + 18, GROUND - 32, 18, 32);     // arch opening
+        ctx.fillStyle = 'rgba(172, 138, 104, .55)';
+        ctx.fillRect(sx + 1, GROUND - 64, 10, 6);       // turret domes
+        ctx.fillRect(sx + 43, GROUND - 64, 10, 6);
+        ctx.fillRect(sx + 22, GROUND - 52, 10, 6);
+      } else if (s.t === 'cst') {
+        // CST clock tower
+        ctx.fillStyle = 'rgba(150, 128, 110, .5)';
+        ctx.fillRect(sx, GROUND - 78, 22, 78);
+        ctx.fillStyle = 'rgba(120, 100, 86, .55)';
+        ctx.beginPath();
+        ctx.moveTo(sx - 2, GROUND - 78); ctx.lineTo(sx + 11, GROUND - 96); ctx.lineTo(sx + 24, GROUND - 78);
+        ctx.closePath(); ctx.fill();                    // dome cap
+        ctx.fillStyle = 'rgba(255, 245, 220, .75)';
+        ctx.fillRect(sx + 6, GROUND - 68, 10, 10);      // clock face
+        ctx.fillStyle = 'rgba(60, 50, 40, .6)';
+        ctx.fillRect(sx + 10, GROUND - 66, 2, 5);       // hands
+      } else if (s.t === 'tajdome') {
+        // Taj Mahal Palace hotel
+        ctx.fillStyle = 'rgba(180, 150, 120, .45)';
+        ctx.fillRect(sx, GROUND - 42, 60, 42);
+        ctx.fillStyle = 'rgba(190, 92, 78, .55)';
+        ctx.beginPath();
+        ctx.arc(sx + 30, GROUND - 42, 13, Math.PI, 0);
+        ctx.fill();                                     // red dome
+        ctx.fillRect(sx + 28, GROUND - 58, 4, 4);
+        ctx.fillStyle = 'rgba(120, 92, 66, .4)';
+        for (var wnd = 0; wnd < 5; wnd++) ctx.fillRect(sx + 5 + wnd * 11, GROUND - 30, 5, 8);
+      } else if (s.t === 'sealink') {
+        // Bandra–Worli Sea Link pylon + cables
+        ctx.fillStyle = 'rgba(200, 210, 225, .55)';
+        ctx.fillRect(sx + 26, GROUND - 92, 5, 92);      // pylon
+        ctx.fillRect(sx + 20, GROUND - 92, 17, 4);
+        ctx.strokeStyle = 'rgba(210, 220, 235, .45)';
+        ctx.lineWidth = 1;
+        for (var cb = 0; cb < 5; cb++) {
+          ctx.beginPath();
+          ctx.moveTo(sx + 28, GROUND - 86 + cb * 6);
+          ctx.lineTo(sx - 8 - cb * 12, GROUND - 8);
+          ctx.moveTo(sx + 29, GROUND - 86 + cb * 6);
+          ctx.lineTo(sx + 66 + cb * 12, GROUND - 8);
+          ctx.stroke();
+        }
+        ctx.fillStyle = 'rgba(200, 210, 225, .5)';
+        ctx.fillRect(sx - 40, GROUND - 10, 140, 4);     // deck
+      } else if (s.t === 'saddledome') {
+        // Scotiabank Saddledome
+        ctx.fillStyle = 'rgba(140, 150, 165, .5)';
+        ctx.fillRect(sx, GROUND - 26, 8, 26);
+        ctx.fillRect(sx + 62, GROUND - 26, 8, 26);
+        ctx.fillRect(sx + 4, GROUND - 18, 62, 18);      // bowl
+        ctx.beginPath();                                 // saddle roofline
+        ctx.moveTo(sx, GROUND - 26);
+        ctx.quadraticCurveTo(sx + 35, GROUND - 10, sx + 70, GROUND - 26);
+        ctx.lineTo(sx + 70, GROUND - 20);
+        ctx.quadraticCurveTo(sx + 35, GROUND - 4, sx, GROUND - 20);
+        ctx.closePath(); ctx.fill();
+      } else if (s.t === 'peacebridge') {
+        // Calgary Peace Bridge (red arch)
+        ctx.fillStyle = 'rgba(205, 60, 60, .55)';
+        for (var pb = 0; pb < 9; pb++) {
+          var ang = (pb / 8) * Math.PI;
+          var bx2 = sx + pb * 8;
+          var by = GROUND - 8 - Math.sin(ang) * 22;
+          ctx.fillRect(bx2, by, 4, 4);
+        }
+        ctx.fillRect(sx, GROUND - 8, 70, 3);            // deck
+      } else if (s.t === 'pagoda') {
+        // five-storey pagoda
+        for (var tier = 0; tier < 5; tier++) {
+          var tw = 44 - tier * 7;
+          var ty = GROUND - 16 - tier * 14;
+          ctx.fillStyle = 'rgba(150, 60, 55, .55)';
+          ctx.fillRect(sx + (44 - tw) / 2 - 4, ty - 4, tw + 8, 4);   // eave
+          ctx.fillStyle = 'rgba(105, 70, 60, .5)';
+          ctx.fillRect(sx + (44 - tw) / 2, ty - 14, tw, 10);          // storey
+        }
+        ctx.fillStyle = 'rgba(150, 60, 55, .6)';
+        ctx.fillRect(sx + 20, GROUND - 90, 4, 8);        // finial
+      } else if (s.t === 'tokyotower') {
+        // Tokyo Tower lattice
+        ctx.strokeStyle = 'rgba(220, 85, 60, .6)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(sx, GROUND); ctx.lineTo(sx + 22, GROUND - 96);
+        ctx.moveTo(sx + 44, GROUND); ctx.lineTo(sx + 22, GROUND - 96);
+        ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sx + 6, GROUND - 26); ctx.lineTo(sx + 38, GROUND - 26);
+        ctx.moveTo(sx + 11, GROUND - 50); ctx.lineTo(sx + 33, GROUND - 50);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255, 255, 255, .55)';
+        ctx.fillRect(sx + 14, GROUND - 60, 16, 6);       // observation deck
+        ctx.fillStyle = 'rgba(220, 85, 60, .6)';
+        ctx.fillRect(sx + 20, GROUND - 104, 4, 8);       // antenna
+      } else if (s.t === 'castle') {
+        // Himeji-style castle
+        ctx.fillStyle = 'rgba(120, 125, 140, .45)';
+        ctx.fillRect(sx, GROUND - 18, 56, 18);           // stone base
+        ctx.fillStyle = 'rgba(245, 245, 240, .55)';
+        ctx.fillRect(sx + 8, GROUND - 40, 40, 22);       // keep lower
+        ctx.fillRect(sx + 14, GROUND - 58, 28, 18);      // keep upper
+        ctx.fillStyle = 'rgba(90, 110, 130, .6)';
+        ctx.fillRect(sx + 4, GROUND - 44, 48, 5);        // eave 1
+        ctx.fillRect(sx + 10, GROUND - 62, 36, 5);       // eave 2
+        ctx.beginPath();                                  // top roof
+        ctx.moveTo(sx + 12, GROUND - 62); ctx.lineTo(sx + 28, GROUND - 74); ctx.lineTo(sx + 44, GROUND - 62);
+        ctx.closePath(); ctx.fill();
       } else if (s.t === 'rockies') {
         ctx.fillStyle = 'rgba(120, 138, 160, .4)';
         ctx.beginPath();

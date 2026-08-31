@@ -1,33 +1,43 @@
-/* Original Mario-STYLE chiptune via Web Audio — no files, no Nintendo melodies.
-   Square-wave lead + triangle bass, one loop per act, plus SFX blips.
-   AudioContext is created on first user gesture (PRESS START), so autoplay-safe.
-   API: MUSIC.start(trackName) · stop() · sfx(name) · toggleMute() -> muted */
+/* Original chiptune via Web Audio — no files, no borrowed melodies.
+   Three THEMED tracks:
+   - india  (Act 1): Bhupali-raga pentatonic, square-wave lead over a
+     tanpura-style Sa–Pa drone. Peppy, filmi-street energy.
+   - canada (Act 2): winter folk lilt in G, warm triangle lead, sleigh-bell
+     ticks. Slow snow.
+   - japan  (Act 3): hirajoshi scale, koto-style short plucks, sparse drone.
+   AudioContext unlocks on first user gesture (PRESS START / any tap).
+   API: MUSIC.start(name) · stop() · sfx(name) · toggleMute() · unlock() */
 (function () {
   'use strict';
 
   var ac = null, master = null, timer = null, step = 0, track = null, muted = false;
 
-  // melodies as MIDI note numbers, 0 = rest; one entry per 8th-note
   var TRACKS = {
-    mumbai: { // peppy C-major grind
-      bpm: 168,
-      mel:  [72, 76, 79, 76, 81, 79, 76, 72, 74, 77, 81, 77, 79, 0, 76, 0,
-             72, 76, 79, 76, 84, 81, 79, 76, 77, 81, 84, 81, 79, 76, 74, 0],
-      bass: [48, 0, 55, 0, 53, 0, 55, 0, 50, 0, 57, 0, 55, 0, 52, 0]
+    india: {   // Bhupali (C D E G A) — bright, dancing
+      bpm: 160, lead: 'square', dur: 0.14, vol: 0.45,
+      mel:  [76, 79, 81, 79, 76, 74, 72, 74, 76, 79, 84, 81, 79, 0, 76, 0,
+             76, 79, 81, 84, 81, 79, 76, 74, 72, 74, 76, 74, 72, 0, 67, 0],
+      bass: [48, 0, 55, 0, 48, 0, 55, 0],   // Sa–Pa tanpura drone
+      tick: false
     },
-    calgary: { // wistful A-minor snow
-      bpm: 116,
-      mel:  [69, 0, 72, 74, 76, 0, 74, 72, 69, 0, 67, 64, 65, 67, 64, 0,
-             69, 0, 72, 74, 77, 0, 76, 74, 72, 0, 74, 72, 69, 0, 0, 0],
-      bass: [45, 0, 52, 0, 50, 0, 52, 0, 41, 0, 48, 0, 52, 0, 45, 0]
+    canada: {  // G-major folk lilt — warm lodge, falling snow
+      bpm: 104, lead: 'triangle', dur: 0.22, vol: 0.55,
+      mel:  [67, 0, 71, 74, 0, 79, 78, 0, 74, 71, 0, 67, 66, 0, 69, 71,
+             74, 0, 78, 76, 0, 74, 71, 0, 69, 67, 0, 62, 67, 0, 0, 0],
+      bass: [43, 0, 0, 50, 0, 0, 47, 0, 0, 50, 0, 0],
+      tick: true                              // sleigh-bell ticks
     },
-    japan: { // celebratory pentatonic reunion
-      bpm: 152,
-      mel:  [77, 79, 81, 84, 81, 79, 77, 74, 72, 74, 77, 79, 77, 0, 74, 0,
-             77, 79, 81, 84, 86, 84, 81, 79, 81, 84, 86, 88, 86, 0, 84, 0],
-      bass: [41, 0, 48, 0, 46, 0, 48, 0, 43, 0, 50, 0, 48, 0, 41, 0]
+    japan: {   // Hirajoshi (A B C E F) — koto plucks, spacious
+      bpm: 128, lead: 'triangle', dur: 0.1, vol: 0.6,
+      mel:  [69, 0, 72, 0, 76, 77, 76, 72, 71, 0, 69, 0, 64, 0, 69, 0,
+             72, 76, 77, 81, 77, 76, 72, 71, 69, 71, 72, 71, 69, 0, 0, 0],
+      bass: [45, 0, 0, 0, 40, 0, 0, 0],
+      tick: false
     }
   };
+  // legacy names still work
+  TRACKS.mumbai = TRACKS.india;
+  TRACKS.calgary = TRACKS.canada;
 
   function freq(n) { return 440 * Math.pow(2, (n - 69) / 12); }
 
@@ -37,7 +47,7 @@
       if (!AC) return false;
       ac = new AC();
       master = ac.createGain();
-      master.gain.value = 0.14;
+      master.gain.value = 0.18;
       master.connect(ac.destination);
     }
     if (ac.state === 'suspended') ac.resume();
@@ -61,14 +71,16 @@
   function start(name) {
     if (!ensure()) return;
     stop();
-    track = TRACKS[name] || TRACKS.mumbai;
+    track = TRACKS[name] || TRACKS.india;
     step = 0;
     var interval = 60000 / track.bpm / 2; // 8th notes
     timer = setInterval(function () {
+      if (ac.state === 'suspended') { ac.resume(); return; }
       var m = track.mel[step % track.mel.length];
-      if (m) blip(freq(m), 0.14, 'square', 0.45);
+      if (m) blip(freq(m), track.dur, track.lead, track.vol);
       var b = track.bass[step % track.bass.length];
-      if (b) blip(freq(b), 0.2, 'triangle', 0.7);
+      if (b) blip(freq(b), 0.22, 'triangle', 0.7);
+      if (track.tick && step % 4 === 2) blip(2200, 0.04, 'square', 0.1);
       step++;
     }, interval);
   }
@@ -92,6 +104,8 @@
     stop: stop,
     sfx: function (name) { if (ensure() && SFX[name]) SFX[name](); },
     toggleMute: function () { muted = !muted; return muted; },
+    unlock: function () { ensure(); },   // call from any user gesture
+    _state: function () { return { ctx: ac ? ac.state : 'none', playing: !!timer, muted: muted, track: track ? track.bpm : 0 }; },
     get muted() { return muted; }
   };
 })();
