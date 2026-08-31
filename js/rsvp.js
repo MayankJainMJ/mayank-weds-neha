@@ -1,4 +1,5 @@
 /* RSVP form: prefill from mwn.v1, save locally, edit-in-place.
+   Captures ONLY: name, coming?, arrival day, +1 yes/no + their name. (v2.4)
    Firebase sync arrives in P3 — cloud.js will push state.rsvp from the same doc. */
 (function () {
   'use strict';
@@ -7,18 +8,11 @@
 
   var form = document.getElementById('rsvpForm');
   var nameEl = document.getElementById('name');
-  var songEl = document.getElementById('song');
-  var noteEl = document.getElementById('note');
-  var countEl = document.getElementById('count');
-  var minusBtn = document.getElementById('minus');
-  var plusBtn = document.getElementById('plus');
-  var partyNamesGroup = document.getElementById('partyNamesGroup');
-  var partyNamesWrap = document.getElementById('partyNames');
+  var plusNameGroup = document.getElementById('plusNameGroup');
+  var plusNameEl = document.getElementById('plusName');
   var detailsBlock = document.getElementById('detailsBlock');
   var savedBanner = document.getElementById('savedBanner');
   var toast = document.getElementById('toast');
-
-  var partySize = 1;
 
   /* ---------- helpers ---------- */
 
@@ -50,28 +44,8 @@
     showToast._t = setTimeout(function () { toast.classList.remove('show'); }, 2600);
   }
 
-  function renderPartyNames(existing) {
-    partyNamesWrap.innerHTML = '';
-    var extras = partySize - 1;
-    partyNamesGroup.style.display = extras > 0 ? '' : 'none';
-    for (var i = 0; i < extras; i++) {
-      var input = document.createElement('input');
-      input.type = 'text';
-      input.maxLength = 40;
-      input.placeholder = 'Their name';
-      input.style.marginBottom = '.6rem';
-      input.className = 'party-name';
-      if (existing && existing[i]) input.value = existing[i];
-      partyNamesWrap.appendChild(input);
-    }
-  }
-
-  function setPartySize(n, existingNames) {
-    partySize = Math.max(1, Math.min(2, n)); // intimate wedding: +1 max
-    countEl.textContent = String(partySize);
-    minusBtn.disabled = partySize <= 1;
-    plusBtn.disabled = partySize >= 2;
-    renderPartyNames(existingNames);
+  function updatePlusVisibility() {
+    plusNameGroup.style.display = radioValue('plusOne') === 'yes' ? '' : 'none';
   }
 
   function updateDetailsVisibility() {
@@ -85,23 +59,20 @@
   if (state.rsvp) {
     setRadio('attending', state.rsvp.attending ? 'yes' : 'no');
     setRadio('arrivalDay', state.rsvp.arrivalDay);
-    setPartySize(state.rsvp.partySize, state.rsvp.partyNames);
-    songEl.value = state.rsvp.song || '';
-    noteEl.value = state.rsvp.note || '';
+    if (state.rsvp.partySize > 1) {
+      setRadio('plusOne', 'yes');
+      plusNameEl.value = (state.rsvp.partyNames && state.rsvp.partyNames[0]) || '';
+    }
     savedBanner.textContent = state.rsvp.attending
-      ? '\u2713 You\u2019ve RSVP\u2019d \u2014 ' + (state.rsvp.partySize > 1 ? state.rsvp.partySize + ' of you, ' : '') + 'arriving on the ' + (state.rsvp.arrivalDay === '2' ? '2nd' : '3rd') + '. Edit anytime below.'
+      ? '\u2713 You\u2019ve RSVP\u2019d \u2014 ' + (state.rsvp.partySize > 1 ? 'you + 1, ' : '') + 'arriving on the ' + (state.rsvp.arrivalDay === '2' ? '2nd' : '3rd') + '. Edit anytime below.'
       : '\u2713 Your response is saved. Changed your mind? Edit below \u2014 the hill awaits.';
     savedBanner.classList.add('show');
-  } else {
-    setPartySize(1);
   }
+  updatePlusVisibility();
   updateDetailsVisibility();
   highlightChoices();
 
   /* ---------- events ---------- */
-
-  minusBtn.addEventListener('click', function () { setPartySize(partySize - 1, collectPartyNames()); });
-  plusBtn.addEventListener('click', function () { setPartySize(partySize + 1, collectPartyNames()); });
 
   radios('attending').forEach(function (r) {
     r.addEventListener('change', function () { updateDetailsVisibility(); highlightChoices(); });
@@ -109,12 +80,9 @@
   radios('arrivalDay').forEach(function (r) {
     r.addEventListener('change', highlightChoices);
   });
-
-  function collectPartyNames() {
-    return Array.prototype.slice.call(document.querySelectorAll('.party-name'))
-      .map(function (i) { return i.value.trim(); })
-      .filter(Boolean);
-  }
+  radios('plusOne').forEach(function (r) {
+    r.addEventListener('change', function () { updatePlusVisibility(); highlightChoices(); });
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -134,15 +102,20 @@
       showToast('Pick an arrival day \u2014 2nd or 3rd?');
       return;
     }
+    var plusOne = attending === 'yes' && radioValue('plusOne') === 'yes';
+    var plusName = plusNameEl.value.trim();
+    if (plusOne && !plusName) {
+      plusNameEl.focus();
+      showToast('What\u2019s your +1\u2019s name?');
+      return;
+    }
 
     state.name = name.slice(0, 40);
     state.rsvp = {
       attending: attending === 'yes',
       arrivalDay: radioValue('arrivalDay') || '3',
-      partySize: attending === 'yes' ? partySize : 1,
-      partyNames: attending === 'yes' ? collectPartyNames() : [],
-      song: songEl.value.trim().slice(0, 80),
-      note: noteEl.value.trim().slice(0, 300)
+      partySize: plusOne ? 2 : 1,
+      partyNames: plusOne ? [plusName.slice(0, 40)] : []
     };
     state = window.MWN.save(window.MWN.sanitizeState(state));
 

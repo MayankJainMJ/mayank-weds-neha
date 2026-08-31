@@ -65,7 +65,8 @@
     <canvas id="gc" width="320" height="480" aria-label="Road to Pawna — Act 1: Mumbai. Tap to jump."></canvas>
     <div class="hud">
       <span id="hudLives" aria-label="Lives">&hearts;&hearts;&hearts;</span>
-      <span id="hudScore">LADDOOS 0</span>
+      <span id="hudScore">ACT 1 &middot; 0</span>
+      <button id="hudMute" aria-label="Toggle music">&#128266;</button>
     </div>
     <div id="gameOverlay" class="game-overlay"></div>
   </div>
@@ -73,6 +74,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="js/store.js"></script>
+  <script src="js/music.js"></script>
   <script src="js/levels.js"></script>
   <script src="js/game.js"></script>
   <script>

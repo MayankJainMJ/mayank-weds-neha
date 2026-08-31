@@ -53,9 +53,7 @@
         attending: p.rsvp.attending === true,
         arrivalDay: p.rsvp.arrivalDay === '3' ? '3' : '2',
         partySize: int(p.rsvp.partySize, 1, 2),
-        partyNames: names,
-        song: str(p.rsvp.song, 80),
-        note: str(p.rsvp.note, 300)
+        partyNames: names
       };
     }
     d.updatedAt = int(p.updatedAt, 0, 9007199254740991);

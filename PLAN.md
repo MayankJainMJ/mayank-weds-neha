@@ -31,6 +31,18 @@ GAME START." Firebase = Firestore + Anonymous Auth; one `guests/{uid}` doc
 holds name, best score, tokens, RSVP, song request.
 
 Locked with Mayank:
+- 2026-08-31 (v2.5, Codex story rounds + Mayank): **three acts with airport
+  transitions.** Act 1 him, Mumbai → ends boarding BOM ✈ JAPAN. Act 2 her,
+  **Calgary** (Rockies, Calgary Tower, pines, snowfall; snowdrift/clock/gate
+  obstacles) → ends boarding YYC ✈ JAPAN. Act 3 opens with **both flights
+  landing** — then they run TOGETHER (one tap, both jump) through Japan
+  (sakura, torii, Fuji over Lake Kawaguchiko, shinkansen), collect the rings
+  they made at the ring studio, and finish at a **MANDAP ON A HILL** (not a
+  castle): "It's not game over. It's game start." Original Mario-style
+  **chiptune per act** via Web Audio (js/music.js — square lead + triangle
+  bass, jump/coin/hit/clear SFX, HUD mute; no Nintendo melodies, no files).
+  **RSVP captures ONLY**: name · coming? · arrival day · "Are you bringing a
+  +1?" yes/no + their name. Song request and note fields REMOVED.
 - 2026-08-31: URL/repo/folder **`mayank-weds-neha`**; wedding facts (Pawna
   hilltop, 2–4 Dec 2026, wedding 3 Dec 4 PM sundowner, RSVP deadline end Oct);
   runner mechanics; original pixel art only; Anonymous Auth; game never blocks
@@ -308,9 +320,8 @@ never touches engine code.
   name: "", bestScore: 0, plays: 0,
   unlocked: false, hardMode: false,
   tokens: [false×8],           // memory tokens, index = year 2018+i
-  rsvp: null | { attending, arrivalDay:"2"|"3", partySize:1,   // 1–2, +1 max (v2.3)
-                 partyNames:[],                                 // at most one name
-                 song:"", note:"" },
+  rsvp: null | { attending, arrivalDay:"2"|"3", partySize:1,   // 1–2, +1 max
+                 partyNames:[] },                               // at most one +1 name (v2.5)
   updatedAt: 0 }
 ```
 Every load path through `sanitizeState()`; new fields must be added there.
@@ -319,7 +330,8 @@ Every load path through `sanitizeState()`; new fields must be added there.
 
 Fields: name (required, prefilled) · attending (yes/no) · arrival day (radio:
 "2 Dec — come up early" / "3 Dec — straight to the wedding") · party size
-(stepper 1–2, default 1, +1 max — v2.3) · +1 name · **song for the bonfire
+("Are you bringing a +1?" yes/no radio, default "Just me"; if yes → one
+required name field — v2.4, no stepper, no counts) · **song for the bonfire
 playlist** (text, optional) · note. One submission per family (edit-in-place
 on revisit). Deadline banner "RSVP by 31 October 2026". Camp-tent line below
 submit. Offline/blocked Firebase: save to localStorage, show "RSVP saved on

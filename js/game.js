@@ -1,9 +1,11 @@
-/* Road to Pawna — two-act auto-runner. One input: tap/Space = jump.
-   Act 1 (him): Mumbai → he reaches the flag and waits.
-   Act 2 (her): Japan — Fuji, Lake Kawaguchiko, shinkansen, the ring studio —
-   she runs to him and they exchange the rings they made for each other.
+/* Road to Pawna — three-act auto-runner. One input: tap/Space = jump.
+   Act 1 (him): Mumbai grind → boards BOM ✈ JAPAN.
+   Act 2 (her): Calgary — snow, clocks, gates → boards YYC ✈ JAPAN.
+   Act 3 (both): two flights land in Japan; they run TOGETHER (one tap, both
+   jump) past the ring studio and Lake Kawaguchiko to a MANDAP ON A HILL.
+   "It's not game over. It's game start."
    Fixed-timestep physics, rAF render, AABB, 3 lives per act,
-   continue-on-death never blocks the invite. Data lives in levels.js. */
+   continue-on-death never blocks the invite. Data: levels.js. Audio: music.js. */
 (function () {
   'use strict';
 
@@ -15,6 +17,9 @@
     chair:     { w: 24, h: 30 },
     excel:     { w: 30, h: 14 },
     door:      { w: 16, h: 46 },
+    snowdrift: { w: 26, h: 16 },
+    clock:     { w: 20, h: 26 },
+    gate:      { w: 16, h: 46 },
     suitcase:  { w: 18, h: 44 },
     lantern:   { w: 14, h: 24 },
     traindoor: { w: 16, h: 46 },
@@ -29,17 +34,20 @@
   var ctx = canvas.getContext('2d');
   var hudLives = document.getElementById('hudLives');
   var hudScore = document.getElementById('hudScore');
+  var hudMute = document.getElementById('hudMute');
   var overlay = document.getElementById('gameOverlay');
   var toast = document.getElementById('toast');
 
   /* ---------- state ---------- */
-  var mode = 'idle'; // idle | chapter | run | over | rings | clear | paused
+  var mode = 'idle'; // idle|chapter|run|boarding|landing|over|finale|clear|paused
   var actIdx = 0, act = null, items = [], taunts = [];
   var camX = 0, player = null, lives = 3;
   var laddoos = 0, sessionTokens = 0, ringGot = false; // persist across acts in a run
   var runTime = 0, acc = 0, lastT = 0, rafId = 0;
-  var invincibleUntil = 0, scenery = [], clouds = [];
-  var ringsT = 0, brideX = 0, hearts = [];
+  var invincibleUntil = 0, scenery = [], clouds = [], flakes = [];
+  var boardT = 0, walkerX = 0, planeOff = 0;
+  var landT = 0;
+  var finaleT = 0, coupleX = 0, heartsFx = [];
   var store = window.MWN.load();
 
   /* ---------- canvas scale ---------- */
@@ -51,10 +59,6 @@
   }
   canvas.width = W; canvas.height = H;
   window.addEventListener('resize', fit);
-
-  /* ---------- color helpers ---------- */
-  function hx(c) { return [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]; }
-  function rgb(a) { return 'rgb(' + a[0] + ',' + a[1] + ',' + a[2] + ')'; }
 
   /* ---------- ui helpers ---------- */
   function showToast(msg) {
@@ -79,15 +83,22 @@
 
   overlay.addEventListener('click', function (e) {
     var a = e.target && e.target.getAttribute && e.target.getAttribute('data-a');
-    if (!a && mode === 'chapter') { startRun(); return; } // tap anywhere to GO
+    if (!a && mode === 'chapter') { startAct(); return; } // tap anywhere to GO
     if (!a) return;
-    if (a === 'run') startRun();
+    if (a === 'run') startAct();
     if (a === 'next') loadAct(actIdx + 1);
-    if (a === 'continue') { lives = 3; camX = 0; resetPlayer(); startRun(); }
+    if (a === 'continue') { lives = 3; camX = 0; resetPlayer(); hideOverlay(); mode = 'run'; lastT = 0; window.MUSIC.start(act.music); }
     if (a === 'replay') beginRun();
     if (a === 'resume') { mode = 'run'; hideOverlay(); lastT = 0; }
     if (a === 'goinvite') location.href = 'invite.html';
   });
+
+  if (hudMute) {
+    hudMute.addEventListener('pointerdown', function (e) {
+      e.stopPropagation();
+      hudMute.textContent = window.MUSIC.toggleMute() ? '\u{1F507}' : '\u{1F50A}';
+    });
+  }
 
   function score(final) {
     return Math.min(9999,
@@ -115,6 +126,8 @@
     items = act.items.map(function (it) { return { t: it.t, x: it.x, dy: it.dy || 0, hit: false }; });
     taunts = act.taunts;
     camX = 0; lives = 3; invincibleUntil = 0;
+    boardT = 0; walkerX = PLAYER_X; planeOff = 0; landT = 0;
+    finaleT = 0; heartsFx = [];
     resetPlayer();
     buildScenery();
     mode = 'chapter';
@@ -122,9 +135,16 @@
     hud();
   }
 
+  function startAct() {
+    hideOverlay();
+    window.MUSIC.start(act.music);
+    if (act.landing) { mode = 'landing'; landT = 0; }
+    else { mode = 'run'; }
+    lastT = 0;
+  }
+
   function beginRun() {
     laddoos = 0; sessionTokens = 0; ringGot = false; runTime = 0;
-    hearts = []; ringsT = 0;
     store.plays += 1; window.MWN.save(store);
     gameEl.hidden = false;
     document.getElementById('splash').style.display = 'none';
@@ -133,43 +153,32 @@
     if (!rafId) rafId = requestAnimationFrame(loop);
   }
 
-  function startRun() {
-    hideOverlay();
-    mode = 'run';
-    lastT = 0;
-  }
-
   function die() {
     lives = 0; hud();
     mode = 'over';
+    window.MUSIC.stop();
     overlayHTML(
       ['OUT OF LIVES.', 'BUT LOVE FINDS A WAY.'],
       [{ a: 'continue', label: '\u25B6 CONTINUE' }]
     );
   }
 
-  function actCleared() {
-    if (actIdx < window.LEVELS.acts.length - 1) {
-      mode = 'clear';
-      overlayHTML(act.clearLine, [{ a: 'next', label: '\u25B6 HER TURN' }]);
-    } else {
-      // Act 2: run to him — rings first, overlay after
-      mode = 'rings';
-      ringsT = 0;
-      brideX = PLAYER_X;
-      player.y = GROUND - PH; player.vy = 0; player.onGround = true;
-    }
+  function showActClear() {
+    mode = 'clear';
+    window.MUSIC.sfx('clear');
+    overlayHTML(act.clearLine, [{ a: 'next', label: act.nextLabel }]);
   }
 
   function finishGame() {
     mode = 'clear';
+    window.MUSIC.sfx('clear');
     var sc = score(true);
     if (sc > store.bestScore) store.bestScore = sc;
     store.unlocked = true;
     window.MWN.save(store);
     var lines = act.clearLine.concat([
       '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore,
-      '', 'ACT 3 \u2014 THE ROAD TO PAWNA', 'COMING SOON'
+      '', 'YOU HAVE UNLOCKED', 'YOUR INVITATION'
     ]);
     overlayHTML(lines, [
       { a: 'goinvite', label: 'SEE THE INVITATION \u2192' },
@@ -179,11 +188,14 @@
 
   /* ---------- input ---------- */
   function jump() {
-    if (mode === 'chapter') { startRun(); return; }
+    if (mode === 'chapter') { startAct(); return; }
+    if (mode === 'landing') { landT = 99; return; } // tap to skip
+    if (mode === 'boarding') { boardT = Math.max(boardT, 90); return; } // tap to skip
     if (mode !== 'run') return;
     if (player.onGround) {
       player.vy = JUMP_V;
       player.onGround = false;
+      window.MUSIC.sfx('jump');
     }
   }
   canvas.addEventListener('pointerdown', function (e) { e.preventDefault(); jump(); });
@@ -195,6 +207,7 @@
   document.addEventListener('visibilitychange', function () {
     if (document.hidden && mode === 'run') {
       mode = 'paused';
+      window.MUSIC.stop();
       overlayHTML(['PAUSED'], [{ a: 'resume', label: '\u25B6 RESUME' }]);
     }
   });
@@ -213,7 +226,7 @@
       player.onGround = true;
     }
 
-    var px = PLAYER_X, py = player.y;
+    var px2 = PLAYER_X, py = player.y;
     var now = runTime;
 
     for (var i = 0; i < items.length; i++) {
@@ -225,21 +238,24 @@
       var collectible = (it.t === 'laddoo' || it.t === 'token' || it.t === 'ring');
       var oy = collectible ? GROUND + it.dy - box.h : GROUND - box.h;
       var pad = 3; // forgiveness
-      if (px + pad < sx + box.w && px + PW - pad > sx &&
+      if (px2 + pad < sx + box.w && px2 + PW - pad > sx &&
           py + pad < oy + box.h && py + PH - pad > oy) {
         if (it.t === 'laddoo') {
-          it.hit = true; laddoos++; hud();
+          it.hit = true; laddoos++; window.MUSIC.sfx('coin'); hud();
         } else if (it.t === 'token') {
           it.hit = true; sessionTokens++;
           store.tokens[act.tokenIndex] = true; window.MWN.save(store);
+          window.MUSIC.sfx('token');
           showToast(act.tokenToast);
           hud();
         } else if (it.t === 'ring') {
           it.hit = true; ringGot = true;
-          showToast('\u2726 You made his ring at the studio');
+          window.MUSIC.sfx('token');
+          showToast('\u2726 You made each other\u2019s rings at the studio');
           hud();
         } else if (now > invincibleUntil) {
           lives--;
+          window.MUSIC.sfx('hit');
           hud();
           if (lives <= 0) { die(); return; }
           invincibleUntil = now + 1.4;
@@ -247,31 +263,66 @@
       }
     }
 
-    var trigger = act.groomAtFlag ? act.flagX - 190 : act.flagX - PLAYER_X;
-    if (camX >= trigger) { actCleared(); }
+    if (act.boarding && camX >= act.flagX - 200) {
+      mode = 'boarding'; boardT = 0; walkerX = PLAYER_X; planeOff = 0;
+      return;
+    }
+    if (act.mandap && camX >= act.flagX - 190) {
+      mode = 'finale'; finaleT = 0; coupleX = PLAYER_X;
+      player.y = GROUND - PH;
+      return;
+    }
   }
 
-  function updateRings(dt) {
-    ringsT += dt;
+  function updateBoarding(dt) {
+    boardT += dt;
     runTime += dt;
-    var gx = act.flagX - camX + 12; // groom screen x
-    var target = gx - 26;
-    if (brideX < target) brideX = Math.min(target, brideX + 90 * dt);
-    // hearts
-    if (ringsT > 0.7 && Math.random() < dt * 6) {
-      hearts.push({ x: (brideX + gx) / 2 + (Math.random() * 40 - 20), y: GROUND - 40, vy: -30 - Math.random() * 25, life: 1.6 });
+    var doorX = act.flagX - camX - 26; // plane door screen x
+    if (walkerX < doorX) {
+      walkerX = Math.min(doorX, walkerX + 70 * dt);
+    } else if (boardT < 90) {
+      planeOff += (60 + planeOff * 2.2) * dt; // accelerating takeoff
+      if (planeOff > W + 160) boardT = 90;
     }
-    for (var i = hearts.length - 1; i >= 0; i--) {
-      var hh = hearts[i];
+    if (boardT >= 90) { showActClear(); }
+  }
+
+  function updateLanding(dt) {
+    landT += dt;
+    runTime += dt;
+    if (landT >= 4 || landT === 99) {
+      mode = 'run'; lastT = 0;
+    }
+  }
+
+  function updateFinale(dt) {
+    finaleT += dt;
+    runTime += dt;
+    var target = act.flagX - camX - 12; // stop centered under the canopy
+    if (coupleX < target) coupleX = Math.min(target, coupleX + 85 * dt);
+    if (finaleT > 0.9 && Math.random() < dt * 6) {
+      heartsFx.push({ x: coupleX + Math.random() * 60 - 20, y: GROUND - hillLift(coupleX) - 46, vy: -30 - Math.random() * 25, life: 1.6 });
+    }
+    for (var i = heartsFx.length - 1; i >= 0; i--) {
+      var hh = heartsFx[i];
       hh.y += hh.vy * dt; hh.life -= dt;
-      if (hh.life <= 0) hearts.splice(i, 1);
+      if (hh.life <= 0) heartsFx.splice(i, 1);
     }
-    if (ringsT > 2.6) finishGame();
+    if (finaleT > 3) finishGame();
+  }
+
+  /* the ground swells into a hill under the mandap */
+  function hillLift(screenX) {
+    if (!act.mandap) return 0;
+    var mx = act.flagX - camX;
+    var d = Math.abs(screenX - mx);
+    if (d > 150) return 0;
+    return Math.round(24 * (1 - d / 150));
   }
 
   /* ---------- scenery ---------- */
   function buildScenery() {
-    scenery = []; clouds = [];
+    scenery = []; clouds = []; flakes = [];
     var i, x;
     if (act.style === 'mumbai') {
       x = 0;
@@ -279,8 +330,21 @@
         scenery.push({ t: 'bldg', x: x, w: 30 + Math.random() * 50, h: 50 + Math.random() * 90 });
         x += 40 + Math.random() * 70;
       }
+    } else if (act.style === 'calgary') {
+      scenery.push({ t: 'rockies', x: 60 });
+      scenery.push({ t: 'rockies', x: 700 });
+      scenery.push({ t: 'rockies', x: 1400 });
+      scenery.push({ t: 'tower', x: 420 });
+      scenery.push({ t: 'tower', x: 1700 });
+      x = 0;
+      while (x < (act.flagX + 800) * 0.55 + W) {
+        scenery.push({ t: 'pine', x: x, h: 34 + Math.random() * 26 });
+        x += 70 + Math.random() * 90;
+      }
+      for (i = 0; i < 42; i++) {
+        flakes.push({ x0: Math.random() * W, y0: Math.random() * H, spd: 22 + Math.random() * 26, w: 1 + Math.random() * 2 });
+      }
     } else {
-      // Japan: sakura + torii early, Fuji + Lake Kawaguchiko in the second half
       x = 0;
       while (x < 1300) {
         scenery.push({ t: 'sakura', x: x, h: 46 + Math.random() * 26 });
@@ -312,51 +376,93 @@
       if (f === 0) { ctx.fillRect(x + 2, y + 20, 5, 6); ctx.fillRect(x + 11, y + 22, 5, 4); }
       else { ctx.fillRect(x + 2, y + 22, 5, 4); ctx.fillRect(x + 11, y + 20, 5, 6); }
     } else { ctx.fillRect(x + 3, y + 20, 5, 6); ctx.fillRect(x + 10, y + 20, 5, 6); }
-    ctx.fillStyle = '#e8703a';                    // kurta
+    ctx.fillStyle = '#e8703a';
     ctx.fillRect(x + 1, y + 9, 16, 12);
     ctx.fillStyle = '#c94f2a';
     ctx.fillRect(x + 1, y + 17, 16, 2);
-    ctx.fillStyle = '#e8b88a';                    // head
+    ctx.fillStyle = '#e8b88a';
     ctx.fillRect(x + 3, y + 1, 12, 9);
-    ctx.fillStyle = '#241a12';                    // hair
+    ctx.fillStyle = '#241a12';
     ctx.fillRect(x + 3, y, 12, 3);
     ctx.fillRect(facingLeft ? x + 14 : x + 2, y + 1, 2, 4);
-    ctx.fillStyle = '#241a12';                    // eye
     ctx.fillRect(facingLeft ? x + 4 : x + 12, y + 4, 2, 2);
   }
 
   function drawNeha(x, y, running, frame) {
     x = px(x); y = px(y);
     var f = running ? (Math.floor(frame) % 2) : 0;
-    ctx.fillStyle = '#3b2d20';                    // legs
+    ctx.fillStyle = '#3b2d20';
     if (running) {
       if (f === 0) { ctx.fillRect(x + 2, y + 20, 5, 6); ctx.fillRect(x + 11, y + 22, 5, 4); }
       else { ctx.fillRect(x + 2, y + 22, 5, 4); ctx.fillRect(x + 11, y + 20, 5, 6); }
     } else { ctx.fillRect(x + 3, y + 20, 5, 6); ctx.fillRect(x + 10, y + 20, 5, 6); }
-    ctx.fillStyle = '#e85d75';                    // kurti
+    ctx.fillStyle = '#e85d75';
     ctx.fillRect(x + 1, y + 9, 16, 12);
-    ctx.fillStyle = '#ffd23f';                    // gold trim
+    ctx.fillStyle = '#ffd23f';
     ctx.fillRect(x + 1, y + 19, 16, 2);
-    ctx.fillStyle = '#241a12';                    // hair behind
+    ctx.fillStyle = '#241a12';
     ctx.fillRect(x + 1, y + 2, 3, 13);
-    ctx.fillStyle = '#e8b88a';                    // head
+    ctx.fillStyle = '#e8b88a';
     ctx.fillRect(x + 4, y + 1, 11, 9);
-    ctx.fillStyle = '#241a12';                    // hair top
+    ctx.fillStyle = '#241a12';
     ctx.fillRect(x + 3, y, 12, 3);
-    ctx.fillStyle = '#d64545';                    // bindi
+    ctx.fillStyle = '#d64545';
     ctx.fillRect(x + 9, y + 4, 1, 1);
-    ctx.fillStyle = '#241a12';                    // eye
+    ctx.fillStyle = '#241a12';
     ctx.fillRect(x + 12, y + 4, 2, 2);
+  }
+
+  function drawPlane(x, y) {
+    x = px(x); y = px(y);
+    ctx.fillStyle = '#f4f7fa';
+    ctx.fillRect(x, y - 16, 64, 14);            // body
+    ctx.beginPath();                             // nose
+    ctx.moveTo(x + 64, y - 16);
+    ctx.lineTo(x + 76, y - 9);
+    ctx.lineTo(x + 64, y - 2);
+    ctx.closePath(); ctx.fill();
+    ctx.fillRect(x + 2, y - 30, 8, 15);          // tail fin
+    ctx.fillStyle = '#3d6bb0';
+    ctx.fillRect(x, y - 7, 64, 3);               // stripe
+    ctx.fillRect(x + 24, y - 6, 20, 4);          // wing root
+    ctx.fillStyle = '#9fc2e8';
+    for (var i = 0; i < 5; i++) ctx.fillRect(x + 14 + i * 9, y - 13, 3, 3);
+    ctx.fillStyle = '#2b2118';
+    ctx.fillRect(x + 16, y - 2, 4, 3); ctx.fillRect(x + 46, y - 2, 4, 3); // wheels
   }
 
   function drawGoldRing(x, y, blinkPhase) {
     ctx.fillStyle = blinkPhase ? '#fff3c4' : '#ffd23f';
     ctx.fillRect(x, y, 10, 10);
-    ctx.fillStyle = act.style === 'japan' ? skyBottom() : '#ffffff';
+    ctx.fillStyle = 'rgba(255,255,255,.15)';
     ctx.fillRect(x + 3, y + 3, 4, 4);
   }
 
-  function skyBottom() { return '#ffd9a0'; }
+  function drawMandap() {
+    var mx = px(act.flagX - camX);
+    if (mx > W + 160) return;
+    // hill
+    ctx.fillStyle = act.style === 'japan' ? '#6f9a6a' : '#4a7c59';
+    ctx.beginPath();
+    ctx.moveTo(mx - 150, GROUND);
+    ctx.quadraticCurveTo(mx, GROUND - 52, mx + 150, GROUND);
+    ctx.closePath(); ctx.fill();
+    var top = GROUND - 24;
+    // posts
+    ctx.fillStyle = '#7b4a12';
+    ctx.fillRect(mx - 44, top - 62, 5, 62);
+    ctx.fillRect(mx + 40, top - 62, 5, 62);
+    // canopy (striped)
+    for (var i = 0; i < 6; i++) {
+      ctx.fillStyle = i % 2 ? '#ffd23f' : '#fb8500';
+      ctx.fillRect(mx - 52 + i * 17.5, top - 74, 18, 12);
+    }
+    ctx.fillStyle = '#e85d75';
+    ctx.fillRect(mx - 52, top - 64, 105, 3);
+    // garland dots hanging from canopy
+    ctx.fillStyle = '#ffb703';
+    for (var g = 0; g < 6; g++) ctx.fillRect(mx - 44 + g * 17, top - 58 + (g % 2) * 3, 3, 3);
+  }
 
   /* ---------- item skins ---------- */
   function drawItem(it) {
@@ -403,6 +509,32 @@
       ctx.fillRect(x + 7, y, 2, 46);
       ctx.fillStyle = '#ffd23f';
       ctx.fillRect(x + 2, y + 20, 3, 6); ctx.fillRect(x + 11, y + 20, 3, 6);
+    } else if (it.t === 'snowdrift') {
+      ctx.fillStyle = '#f4f8fc';
+      ctx.fillRect(x + 2, y + 6, 22, 10);
+      ctx.fillRect(x + 6, y, 14, 8);
+      ctx.fillStyle = '#d3e2ee';
+      ctx.fillRect(x + 2, y + 13, 22, 3);
+    } else if (it.t === 'clock') {
+      ctx.fillStyle = '#5a5a6a';
+      ctx.fillRect(x + 8, y + 18, 4, 8);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x + 2, y, 16, 18);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillRect(x + 9, y + 4, 2, 6);         // hands
+      ctx.fillRect(x + 11, y + 8, 4, 2);
+      ctx.fillStyle = '#c94f4f';
+      ctx.fillRect(x + 2, y, 16, 2);
+    } else if (it.t === 'gate') {
+      ctx.fillStyle = '#3a4a63';
+      ctx.fillRect(x, y, 16, 46);
+      ctx.fillStyle = '#ffd23f';
+      ctx.fillRect(x + 2, y + 4, 12, 3);
+      ctx.fillRect(x + 2, y + 10, 12, 3);
+      ctx.fillStyle = '#c94f4f';
+      ctx.fillRect(x + 5, y - 4, 6, 4);          // top light
+      ctx.fillStyle = '#8d99ae';
+      ctx.fillRect(x + 2, y + 22, 12, 20);
     } else if (it.t === 'suitcase') {
       ctx.fillStyle = '#b4656f';
       ctx.fillRect(x, y + 30, 18, 14);
@@ -438,17 +570,17 @@
     var g = ctx.createLinearGradient(0, 0, 0, H);
     if (act.style === 'mumbai') {
       g.addColorStop(0, '#8ecae6'); g.addColorStop(.6, '#bde0fe'); g.addColorStop(1, '#ffe8b6');
+    } else if (act.style === 'calgary') {
+      g.addColorStop(0, '#7fa8cc'); g.addColorStop(.6, '#d8e6f2'); g.addColorStop(1, '#f4f8fc');
     } else {
       g.addColorStop(0, '#8c6bb1'); g.addColorStop(.55, '#f2909e'); g.addColorStop(1, '#ffd9a0');
     }
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
-    // sun (mumbai) / low sunset sun (japan)
-    ctx.fillStyle = act.style === 'mumbai' ? '#ffd23f' : '#ff8b5e';
-    if (act.style === 'mumbai') ctx.fillRect(250, 40, 28, 28);
-    else ctx.fillRect(236, 120, 34, 34);
-    // clouds
-    ctx.fillStyle = act.style === 'mumbai' ? 'rgba(255,255,255,.85)' : 'rgba(255,236,224,.8)';
+    if (act.style === 'mumbai') { ctx.fillStyle = '#ffd23f'; ctx.fillRect(250, 40, 28, 28); }
+    else if (act.style === 'calgary') { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillRect(244, 52, 26, 26); }
+    else { ctx.fillStyle = '#ff8b5e'; ctx.fillRect(236, 120, 34, 34); }
+    ctx.fillStyle = act.style === 'japan' ? 'rgba(255,236,224,.8)' : 'rgba(255,255,255,.85)';
     clouds.forEach(function (c) {
       var cx = px(c.x - camX * 0.3);
       if (cx > -80 && cx < W + 80) { ctx.fillRect(cx, c.y, c.w, 8); ctx.fillRect(cx + 8, c.y - 6, c.w * .5, 6); }
@@ -459,10 +591,36 @@
     var F = 0.55;
     scenery.forEach(function (s) {
       var sx = px(s.x - camX * F);
-      if (sx < -260 || sx > W + 60) return;
+      if (sx < -300 || sx > W + 80) return;
       if (s.t === 'bldg') {
         ctx.fillStyle = 'rgba(140, 160, 195, .38)';
         ctx.fillRect(sx, GROUND - s.h, s.w, s.h);
+      } else if (s.t === 'rockies') {
+        ctx.fillStyle = 'rgba(120, 138, 160, .4)';
+        ctx.beginPath();
+        ctx.moveTo(sx - 130, GROUND); ctx.lineTo(sx - 40, GROUND - 95); ctx.lineTo(sx + 40, GROUND); ctx.closePath(); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(sx - 20, GROUND); ctx.lineTo(sx + 70, GROUND - 120); ctx.lineTo(sx + 170, GROUND); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,.7)';
+        ctx.beginPath();
+        ctx.moveTo(sx + 44, GROUND - 86); ctx.lineTo(sx + 70, GROUND - 120); ctx.lineTo(sx + 96, GROUND - 86);
+        ctx.lineTo(sx + 84, GROUND - 82); ctx.lineTo(sx + 70, GROUND - 90); ctx.lineTo(sx + 56, GROUND - 82);
+        ctx.closePath(); ctx.fill();
+      } else if (s.t === 'tower') {
+        ctx.fillStyle = 'rgba(150, 160, 175, .55)';
+        ctx.fillRect(sx + 6, GROUND - 96, 6, 96);
+        ctx.fillStyle = 'rgba(201, 79, 79, .6)';
+        ctx.fillRect(sx, GROUND - 108, 18, 12);
+        ctx.fillStyle = 'rgba(255,255,255,.6)';
+        ctx.fillRect(sx + 2, GROUND - 104, 14, 3);
+        ctx.fillStyle = 'rgba(150, 160, 175, .55)';
+        ctx.fillRect(sx + 7, GROUND - 116, 4, 8);
+      } else if (s.t === 'pine') {
+        ctx.fillStyle = 'rgba(78, 125, 99, .55)';
+        ctx.beginPath();
+        ctx.moveTo(sx, GROUND); ctx.lineTo(sx + 10, GROUND - s.h); ctx.lineTo(sx + 20, GROUND); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,.5)';
+        ctx.fillRect(sx + 6, GROUND - s.h + 8, 8, 2);
       } else if (s.t === 'sakura') {
         ctx.fillStyle = 'rgba(122, 85, 70, .5)';
         ctx.fillRect(sx + 8, GROUND - s.h + 18, 5, s.h - 18);
@@ -493,18 +651,26 @@
         ctx.lineTo(sx - 22, GROUND - 92);
         ctx.closePath(); ctx.fill();
       } else if (s.t === 'lake') {
-        // Lake Kawaguchiko + Fuji reflection glints
         ctx.fillStyle = 'rgba(126, 178, 221, .55)';
         ctx.fillRect(sx, GROUND - 26, s.w, 26);
         ctx.fillStyle = 'rgba(255, 255, 255, .5)';
         for (var k = 0; k < 6; k++) ctx.fillRect(sx + 40 + k * (s.w / 6), GROUND - 18 + (k % 2) * 6, 18, 2);
       }
     });
+    // snowfall (screen-space)
+    if (act.style === 'calgary') {
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      flakes.forEach(function (f) {
+        var fy = (f.y0 + runTime * f.spd) % H;
+        var fx2 = (f.x0 + Math.sin(runTime * 0.8 + f.y0) * 10 + W) % W;
+        ctx.fillRect(px(fx2), px(fy), f.w, f.w);
+      });
+    }
     // haze band separating background from playfield
-    var hzTop = act.style === 'mumbai' ? 'rgba(255, 232, 182, 0)' : 'rgba(255, 217, 160, 0)';
-    var hzBot = act.style === 'mumbai' ? 'rgba(255, 232, 182, .55)' : 'rgba(255, 217, 160, .5)';
+    var hzc = act.style === 'mumbai' ? '255, 232, 182' : act.style === 'calgary' ? '244, 248, 252' : '255, 217, 160';
     var hz = ctx.createLinearGradient(0, GROUND - 70, 0, GROUND);
-    hz.addColorStop(0, hzTop); hz.addColorStop(1, hzBot);
+    hz.addColorStop(0, 'rgba(' + hzc + ', 0)');
+    hz.addColorStop(1, 'rgba(' + hzc + ', .55)');
     ctx.fillStyle = hz;
     ctx.fillRect(0, GROUND - 70, W, 70);
   }
@@ -517,7 +683,7 @@
     var ty = 208;
     ctx.fillStyle = '#f4f7fa';
     ctx.fillRect(px(tx), ty, 150, 16);
-    ctx.beginPath(); // nose
+    ctx.beginPath();
     ctx.moveTo(px(tx), ty);
     ctx.lineTo(px(tx) - 22, ty + 16);
     ctx.lineTo(px(tx), ty + 16);
@@ -529,49 +695,85 @@
   }
 
   function renderGround() {
-    ctx.fillStyle = act.style === 'mumbai' ? '#4a7c59' : '#6f9a6a';
+    var g1 = act.style === 'mumbai' ? '#4a7c59' : act.style === 'calgary' ? '#e9f0f6' : '#6f9a6a';
+    var g2 = act.style === 'mumbai' ? '#3b6349' : act.style === 'calgary' ? '#c9d8e4' : '#5b8258';
+    ctx.fillStyle = g1;
     ctx.fillRect(0, GROUND, W, H - GROUND);
-    ctx.fillStyle = act.style === 'mumbai' ? '#3b6349' : '#5b8258';
+    ctx.fillStyle = g2;
     for (var gx = -(px(camX) % 20); gx < W; gx += 20) ctx.fillRect(gx, GROUND, 10, 4);
     if (act.style === 'japan') {
-      // fallen sakura petals
       ctx.fillStyle = 'rgba(244, 184, 200, .8)';
-      for (var pxl = -(px(camX * 1.0) % 46); pxl < W; pxl += 46) ctx.fillRect(pxl, GROUND + 10, 3, 3);
+      for (var pxl = -(px(camX) % 46); pxl < W; pxl += 46) ctx.fillRect(pxl, GROUND + 10, 3, 3);
     }
   }
 
-  function renderFlag() {
-    var fx = px(act.flagX - camX);
-    if (fx > W + 60) return;
+  function renderEnd() {
+    if (act.mandap) { drawMandap(); return; }
+    if (act.boarding) {
+      // airport at the end of the act: parked plane + destination sign
+      var fx = px(act.flagX - camX);
+      if (fx > W + 180) return;
+      ctx.fillStyle = 'rgba(255,255,255,.92)';
+      ctx.font = '7px "Press Start 2P", monospace';
+      var label = 'TO: JAPAN \u2708';
+      var w = ctx.measureText(label).width + 14;
+      ctx.fillRect(fx - 46, GROUND - 130, w, 22);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillText(label, fx - 39, GROUND - 116);
+      ctx.fillStyle = '#8d99ae';
+      ctx.fillRect(fx - 40, GROUND - 108, 4, 108); // signpost
+      var lift = 0, off = 0;
+      if (mode === 'boarding') { off = planeOff; lift = Math.max(0, planeOff - 40) * 0.35; }
+      drawPlane(fx - 20 + off, GROUND - lift);
+      return;
+    }
+    // plain flag (fallback)
+    var fx2 = px(act.flagX - camX);
+    if (fx2 > W + 40) return;
     ctx.fillStyle = '#7b4a12';
-    ctx.fillRect(fx, GROUND - 120, 4, 120);
+    ctx.fillRect(fx2, GROUND - 120, 4, 120);
     ctx.fillStyle = '#e85d75';
-    ctx.fillRect(fx + 4, GROUND - 120, 26, 18);
-    ctx.fillStyle = '#ffd23f';
-    ctx.fillRect(fx + 4, GROUND - 104, 26, 3);
-    if (act.groomAtFlag) {
-      var gx = fx + 12;
-      drawMayank(gx, GROUND - PH, true, false, 0);
-      // heart bobbing over his head while he waits
-      if (mode === 'run' || mode === 'rings') {
-        var hy = GROUND - PH - 14 + Math.sin(runTime * 3) * 3;
-        ctx.fillStyle = '#e85d75';
-        ctx.fillRect(gx + 5, px(hy), 3, 3); ctx.fillRect(gx + 10, px(hy), 3, 3);
-        ctx.fillRect(gx + 5, px(hy) + 2, 8, 3); ctx.fillRect(gx + 7, px(hy) + 5, 4, 2);
+    ctx.fillRect(fx2 + 4, GROUND - 120, 26, 18);
+  }
+
+  function renderLanding() {
+    // two planes arrive; the couple steps out and lines up
+    var t = Math.min(landT, 4);
+    var p1t = Math.min(1, t / 1.2);                 // her plane
+    var p2t = Math.min(1, Math.max(0, (t - 0.5) / 1.2)); // his plane
+    var e1 = 1 - Math.pow(1 - p1t, 2), e2 = 1 - Math.pow(1 - p2t, 2);
+    var plane1X = (W + 90) - e1 * ((W + 90) - 150);
+    var plane1Y = GROUND - 90 + e1 * 90;
+    var plane2X = (W + 90) - e2 * ((W + 90) - 235);
+    var plane2Y = GROUND - 130 + e2 * 130;
+    drawPlane(plane1X, plane1Y);
+    drawPlane(plane2X, plane2Y);
+    // walk out
+    if (t > 1.6) {
+      var wt = Math.min(1, (t - 1.6) / 1.4);
+      var nx = 164 - wt * (164 - PLAYER_X);
+      drawNeha(nx, GROUND - PH, wt < 1, runTime * 10);
+      if (t > 2.1) {
+        var wt2 = Math.min(1, (t - 2.1) / 1.2);
+        var mx2 = 249 - wt2 * (249 - (PLAYER_X - 24));
+        drawMayank(mx2, GROUND - PH, true, wt2 < 1, runTime * 10);
       }
     }
   }
 
-  function renderRings() {
-    var gx = px(act.flagX - camX + 12);
-    drawNeha(brideX, GROUND - PH, brideX < gx - 26, runTime * 10);
-    if (ringsT > 0.9) {
+  function renderFinale() {
+    var lift = hillLift(coupleX);
+    var y = GROUND - PH - lift;
+    var walking = coupleX < act.flagX - camX - 12;
+    drawMayank(coupleX - 24, y + (walking ? 0 : 0), false, walking, runTime * 10);
+    drawNeha(coupleX, y, walking, runTime * 10);
+    if (finaleT > 1.1) {
       var blink = Math.floor(runTime * 5) % 2 === 0;
-      drawGoldRing(px((brideX + gx) / 2) - 2, GROUND - PH - 22, blink);
-      drawGoldRing(px((brideX + gx) / 2) + 8, GROUND - PH - 30, !blink);
+      drawGoldRing(px(coupleX) - 8, y - 18, blink);
+      drawGoldRing(px(coupleX) + 4, y - 26, !blink);
     }
     ctx.fillStyle = '#e85d75';
-    hearts.forEach(function (hh) {
+    heartsFx.forEach(function (hh) {
       var hx2 = px(hh.x), hy = px(hh.y);
       ctx.globalAlpha = Math.max(0, Math.min(1, hh.life));
       ctx.fillRect(hx2, hy, 3, 3); ctx.fillRect(hx2 + 5, hy, 3, 3);
@@ -584,9 +786,9 @@
     renderSky();
     renderTrain();
     renderScenery();
-    var finale = (mode === 'rings' || (mode === 'clear' && actIdx === window.LEVELS.acts.length - 1 && ringsT > 0));
-    if (!finale) {
-      // signposts / taunt bubbles (hidden once the finale starts)
+    var cinematic = (mode === 'boarding' || mode === 'landing' || mode === 'finale' ||
+                     (mode === 'clear' && (boardT >= 90 || finaleT > 0)));
+    if (!cinematic) {
       ctx.font = '7px "Press Start 2P", monospace';
       taunts.forEach(function (t) {
         var tx = px(t.x - camX);
@@ -600,15 +802,27 @@
       });
     }
     renderGround();
-    renderFlag();
+    renderEnd();
     items.forEach(function (it) { if (!it.hit) drawItem(it); });
-    if (finale) {
-      renderRings();
-    } else {
-      var blinking = runTime < invincibleUntil && Math.floor(runTime * 12) % 2 === 0;
-      if (!blinking) {
-        if (act.player === 'neha') drawNeha(PLAYER_X, player.y, player.onGround, player.frame);
-        else drawMayank(PLAYER_X, player.y, false, player.onGround, player.frame);
+
+    if (mode === 'landing') { renderLanding(); return; }
+    if (mode === 'finale' || (mode === 'clear' && finaleT > 0)) { renderFinale(); return; }
+    if (mode === 'boarding' || (mode === 'clear' && boardT >= 90)) {
+      if (walkerX < act.flagX - camX - 26 - 1) {
+        if (act.player === 'neha') drawNeha(walkerX, GROUND - PH, true, runTime * 10);
+        else drawMayank(walkerX, GROUND - PH, false, true, runTime * 10);
+      }
+      return;
+    }
+    var blinking = runTime < invincibleUntil && Math.floor(runTime * 12) % 2 === 0;
+    if (!blinking && player) {
+      if (act.player === 'both') {
+        drawMayank(PLAYER_X - 24, player.y, false, player.onGround, player.frame + 0.5);
+        drawNeha(PLAYER_X, player.y, player.onGround, player.frame);
+      } else if (act.player === 'neha') {
+        drawNeha(PLAYER_X, player.y, player.onGround, player.frame);
+      } else {
+        drawMayank(PLAYER_X, player.y, false, player.onGround, player.frame);
       }
     }
   }
@@ -616,15 +830,27 @@
   /* ---------- loop ---------- */
   function loop(t) {
     rafId = requestAnimationFrame(loop);
+    var dt;
     if (mode === 'run') {
       if (!lastT) lastT = t;
       acc += Math.min(0.1, (t - lastT) / 1000);
       lastT = t;
       while (acc >= STEP) { update(STEP); acc -= STEP; if (mode !== 'run') { acc = 0; break; } }
-    } else if (mode === 'rings') {
+    } else if (mode === 'boarding') {
       if (!lastT) lastT = t;
-      updateRings(Math.min(0.05, (t - lastT) / 1000));
+      dt = Math.min(0.05, (t - lastT) / 1000);
       lastT = t;
+      updateBoarding(dt);
+    } else if (mode === 'landing') {
+      if (!lastT) lastT = t;
+      dt = Math.min(0.05, (t - lastT) / 1000);
+      lastT = t;
+      updateLanding(dt);
+    } else if (mode === 'finale') {
+      if (!lastT) lastT = t;
+      dt = Math.min(0.05, (t - lastT) / 1000);
+      lastT = t;
+      updateFinale(dt);
     } else {
       lastT = t;
     }
@@ -637,9 +863,11 @@
     /* test hooks — harmless in prod */
     _debug: function () {
       return { mode: mode, actIdx: actIdx, camX: camX, lives: lives, laddoos: laddoos,
-               tokens: sessionTokens, ringGot: ringGot, playerY: player && player.y, score: score(false) };
+               tokens: sessionTokens, ringGot: ringGot, playerY: player && player.y,
+               boardT: boardT, landT: landT, finaleT: finaleT, score: score(false) };
     },
     _warp: function (x) { camX = x; },
+    _skip: function () { if (mode === 'landing') landT = 99; if (mode === 'boarding') boardT = 90; },
     _jump: jump
   };
 })();
