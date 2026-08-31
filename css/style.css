@@ -500,6 +500,24 @@ textarea { min-height: 84px; resize: vertical; }
   cursor: pointer;
   line-height: 1;
 }
+.shoot-btn {
+  position: absolute;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: auto;
+  font-size: .92rem;
+  padding: 18px 34px;
+  animation: shoot-pulse 1s ease-in-out infinite;
+}
+.shoot-btn[hidden] { display: none; }
+.shoot-btn:active { transform: translateX(-50%) translate(3px, 3px); box-shadow: 1px 1px 0 #3a2200; }
+@keyframes shoot-pulse {
+  0%, 100% { box-shadow: 4px 4px 0 #3a2200, 0 0 0 0 rgba(255, 183, 3, .55); }
+  50% { box-shadow: 4px 4px 0 #3a2200, 0 0 0 12px rgba(255, 183, 3, 0); }
+}
+
 .game-overlay {
   position: absolute; inset: 0;
   display: none;

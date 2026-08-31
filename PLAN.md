@@ -43,6 +43,12 @@ Locked with Mayank:
   bass, jump/coin/hit/clear SFX, HUD mute; no Nintendo melodies, no files).
   **RSVP captures ONLY**: name · coming? · arrival day · "Are you bringing a
   +1?" yes/no + their name. Song request and note fields REMOVED.
+- 2026-08-31 (v2.6, Mayank): **the LONG-DISTANCE MONSTER** — a mini-boss in
+  Acts 1 AND 2, blocking the road to the airport. The runner auto-pauses, a
+  pulsing SHOOT button appears (canvas tap / Space also fire); heart-bullets
+  down its HP (4 in Act 1, 5 in Act 2 — "IT FOLLOWED HER ACROSS THE OCEAN");
+  +200 per kill; on death the run resumes toward the flight. Act 3 has no
+  monster — together, distance is already dead.
 - 2026-08-31: URL/repo/folder **`mayank-weds-neha`**; wedding facts (Pawna
   hilltop, 2–4 Dec 2026, wedding 3 Dec 4 PM sundowner, RSVP deadline end Oct);
   runner mechanics; original pixel art only; Anonymous Auth; game never blocks

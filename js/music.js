@@ -82,7 +82,9 @@
     coin:  function () { blip(freq(88), 0.07, 'square', 0.4); setTimeout(function () { blip(freq(93), 0.12, 'square', 0.4); }, 60); },
     hit:   function () { blip(140, 0.25, 'sawtooth', 0.45, 60); },
     token: function () { [81, 84, 88, 93].forEach(function (n, i) { setTimeout(function () { blip(freq(n), 0.12, 'square', 0.4); }, i * 70); }); },
-    clear: function () { [72, 76, 79, 84, 88].forEach(function (n, i) { setTimeout(function () { blip(freq(n), 0.16, 'square', 0.45); }, i * 90); }); }
+    clear: function () { [72, 76, 79, 84, 88].forEach(function (n, i) { setTimeout(function () { blip(freq(n), 0.16, 'square', 0.45); }, i * 90); }); },
+    shoot: function () { blip(900, 0.09, 'square', 0.35, 300); },
+    boom:  function () { blip(110, 0.3, 'sawtooth', 0.5, 50); }
   };
 
   window.MUSIC = {

@@ -48,6 +48,8 @@
   var boardT = 0, walkerX = 0, planeOff = 0;
   var landT = 0;
   var finaleT = 0, coupleX = 0, heartsFx = [];
+  var monster = null, monsterDone = false, shots = [], monstersKilled = 0;
+  var shootBtn = document.getElementById('shootBtn');
   var store = window.MWN.load();
 
   /* ---------- canvas scale ---------- */
@@ -104,6 +106,7 @@
     return Math.min(9999,
       laddoos * 10 +
       sessionTokens * 100 +
+      monstersKilled * 200 +
       (ringGot ? 150 : 0) +
       (final ? lives * 50 + Math.max(0, 300 - Math.floor(runTime) * 4) : 0));
   }
@@ -128,6 +131,8 @@
     camX = 0; lives = 3; invincibleUntil = 0;
     boardT = 0; walkerX = PLAYER_X; planeOff = 0; landT = 0;
     finaleT = 0; heartsFx = [];
+    monster = null; monsterDone = false; shots = [];
+    if (shootBtn) shootBtn.hidden = true;
     resetPlayer();
     buildScenery();
     mode = 'chapter';
@@ -145,6 +150,7 @@
 
   function beginRun() {
     laddoos = 0; sessionTokens = 0; ringGot = false; runTime = 0;
+    monstersKilled = 0;
     store.plays += 1; window.MWN.save(store);
     gameEl.hidden = false;
     document.getElementById('splash').style.display = 'none';
@@ -198,10 +204,19 @@
       window.MUSIC.sfx('jump');
     }
   }
-  canvas.addEventListener('pointerdown', function (e) { e.preventDefault(); jump(); });
+  canvas.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    if (mode === 'monster') shoot(); else jump();
+  });
+  if (shootBtn) {
+    shootBtn.addEventListener('pointerdown', function (e) {
+      e.stopPropagation(); e.preventDefault();
+      shoot();
+    });
+  }
   document.addEventListener('keydown', function (e) {
     if (e.code === 'Space' || e.code === 'ArrowUp') {
-      if (!gameEl.hidden) { e.preventDefault(); jump(); }
+      if (!gameEl.hidden) { e.preventDefault(); if (mode === 'monster') shoot(); else jump(); }
     }
   });
   document.addEventListener('visibilitychange', function () {
@@ -263,6 +278,14 @@
       }
     }
 
+    if (act.monster && !monsterDone && camX >= act.monster.x - 240) {
+      mode = 'monster';
+      monster = { hp: act.monster.hp, max: act.monster.hp, hitT: 0, dead: false, deadT: 0 };
+      shots = [];
+      player.y = GROUND - PH; player.vy = 0; player.onGround = true;
+      if (shootBtn) shootBtn.hidden = false;
+      return;
+    }
     if (act.boarding && camX >= act.flagX - 200) {
       mode = 'boarding'; boardT = 0; walkerX = PLAYER_X; planeOff = 0;
       return;
@@ -285,6 +308,49 @@
       if (planeOff > W + 160) boardT = 90;
     }
     if (boardT >= 90) { showActClear(); }
+  }
+
+  function updateMonster(dt) {
+    runTime += dt;
+    if (!monster) return;
+    monster.hitT -= dt;
+    var mx = act.monster.x - camX;
+    for (var i = shots.length - 1; i >= 0; i--) {
+      shots[i].x += 330 * dt;
+      if (shots[i].x >= mx + 8 && !monster.dead) {
+        shots.splice(i, 1);
+        monster.hp--;
+        monster.hitT = 0.18;
+        window.MUSIC.sfx('boom');
+        if (monster.hp <= 0) {
+          monster.dead = true; monster.deadT = 0;
+          monstersKilled++;
+          if (shootBtn) shootBtn.hidden = true;
+          window.MUSIC.sfx('token');
+          showToast(act.monster.toast);
+          hud();
+        }
+      } else if (shots[i] && shots[i].x > W + 30) {
+        shots.splice(i, 1);
+      }
+    }
+    if (monster.dead) {
+      monster.deadT += dt;
+      if (monster.deadT > 1) {
+        monsterDone = true;
+        monster = null;
+        mode = 'run';
+        lastT = 0;
+      }
+    }
+  }
+
+  function shoot() {
+    if (mode !== 'monster' || !monster || monster.dead) return;
+    if (shots.length < 6) {
+      shots.push({ x: PLAYER_X + 16, y: player.y + 9 });
+      window.MUSIC.sfx('shoot');
+    }
   }
 
   function updateLanding(dt) {
@@ -782,11 +848,74 @@
     });
   }
 
+  function drawMonsterScene() {
+    var mx = px(act.monster.x - camX);
+    var bob = monster.dead ? 0 : Math.sin(runTime * 3) * 3;
+    var my = px(GROUND - 44 + bob + (monster.dead ? monster.deadT * 70 : 0));
+    ctx.globalAlpha = monster.dead ? Math.max(0, 1 - monster.deadT) : 1;
+    // body — the Long-Distance Monster: signal-dead purple blob
+    ctx.fillStyle = '#6d5590';
+    ctx.fillRect(mx, my + 6, 46, 38);
+    ctx.fillRect(mx + 4, my, 38, 10);
+    ctx.fillStyle = '#57436f';
+    ctx.fillRect(mx + 4, my + 34, 38, 10);
+    // horns
+    ctx.fillStyle = '#57436f';
+    ctx.fillRect(mx + 4, my - 6, 6, 8); ctx.fillRect(mx + 36, my - 6, 6, 8);
+    // angry eyes
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(mx + 9, my + 10, 10, 8); ctx.fillRect(mx + 27, my + 10, 10, 8);
+    ctx.fillStyle = '#c92a2a';
+    ctx.fillRect(mx + 12, my + 12, 4, 4); ctx.fillRect(mx + 30, my + 12, 4, 4);
+    // zigzag mouth
+    ctx.fillStyle = '#2b2118';
+    for (var z = 0; z < 5; z++) ctx.fillRect(mx + 10 + z * 6, my + 24 + (z % 2) * 3, 6, 3);
+    // dead-signal antenna
+    ctx.fillStyle = '#2b2118';
+    ctx.fillRect(mx + 22, my - 14, 3, 10);
+    ctx.fillStyle = '#8d99ae';
+    ctx.fillRect(mx + 27, my - 18, 3, 6); ctx.fillRect(mx + 31, my - 22, 3, 10);
+    ctx.fillStyle = '#c92a2a';
+    ctx.fillRect(mx + 26, my - 22, 2, 12); ctx.fillRect(mx + 34, my - 22, 2, 12); // red X-ish
+    // hit flash
+    if (monster.hitT > 0) {
+      ctx.fillStyle = 'rgba(255,255,255,.75)';
+      ctx.fillRect(mx, my - 6, 46, 50);
+    }
+    ctx.globalAlpha = 1;
+    // hp pips
+    if (!monster.dead) {
+      for (var p = 0; p < monster.max; p++) {
+        ctx.fillStyle = p < monster.hp ? '#e85d75' : 'rgba(255,255,255,.4)';
+        ctx.fillRect(mx + 2 + p * 9, my - 32, 6, 6);
+      }
+      // name bubble
+      ctx.font = '7px "Press Start 2P", monospace';
+      var label = act.monster.name;
+      var w = ctx.measureText(label).width + 14;
+      var bx = Math.min(mx + 23 - w / 2, W - w - 4);
+      ctx.fillStyle = 'rgba(255,255,255,.92)';
+      ctx.fillRect(bx, my - 58, w, 22);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillText(label, bx + 7, my - 44);
+    }
+    // heart bullets
+    ctx.fillStyle = '#e85d75';
+    shots.forEach(function (sh) {
+      var sx2 = px(sh.x), sy = px(sh.y);
+      ctx.fillRect(sx2, sy, 3, 3); ctx.fillRect(sx2 + 5, sy, 3, 3);
+      ctx.fillRect(sx2, sy + 2, 8, 3); ctx.fillRect(sx2 + 2, sy + 5, 4, 2);
+    });
+    // the shooter, standing their ground
+    if (act.player === 'neha') drawNeha(PLAYER_X, GROUND - PH, false, 0);
+    else drawMayank(PLAYER_X, GROUND - PH, false, false, 0);
+  }
+
   function render() {
     renderSky();
     renderTrain();
     renderScenery();
-    var cinematic = (mode === 'boarding' || mode === 'landing' || mode === 'finale' ||
+    var cinematic = (mode === 'boarding' || mode === 'landing' || mode === 'finale' || mode === 'monster' ||
                      (mode === 'clear' && (boardT >= 90 || finaleT > 0)));
     if (!cinematic) {
       ctx.font = '7px "Press Start 2P", monospace';
@@ -805,6 +934,7 @@
     renderEnd();
     items.forEach(function (it) { if (!it.hit) drawItem(it); });
 
+    if (mode === 'monster') { drawMonsterScene(); return; }
     if (mode === 'landing') { renderLanding(); return; }
     if (mode === 'finale' || (mode === 'clear' && finaleT > 0)) { renderFinale(); return; }
     if (mode === 'boarding' || (mode === 'clear' && boardT >= 90)) {
@@ -841,6 +971,11 @@
       dt = Math.min(0.05, (t - lastT) / 1000);
       lastT = t;
       updateBoarding(dt);
+    } else if (mode === 'monster') {
+      if (!lastT) lastT = t;
+      dt = Math.min(0.05, (t - lastT) / 1000);
+      lastT = t;
+      updateMonster(dt);
     } else if (mode === 'landing') {
       if (!lastT) lastT = t;
       dt = Math.min(0.05, (t - lastT) / 1000);
@@ -864,10 +999,13 @@
     _debug: function () {
       return { mode: mode, actIdx: actIdx, camX: camX, lives: lives, laddoos: laddoos,
                tokens: sessionTokens, ringGot: ringGot, playerY: player && player.y,
-               boardT: boardT, landT: landT, finaleT: finaleT, score: score(false) };
+               boardT: boardT, landT: landT, finaleT: finaleT,
+               monster: monster && { hp: monster.hp, dead: monster.dead }, kills: monstersKilled,
+               score: score(false) };
     },
     _warp: function (x) { camX = x; },
     _skip: function () { if (mode === 'landing') landT = 99; if (mode === 'boarding') boardT = 90; },
+    _shoot: shoot,
     _jump: jump
   };
 })();
