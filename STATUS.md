@@ -1,6 +1,6 @@
 # STATUS — Mayank Weds Neha wedding invite site
 
-Spec: [`PLAN.md`](./PLAN.md) · Live target: https://mayankjainmj.github.io/mayank-weds-neha/
+Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/mayank-weds-neha/
 
 ## Phases
 
@@ -9,10 +9,10 @@ Spec: [`PLAN.md`](./PLAN.md) · Live target: https://mayankjainmj.github.io/maya
 | P0 | Repo + deploy; `invite.html` (card/schedule/travel/FAQ, Khanna Pawna Estate maps link); `story.html` (dual-voice draft v1, illustration-only); `rsvp.html` (localStorage + saved-locally banner, song request); splash + skip; `404.html`; weblinks card | **DONE 2026-08-31** | live at https://mayankjainmj.github.io/mayank-weds-neha/ · 2 build/validate rounds run, zero console errors · travel times on invite are estimates — Mayank to verify |
 | P1 | One-act runner prototype — real-phone feasibility GATE | **built + deployed 2026-08-31; awaiting Mayank's real-phone test** | Act 1 Mumbai live: tap-jump, 3 obstacle types, laddoos, 2018 token, flag clear, continue flow. 2 build/validate rounds (bg-reads-as-obstacle fix, button hierarchy, tap-anywhere GO). GATE closes only after Mayank plays it in WhatsApp's browser on his phone |
 | P2 | Full game: 3 acts, chapter cards, illustrated de-rez postcards, havaldar, dragon boss, tokens ×8, scrapbook, vault, eggs E1/E2/E3/E5 | not started | needs P1 pass; no photo dependency (placeholder slots) |
-| P3 | Firebase: anon auth, guest doc, score/tokens, RSVP write, leaderboard + 👑/💎 | not started | needs Mayank's console steps (PLAN §12) + firebaseConfig |
+| P3 | Firebase: anon auth, guest doc, score/tokens, RSVP write, leaderboard + 👑/💎 | not started | needs Mayank's console steps (SPEC §12) + firebaseConfig |
 | P4 | Art/music polish, eggs E4/E7, OG tags, day-arc tuning, QA | not started | |
 
-## Open decisions (from PLAN §14)
+## Open decisions (from SPEC §14)
 
 1. Venue maps link — **RESOLVED**: Khanna Pawna Estate
 2. WhatsApp RSVP fallback — **DROPPED**: localStorage save + auto-resync
