@@ -10,17 +10,21 @@
   /* ---------- sizes (game.js mirrors these in its HIT table) ---------- */
   var SIZES = {
     dog:  { w: 22, h: 16 },
-    auto: { w: 32, h: 26 }
+    auto: { w: 32, h: 26 },
+    plow: { w: 40, h: 26 }
   };
 
   /* ---------- updates ---------- */
   function updateEnemy(e, dt, camX, W) {
     if (e.dead) { e.deadT += dt; return; }
     e.t += dt;
+    if (e.x - camX < -70) { e.dead = true; e.deadT = 99; return; } // passed & gone — never migrates back
     if (e.kind === 'dog') {
       e.x = e.baseX + Math.sin(e.t * 1.2) * 26;      // gentle patrol — stompable under auto-run commit
     } else if (e.kind === 'auto') {
       if (e.x - camX < W + 60) e.x -= 58 * dt;        // drives left once near
+    } else if (e.kind === 'plow') {
+      if (e.x - camX < W + 60) e.x -= 36 * dt;        // slow, wide, relentless
     }
   }
 
@@ -194,7 +198,104 @@
     ctx.stroke();
   }
 
+  function drawFloe(ctx, p, camX) {
+    var x = Math.round(p.x - camX), y = Math.round(p.y);
+    ctx.fillStyle = '#eef4f8';
+    ctx.fillRect(x, y, p.w, 8);
+    ctx.fillStyle = '#cfdde8';
+    ctx.fillRect(x + 3, y + 8, p.w - 6, 4);
+    ctx.fillStyle = 'rgba(126, 178, 221, .5)';       // water lap
+    ctx.fillRect(x - 4, y + 11, p.w + 8, 3);
+  }
+
+  function drawSkilift(ctx, p, camX) {
+    var x = Math.round(p.x - camX), y = Math.round(p.y);
+    ctx.strokeStyle = 'rgba(90, 100, 115, .8)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();                                  // cable up and away
+    ctx.moveTo(x + p.w / 2, y - 40);
+    ctx.lineTo(x + p.w / 2 - 60, 60);
+    ctx.moveTo(x + p.w / 2, y - 40);
+    ctx.lineTo(x + p.w / 2 + 90, 30);
+    ctx.stroke();
+    ctx.fillStyle = '#5a646f';
+    ctx.fillRect(x + p.w / 2 - 2, y - 40, 4, 40);     // hanger
+    ctx.fillStyle = '#c94f4f';
+    ctx.fillRect(x, y, p.w, 6);                       // seat
+    ctx.fillRect(x, y - 22, 5, 22);                   // backrest
+  }
+
+  function drawStationLedge(ctx, p, camX) {
+    var x = Math.round(p.x - camX), y = Math.round(p.y);
+    ctx.fillStyle = '#8d99ae';
+    ctx.fillRect(x, y, p.w, 6);
+    ctx.fillStyle = '#6b7688';
+    ctx.fillRect(x + 2, y + 6, p.w - 4, 8);
+    ctx.fillStyle = '#ffd23f';                        // platform edge line
+    ctx.fillRect(x, y, p.w, 2);
+  }
+
+  function drawShinkansenPlat(ctx, p, camX, runTime) {
+    var x = Math.round(p.x - camX), y = Math.round(p.y);
+    ctx.fillStyle = '#f4f7fa';
+    ctx.fillRect(x, y, p.w, 14);
+    ctx.beginPath();                                  // nose
+    ctx.moveTo(x + p.w, y);
+    ctx.lineTo(x + p.w + 26, y + 14);
+    ctx.lineTo(x + p.w, y + 14);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#3d6bb0';
+    ctx.fillRect(x, y + 9, p.w + 18, 3);
+    ctx.fillStyle = '#9fc2e8';
+    for (var i = x + 8; i < x + p.w - 10; i += 22) ctx.fillRect(i, y + 3, 12, 4);
+    // speed lines while boosting look
+    ctx.fillStyle = 'rgba(255,255,255,.5)';
+    var off = Math.round(runTime * 300) % 30;
+    for (var l = x - off; l < x + p.w; l += 30) ctx.fillRect(l, y - 4, 12, 2);
+  }
+
+  function drawBlackIce(ctx, x) {
+    ctx.fillStyle = 'rgba(30, 45, 70, .8)';
+    ctx.fillRect(x, GROUND - 3, 56, 3);
+    ctx.fillStyle = 'rgba(160, 200, 240, .8)';
+    ctx.fillRect(x + 6, GROUND - 3, 10, 1);
+    ctx.fillRect(x + 30, GROUND - 2, 12, 1);
+  }
+
+  function drawIcicle(ctx, ic, camX) {
+    var x = Math.round(ic.x - camX);
+    if (x < -30 || x > 350) return;
+    if (ic.state === 'shatter') {
+      ctx.fillStyle = 'rgba(210, 235, 250,' + Math.max(0, 0.9 - ic.t * 2) + ')';
+      ctx.fillRect(x - 6, GROUND - 6, 4, 4);
+      ctx.fillRect(x + 4, GROUND - 8, 4, 4);
+      ctx.fillRect(x + 12, GROUND - 5, 3, 3);
+      return;
+    }
+    var y = Math.round(ic.y);
+    if (ic.state === 'warn') x += Math.round(Math.sin(ic.t * 60) * 2); // shake cue
+    ctx.fillStyle = '#9aa8b8';                        // little eave it hangs from
+    if (ic.state === 'hang' || ic.state === 'warn') ctx.fillRect(x - 8, y - 6, 28, 6);
+    ctx.fillStyle = '#d8ecfa';
+    ctx.fillRect(x, y, 10, 10);
+    ctx.fillRect(x + 2, y + 10, 6, 6);
+    ctx.fillRect(x + 4, y + 16, 2, 6);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x + 2, y + 2, 2, 8);
+  }
+
+  function drawPlatformExt(ctx, p, camX, runTime) {
+    if (p.kind === 'icefloe') return drawFloe(ctx, p, camX);
+    if (p.kind === 'skilift') return drawSkilift(ctx, p, camX);
+    if (p.kind === 'station') return drawStationLedge(ctx, p, camX);
+    if (p.kind === 'shinkansen') return drawShinkansenPlat(ctx, p, camX, runTime);
+    return drawPlatform(ctx, p, camX);
+  }
+
   window.ENT = {
+    drawPlatformExt: drawPlatformExt,
+    drawBlackIce: drawBlackIce,
+    drawIcicle: drawIcicle,
     SIZES: SIZES,
     updateEnemy: updateEnemy,
     updateDrop: updateDrop,
