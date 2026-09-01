@@ -29,3 +29,15 @@ Verdict: Act 2 closes. Proceed to Act 3.
 2. [low] During shinkansen boost the HUD should not double-count distance —
    camX boost only, no score inflation. OK as planned.
 Verdict: proceed.
+
+## A34-B — Acts 3+4 build review (Codex)
+1. [high][fixed] invite:* reveals must fire on block-hit, not on collecting a
+   drop hovering out of reach. Grant-on-bonk applied; decorative pop kept.
+2. [med][accepted] act3 hazards during shinkansen dismount (traindoor 1180)
+   can chain-hit a careless rider; lives+continue absorb it.
+3. [low][open] pawna terraces: falling to base ground means backtrack-free
+   retry (auto-run) — player can miss ALL blocks and still finish; recap shows
+   '? ? ?' which nudges replay. Intended.
+4. [low][open] _tick is exposed in prod GAME API; harmless (no cheating vector
+   beyond what _warp already allows; page is a wedding invite).
+Verdict: Acts 3+4 close. Ship after full-suite regression.

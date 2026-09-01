@@ -101,6 +101,7 @@
     if (a === 'replay') beginRun();
     if (a === 'resume') { mode = 'run'; hideOverlay(); lastT = 0; }
     if (a === 'goinvite') location.href = 'invite.html';
+    if (a === 'gorsvp') location.href = 'rsvp.html';
   });
 
   if (hudMute) {
@@ -199,12 +200,16 @@
     if (sc > store.bestScore) store.bestScore = sc;
     store.unlocked = true;
     window.MWN.save(store);
+    var IBT = { date: '3 DEC 2026 \u00B7 4:00 PM', venue: 'KHANNA PAWNA ESTATE', dress: 'FESTIVE + A WARM LAYER', rsvp: 'RSVP: CLAIM YOUR SPOT' };
+    var bits = ['date', 'venue', 'dress', 'rsvp'].map(function (k) {
+      return store.inviteBits.indexOf(k) !== -1 ? IBT[k] : '? ? ?';
+    });
     var lines = act.clearLine.concat([
-      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore,
-      '', 'YOU HAVE UNLOCKED', 'YOUR INVITATION'
-    ]);
+      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore, ''
+    ]).concat(bits).concat(['', 'YOU HAVE UNLOCKED', 'YOUR INVITATION']);
     overlayHTML(lines, [
       { a: 'goinvite', label: 'SEE THE INVITATION \u2192' },
+      { a: 'gorsvp', label: 'CLAIM YOUR SPOT \u2192' },
       { a: 'replay', label: 'RUN IT AGAIN', ghost: true }
     ]);
   }
@@ -212,6 +217,15 @@
   /* ---------- input ---------- */
   function jump() {
     if (mode === 'chapter') { startAct(); return; }
+    if (mode === 'boostwait') {
+      boostDone = true; boosting = true;
+      support = null;
+      player.vy = -760;                 // he kneels, she flies
+      player.onGround = false;
+      mode = 'run'; lastT = 0;
+      window.MUSIC.sfx('jump');
+      return;
+    }
     if (mode === 'landing') { landT = 99; return; } // tap to skip
     if (mode === 'boarding') { boardT = Math.max(boardT, 90); return; } // tap to skip
     if (mode !== 'run') return;
@@ -281,7 +295,18 @@
           if (!bk.hit) {
             bk.hit = true; bk.hitFx = 1;
             window.MUSIC.sfx('blockpop');
-            drops.push({ x: bk.x + 1, y: bk.y - 16, type: bk.drop === 'heart' ? 'heart' : bk.drop, t: 0 });
+            if (bk.drop.indexOf('invite:') === 0) {
+              // invitation reveals ON the hit (the drop is celebration only)
+              var ibb = bk.drop.replace('invite:', '');
+              if (store.inviteBits.indexOf(ibb) === -1) store.inviteBits.push(ibb);
+              window.MWN.save(store);
+              window.MUSIC.sfx('token');
+              var IBT2 = { date: '\u2709 3 DEC 2026 \u00B7 4:00 PM', venue: '\u2709 KHANNA PAWNA ESTATE', dress: '\u2709 FESTIVE + A WARM LAYER', rsvp: '\u2709 RSVP: CLAIM YOUR SPOT \u2192' };
+              showToast(IBT2[ibb] || ibb);
+              drops.push({ x: bk.x + 1, y: bk.y - 16, type: bk.drop, t: 0, deco: true });
+            } else {
+              drops.push({ x: bk.x + 1, y: bk.y - 16, type: bk.drop === 'heart' ? 'heart' : bk.drop, t: 0 });
+            }
           }
         }
       }
@@ -350,16 +375,25 @@
     for (var di = drops.length - 1; di >= 0; di--) {
       var dp = drops[di];
       window.ENT.updateDrop(dp, dt);
+      if (dp.deco) { if (dp.t > 1.2) drops.splice(di, 1); continue; }
       if (dp.t > 0.25 && overlapX(dp.x, 14) && player.y + pad < dp.y + 14 && player.y + PH - pad > dp.y) {
         if (dp.type === 'heart') {
           laddoos++; store.hearts++; window.MWN.save(store);
           window.MUSIC.sfx('coin');
+        } else if (dp.type.indexOf('invite:') === 0) {
+          var ib = dp.type.replace('invite:', '');
+          if (store.inviteBits.indexOf(ib) === -1) store.inviteBits.push(ib);
+          window.MWN.save(store);
+          window.MUSIC.sfx('token');
+          var IBT = { date: '\u2709 3 DEC 2026 \u00B7 4:00 PM', venue: '\u2709 KHANNA PAWNA ESTATE', dress: '\u2709 FESTIVE + A WARM LAYER', rsvp: '\u2709 RSVP: CLAIM YOUR SPOT \u2192' };
+          showToast(IBT[ib] || ib);
         } else {
           var pid = dp.type.replace('prop:', '');
           if (store.props.indexOf(pid) === -1) store.props.push(pid);
           window.MWN.save(store);
           window.MUSIC.sfx('token');
-          showToast(pid === 'chai' ? '\u2615 Chai break, Mumbai style' : '\u{1F3AB} Boarding pass acquired');
+          var PT = { chai: '\u2615 Chai break, Mumbai style', boardingpass: '\u{1F3AB} Boarding pass acquired', scarf: '\u{1F9E3} Her Calgary scarf', coffee: '\u2615 Double-double, extra warm' };
+          showToast(PT[pid] || pid);
         }
         drops.splice(di, 1);
         hud();
@@ -436,6 +470,11 @@
       shots = [];
       player.y = GROUND - PH; player.vy = 0; player.onGround = true;
       if (shootBtn) shootBtn.hidden = false;
+      return;
+    }
+    if (act.boost && !boostDone && camX >= act.boost.x - 160) {
+      mode = 'boostwait';
+      player.y = GROUND - PH; player.vy = 0; player.onGround = true;
       return;
     }
     if (act.endScene === 'boarding' && camX >= act.flagX - 200) {
@@ -580,6 +619,17 @@
       }
       for (i = 0; i < 42; i++) {
         flakes.push({ x0: Math.random() * W, y0: Math.random() * H, spd: 22 + Math.random() * 26, w: 1 + Math.random() * 2 });
+      }
+    } else if (act.style === 'pawna') {
+      scenery.push({ t: 'ridge', x: 100 });
+      scenery.push({ t: 'ridge', x: 700 });
+      scenery.push({ t: 'ridge', x: 1300 });
+      scenery.push({ t: 'lakeglint', x: 300, w: 500 });
+      scenery.push({ t: 'lakeglint', x: 1100, w: 400 });
+      x = 0;
+      while (x < (act.flagX + 600) * 0.55 + W) {
+        if (Math.random() < .5) scenery.push({ t: 'marigold', x: x });
+        x += 90 + Math.random() * 120;
       }
     } else {
       x = 0;
@@ -850,6 +900,8 @@
       g.addColorStop(0, '#8ecae6'); g.addColorStop(.6, '#bde0fe'); g.addColorStop(1, '#ffe8b6');
     } else if (act.style === 'calgary') {
       g.addColorStop(0, '#7fa8cc'); g.addColorStop(.6, '#d8e6f2'); g.addColorStop(1, '#f4f8fc');
+    } else if (act.style === 'pawna') {
+      g.addColorStop(0, '#f6b26b'); g.addColorStop(.55, '#f18f4a'); g.addColorStop(1, '#ffd166');
     } else {
       g.addColorStop(0, '#8c6bb1'); g.addColorStop(.55, '#f2909e'); g.addColorStop(1, '#ffd9a0');
     }
@@ -858,6 +910,7 @@
     if (act.style === 'mumbai') { ctx.fillStyle = '#ffd23f'; ctx.fillRect(250, 40, 28, 28); }
     if (act.weather === 'rain') { ctx.fillStyle = 'rgba(110, 122, 138, .22)'; ctx.fillRect(0, 0, W, H); }
     else if (act.style === 'calgary') { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillRect(244, 52, 26, 26); }
+    else if (act.style === 'pawna') { ctx.fillStyle = '#ff7b3e'; ctx.fillRect(226, 150, 40, 40); }
     else { ctx.fillStyle = '#ff8b5e'; ctx.fillRect(236, 120, 34, 34); }
     ctx.fillStyle = act.style === 'japan' ? 'rgba(255,236,224,.8)' : 'rgba(255,255,255,.85)';
     clouds.forEach(function (c) {
@@ -990,6 +1043,24 @@
         ctx.beginPath();                                  // top roof
         ctx.moveTo(sx + 12, GROUND - 62); ctx.lineTo(sx + 28, GROUND - 74); ctx.lineTo(sx + 44, GROUND - 62);
         ctx.closePath(); ctx.fill();
+      } else if (s.t === 'ridge') {
+        // Sahyadri ridgeline, warm dusk
+        ctx.fillStyle = 'rgba(110, 75, 60, .45)';
+        ctx.beginPath();
+        ctx.moveTo(sx - 160, GROUND); ctx.lineTo(sx - 40, GROUND - 88); ctx.lineTo(sx + 60, GROUND - 30);
+        ctx.lineTo(sx + 150, GROUND - 70); ctx.lineTo(sx + 260, GROUND);
+        ctx.closePath(); ctx.fill();
+      } else if (s.t === 'lakeglint') {
+        // Pawna Lake glinting below the climb
+        ctx.fillStyle = 'rgba(255, 209, 102, .35)';
+        ctx.fillRect(sx, GROUND - 14, s.w, 14);
+        ctx.fillStyle = 'rgba(255, 240, 200, .55)';
+        for (var lg = 0; lg < 5; lg++) ctx.fillRect(sx + 30 + lg * (s.w / 5), GROUND - 10 + (lg % 2) * 4, 20, 2);
+      } else if (s.t === 'marigold') {
+        ctx.fillStyle = 'rgba(251, 133, 0, .7)';
+        ctx.fillRect(sx, GROUND - 10, 5, 5); ctx.fillRect(sx + 7, GROUND - 14, 5, 5); ctx.fillRect(sx + 13, GROUND - 8, 5, 5);
+        ctx.fillStyle = 'rgba(90, 110, 60, .6)';
+        ctx.fillRect(sx + 6, GROUND - 8, 3, 8);
       } else if (s.t === 'rockies') {
         ctx.fillStyle = 'rgba(120, 138, 160, .4)';
         ctx.beginPath();
@@ -1090,8 +1161,8 @@
   }
 
   function renderGround() {
-    var g1 = act.style === 'mumbai' ? '#4a7c59' : act.style === 'calgary' ? '#e9f0f6' : '#6f9a6a';
-    var g2 = act.style === 'mumbai' ? '#3b6349' : act.style === 'calgary' ? '#c9d8e4' : '#5b8258';
+    var g1 = act.style === 'mumbai' ? '#4a7c59' : act.style === 'calgary' ? '#e9f0f6' : act.style === 'pawna' ? '#8a9a55' : '#6f9a6a';
+    var g2 = act.style === 'mumbai' ? '#3b6349' : act.style === 'calgary' ? '#c9d8e4' : act.style === 'pawna' ? '#75844a' : '#5b8258';
     ctx.fillStyle = g1;
     ctx.fillRect(0, GROUND, W, H - GROUND);
     ctx.fillStyle = g2;
@@ -1280,9 +1351,24 @@
       return;
     }
     if (act.weather === 'rain') window.ENT.drawRain(ctx, runTime, W, H);
+    if (mode === 'boostwait') {
+      drawMayank(PLAYER_X - 22, GROUND - PH + 8, false, false, 0); // kneel
+      drawNeha(PLAYER_X, GROUND - PH, false, 0);
+      ctx.font = '8px "Press Start 2P", monospace';
+      var bl = 'TAP TO BOOST!';
+      var bw = ctx.measureText(bl).width + 16;
+      ctx.fillStyle = 'rgba(255,255,255,.95)';
+      ctx.fillRect(W / 2 - bw / 2, 210, bw, 26);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillText(bl, W / 2 - bw / 2 + 8, 227);
+      return;
+    }
     var blinking = runTime < invincibleUntil && Math.floor(runTime * 12) % 2 === 0;
     if (!blinking && player) {
-      if (act.player === 'both') {
+      if (act.player === 'both' && boosting) {
+        drawMayank(PLAYER_X - 22, GROUND - PH + 8, false, false, 0); // still kneeling
+        drawNeha(PLAYER_X, player.y, false, player.frame);
+      } else if (act.player === 'both') {
         drawMayank(PLAYER_X - 24, player.y, false, player.onGround, player.frame + 0.5);
         drawNeha(PLAYER_X, player.y, player.onGround, player.frame);
       } else if (act.player === 'neha') {
@@ -1312,6 +1398,8 @@
       dt = Math.min(0.05, (t - lastT) / 1000);
       lastT = t;
       updateMonster(dt);
+    } else if (mode === 'boostwait') {
+      lastT = t;
     } else if (mode === 'landing') {
       if (!lastT) lastT = t;
       dt = Math.min(0.05, (t - lastT) / 1000);
@@ -1347,6 +1435,19 @@
     _warp: function (x) { camX = x; },
     _skip: function () { if (mode === 'landing') landT = 99; if (mode === 'boarding') boardT = 90; },
     _freeze: function () { if (mode === 'run') mode = 'paused'; },
+    _tick: function (ms) { // deterministic manual driver for tests (rAF-independent)
+      var steps = Math.max(1, Math.round(ms / (1000 * STEP)));
+      for (var i = 0; i < steps; i++) {
+        if (mode === 'run') update(STEP);
+        else if (mode === 'boarding') updateBoarding(STEP);
+        else if (mode === 'landing') updateLanding(STEP);
+        else if (mode === 'finale') updateFinale(STEP);
+        else if (mode === 'monster') updateMonster(STEP);
+        else break;
+      }
+      render();
+      return mode;
+    },
     _go: function () { if (mode === 'paused') { mode = 'run'; lastT = 0; hideOverlay(); } },
     _shoot: shoot,
     _jump: jump

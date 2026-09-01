@@ -1,33 +1,35 @@
-# HANDOFF.md — Act 2 (Calgary) — LOOP 2 (build)
+# HANDOFF.md — Acts 3+4 (Japan co-op + Pawna Finale) — LOOP 2 (build)
 **Date:** 2026-09-01 · branch platformer
 
 ## Changed
-- entities.js: floe/skilift/station/shinkansen platform skins, black ice, icicle
-  (hang→warn-shake→fall→shatter), snowplow enemy, off-screen enemy despawn.
-- game.js: moving-platform bob + support-ref carry (replaces stateless walk-off),
-  shinkansen camX boost hook (used in Act 3), black-ice jump suppression,
-  icicle lifecycle + damage, endScene generalization (boarding/torii/mandap),
-  drawBigTorii, torii-finale branch, continue = full act rebuild, _freeze/_go
-  test hooks.
-- levels.js: Act 2 rebuilt — floes ×3 (bobbing), rooftops ×2, ski-lift chairs
-  ×2 (±22 bob) with token on chair 2, blocks (3 heart + scarf + coffee), plows
-  ×2, icicles ×4, black ice ×2, hearts replace laddoos.
+- levels.js: Act 3 rebuilt (station ledges, SHINKANSEN boost platform, ring
+  studio, boost set piece @2600, boost-only Kawaguchiko token ledge, torii
+  goal) + NEW act4 (Pawna: speed 120, 6 rising terraces, 4 invitation
+  ?-blocks: date/venue/dress/rsvp, no enemies/monster/hazards). acts[] = 4.
+- game.js: boostwait mode (TAP TO BOOST prompt, kneel + launch vy -760,
+  rejoin on landing), shinkansen support boost (+120px/s, measured 288 total),
+  endScene 'torii' (proposal = ring scene under drawBigTorii → interstitial),
+  pawna sky/ground/scenery (Sahyadri ridges, Pawna Lake glints, marigolds),
+  invitation recap on the final overlay ('? ? ?' for missed bits), CLAIM YOUR
+  SPOT button, invite bits GRANT ON BLOCK-HIT (fix below), _tick(ms)
+  deterministic test driver (rAF-throttling-proof).
+- entities.js: terrace skin. music.js: pawna track (slow Bhupali, 92bpm).
 
-## Bugs found & fixed during build (Codex A2-B)
-1. [HIGH] Enemy migration state-leak: autos/plows drove left forever; after
-   minutes they ambushed the player anywhere (insta-death chains). Fix:
-   despawn once 70px behind camera. Applies to Act 1 autos too.
-2. [HIGH] `continue` kept stale enemy/icicle state — now rebuilds the act.
-3. [MED] Icicle at 90px lead hit grounded runners with no warning — added
-   0.25s shake 'warn' state at 110px; jumping the impact zone dodges it.
+## Bugs found & fixed (Codex A34-B)
+1. [high] Invitation bits granted on drop-collect, but drops float above head
+   height → hits felt dead and bits were missable. Now grant ON the bonk;
+   the envelope pop is decorative (deco drops never collide, cull 1.2s).
+2. [test-infra] rAF suspension in occluded windows froze validation; _tick(ms)
+   drives the fixed-step engine synchronously. Ships in prod (harmless, tiny).
 
-## Verified
-Floe land + bob carry (22 frames icefloe support) · black ice 32-frame zone,
-jump suppressed while sliding · icicle warn→fall triggers · ski-lift token
-reachable (bot: 3rd of 4 tries — DEMANDING, acceptable for optional bonus) ·
-plow despawn behind camera · full run → monster → YYC boarding · Act 1
-platform regression green after support refactor · 0 console errors.
+## Verified (deterministic driver, 0 console errors)
+Shinkansen: land on roof → support 'shinkansen', 288px/s vs 180 base ·
+boostwait triggers at cam 2442 → tap launches → boost-ledge token collected ·
+torii scene → 'SHE SAID YES. AGAIN.' interstitial → act4 · terrace staircase
+landing · invite blocks 1-3 bonked → bits stored + toasts; block 4 skipped
+deliberately → '? ? ?' in recap · mandap finale closes: 'IT'S NOT GAME OVER.
+IT'S GAME START.' + recap + invitation unlock · hearts persist E2E.
 
 ## Gaps / phone-test
-Chair-hop difficulty feel; scarf/coffee block collection untested by bot
-(same code path as chai/boarding pass — Act 1 verified); load perf.
+Terrace-6 (rsvp block) requires the full staircase route — verify feel; boost
+prompt discoverability; overall run length (~4-5 min with cutscenes).

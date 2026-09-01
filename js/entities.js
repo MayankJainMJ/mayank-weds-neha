@@ -284,7 +284,20 @@
     ctx.fillRect(x + 2, y + 2, 2, 8);
   }
 
+  function drawTerrace(ctx, p, camX) {
+    var x = Math.round(p.x - camX), y = Math.round(p.y);
+    ctx.fillStyle = '#8a9a55';                        // grassy hill terrace
+    ctx.fillRect(x, y, p.w, 8);
+    ctx.fillStyle = '#6e5340';                        // earth face
+    ctx.fillRect(x, y + 8, p.w, GROUND - y - 8);
+    ctx.fillStyle = '#75844a';
+    for (var g2 = x + 6; g2 < x + p.w - 8; g2 += 26) ctx.fillRect(g2, y + 2, 12, 3);
+    ctx.fillStyle = 'rgba(251, 133, 0, .8)';          // marigold edge dots
+    for (var m2 = x + 10; m2 < x + p.w - 6; m2 += 40) ctx.fillRect(m2, y - 3, 4, 4);
+  }
+
   function drawPlatformExt(ctx, p, camX, runTime) {
+    if (p.kind === 'terrace') return drawTerrace(ctx, p, camX);
     if (p.kind === 'icefloe') return drawFloe(ctx, p, camX);
     if (p.kind === 'skilift') return drawSkilift(ctx, p, camX);
     if (p.kind === 'station') return drawStationLedge(ctx, p, camX);

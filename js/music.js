@@ -35,6 +35,13 @@
       tick: false
     }
   };
+  TRACKS.pawna = { // slow warm Bhupali — the sundowner climb
+    bpm: 92, lead: 'triangle', dur: 0.3, vol: 0.55,
+    mel:  [72, 0, 76, 0, 79, 0, 76, 0, 74, 0, 77, 0, 74, 0, 72, 0,
+           76, 0, 79, 0, 81, 0, 79, 0, 76, 0, 74, 0, 72, 0, 0, 0],
+    bass: [48, 0, 0, 0, 55, 0, 0, 0],
+    tick: false
+  };
   // legacy names still work
   TRACKS.mumbai = TRACKS.india;
   TRACKS.calgary = TRACKS.canada;
