@@ -22,3 +22,10 @@ Verdict: proceed with revisions 1–4 folded in.
 5. [low][open] floe bob dy 5-6 is nearly invisible in play; consider dy 8+ for
    readability in a polish pass.
 Verdict: Act 2 closes. Proceed to Act 3.
+
+## A3-P — Act 3 plan review (Codex)
+1. [med] Boost launch vy -760 with ledge at y250: verify landing window math
+   against speed 180 (window ≈ x2620–2710) — test, don't trust.
+2. [low] During shinkansen boost the HUD should not double-count distance —
+   camX boost only, no score inflation. OK as planned.
+Verdict: proceed.
