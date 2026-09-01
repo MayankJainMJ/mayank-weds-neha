@@ -24,6 +24,9 @@
     lantern:   { w: 14, h: 24 },
     traindoor: { w: 16, h: 46 },
     laddoo:    { w: 14, h: 14 },
+    heartc:    { w: 14, h: 14 },
+    puddle:    { w: 30, h: 8 },
+    cart:      { w: 26, h: 26 },
     token:     { w: 16, h: 16 },
     ring:      { w: 14, h: 14 }
   };
@@ -49,6 +52,7 @@
   var landT = 0;
   var finaleT = 0, coupleX = 0, heartsFx = [];
   var monster = null, monsterDone = false, shots = [], monstersKilled = 0;
+  var platforms = [], blocks = [], enemiesArr = [], drops = [];
   var shootBtn = document.getElementById('shootBtn');
   var store = window.MWN.load();
 
@@ -116,7 +120,7 @@
     var h = '';
     for (var i = 0; i < 3; i++) h += i < lives ? '\u2665' : '\u2661';
     hudLives.textContent = h;
-    hudScore.textContent = act.name.split(' \u2014 ')[0] + ' \u00B7 ' + laddoos + (ringGot ? ' \u25CB' : '') + (sessionTokens ? ' \u2726' : '');
+    hudScore.innerHTML = act.name.split(' \u2014 ')[0] + ' \u00B7 <span style="color:#ffd23f">\u2665</span> ' + store.hearts + (ringGot ? ' \u25CB' : '') + (sessionTokens ? ' \u2726' : '');
   }
 
   function resetPlayer() {
@@ -134,6 +138,10 @@
     finaleT = 0; heartsFx = [];
     monster = null; monsterDone = false; shots = [];
     if (shootBtn) shootBtn.hidden = true;
+    platforms = (act.platforms || []).map(function (p) { return { x: p.x, y: p.y, w: p.w, kind: p.kind }; });
+    blocks = (act.blocks || []).map(function (b) { return { x: b.x, y: b.y, drop: b.drop, hit: false, hitFx: 0 }; });
+    enemiesArr = (act.enemies || []).map(function (e) { return { x: e.x, baseX: e.x, kind: e.kind, t: Math.random() * 6, dead: false, deadT: 0 }; });
+    drops = [];
     resetPlayer();
     buildScenery();
     mode = 'chapter';
@@ -200,7 +208,7 @@
     if (mode === 'boarding') { boardT = Math.max(boardT, 90); return; } // tap to skip
     if (mode !== 'run') return;
     if (player.onGround) {
-      player.vy = JUMP_V;
+      player.vy = JUMP_V * ((act.physics && act.physics.jumpScale) || 1);
       player.onGround = false;
       window.MUSIC.sfx('jump');
     }
@@ -235,12 +243,109 @@
     runTime += dt;
     player.frame += dt * 10;
 
+    var prevY = player.y;
     player.vy += GRAVITY * dt;
     player.y += player.vy * dt;
-    if (player.y >= GROUND - PH) {
-      player.y = GROUND - PH;
-      player.vy = 0;
-      player.onGround = true;
+
+    var worldX = camX + PLAYER_X;
+    var pad = 3;
+    function overlapX(ox, ow) { return worldX + pad < ox + ow && worldX + PW - pad > ox; }
+
+    // ?-block head-hit (rising)
+    if (player.vy < 0) {
+      for (var bi = 0; bi < blocks.length; bi++) {
+        var bk = blocks[bi];
+        var bBottom = bk.y + 16;
+        if (!overlapX(bk.x, 16)) continue;
+        if (prevY >= bBottom - 1 && player.y < bBottom) {
+          player.y = bBottom;
+          player.vy = 90;
+          if (!bk.hit) {
+            bk.hit = true; bk.hitFx = 1;
+            window.MUSIC.sfx('blockpop');
+            drops.push({ x: bk.x + 1, y: bk.y - 16, type: bk.drop === 'heart' ? 'heart' : bk.drop, t: 0 });
+          }
+        }
+      }
+    }
+
+    // landing: base ground + platform tops + block tops
+    if (player.vy >= 0) {
+      var feetPrev = prevY + PH, feetNew = player.y + PH;
+      var best = null;
+      function tryTop(top, ox, ow) {
+        if (!overlapX(ox, ow)) return;
+        if (feetPrev <= top + 6 && feetNew >= top) {
+          if (best === null || top < best) best = top;
+        }
+      }
+      platforms.forEach(function (p) { tryTop(p.y, p.x, p.w); });
+      blocks.forEach(function (b) { tryTop(b.y, b.x, 16); });
+      if (feetNew >= GROUND) best = (best === null || GROUND < best) ? GROUND : best;
+      if (best !== null) {
+        player.y = best - PH;
+        player.vy = 0;
+        player.onGround = true;
+      }
+    }
+
+    // walked off an elevated surface
+    if (player.onGround) {
+      var feet = player.y + PH;
+      if (feet < GROUND - 1) {
+        var supported = false;
+        platforms.forEach(function (p) { if (Math.abs(p.y - feet) < 2 && overlapX(p.x, p.w)) supported = true; });
+        blocks.forEach(function (b) { if (Math.abs(b.y - feet) < 2 && overlapX(b.x, 16)) supported = true; });
+        if (!supported) player.onGround = false;
+      }
+    }
+
+    // entities tick
+    blocks.forEach(function (b) { if (b.hitFx > 0) b.hitFx = Math.max(0, b.hitFx - dt * 5); });
+    enemiesArr.forEach(function (e) { window.ENT.updateEnemy(e, dt, camX, W); });
+    for (var di = drops.length - 1; di >= 0; di--) {
+      var dp = drops[di];
+      window.ENT.updateDrop(dp, dt);
+      if (dp.t > 0.25 && overlapX(dp.x, 14) && player.y + pad < dp.y + 14 && player.y + PH - pad > dp.y) {
+        if (dp.type === 'heart') {
+          laddoos++; store.hearts++; window.MWN.save(store);
+          window.MUSIC.sfx('coin');
+        } else {
+          var pid = dp.type.replace('prop:', '');
+          if (store.props.indexOf(pid) === -1) store.props.push(pid);
+          window.MWN.save(store);
+          window.MUSIC.sfx('token');
+          showToast(pid === 'chai' ? '\u2615 Chai break, Mumbai style' : '\u{1F3AB} Boarding pass acquired');
+        }
+        drops.splice(di, 1);
+        hud();
+      }
+    }
+
+    // stompable enemies
+    var now0 = runTime;
+    for (var ei = 0; ei < enemiesArr.length; ei++) {
+      var en = enemiesArr[ei];
+      if (en.dead) continue;
+      var es = window.ENT.SIZES[en.kind];
+      if (!overlapX(en.x, es.w)) continue;
+      var eTop = GROUND - es.h;
+      if (player.y + PH > eTop && player.y < GROUND) {
+        if (player.vy > 0 && (prevY + PH) <= eTop + 12) {
+          en.dead = true; en.deadT = 0;
+          player.vy = -320;
+          player.onGround = false;
+          laddoos++; store.hearts++; window.MWN.save(store);
+          window.MUSIC.sfx('stomp');
+          hud();
+        } else if (now0 > invincibleUntil) {
+          lives--;
+          window.MUSIC.sfx('hit');
+          hud();
+          if (lives <= 0) { die(); return; }
+          invincibleUntil = now0 + 1.4;
+        }
+      }
     }
 
     var px2 = PLAYER_X, py = player.y;
@@ -252,13 +357,13 @@
       var box = HIT[it.t];
       var sx = it.x - camX;
       if (sx < -60 || sx > W + 60) continue;
-      var collectible = (it.t === 'laddoo' || it.t === 'token' || it.t === 'ring');
+      var collectible = (it.t === 'laddoo' || it.t === 'heartc' || it.t === 'token' || it.t === 'ring');
       var oy = collectible ? GROUND + it.dy - box.h : GROUND - box.h;
-      var pad = 3; // forgiveness
       if (px2 + pad < sx + box.w && px2 + PW - pad > sx &&
           py + pad < oy + box.h && py + PH - pad > oy) {
-        if (it.t === 'laddoo') {
-          it.hit = true; laddoos++; window.MUSIC.sfx('coin'); hud();
+        if (it.t === 'laddoo' || it.t === 'heartc') {
+          it.hit = true; laddoos++; store.hearts++; window.MWN.save(store);
+          window.MUSIC.sfx('coin'); hud();
         } else if (it.t === 'token') {
           it.hit = true; sessionTokens++;
           store.tokens[act.tokenIndex] = true; window.MWN.save(store);
@@ -554,7 +659,13 @@
     var collectible = (it.t === 'laddoo' || it.t === 'token' || it.t === 'ring');
     y = collectible ? px(GROUND + it.dy - box.h) : GROUND - box.h;
 
-    if (it.t === 'laddoo') {
+    if (it.t === 'heartc') {
+      window.ENT.drawHeartC(ctx, x, y, runTime);
+    } else if (it.t === 'puddle') {
+      window.ENT.drawPuddle(ctx, x);
+    } else if (it.t === 'cart') {
+      window.ENT.drawCart(ctx, x);
+    } else if (it.t === 'laddoo') {
       ctx.fillStyle = '#fb8500';
       ctx.fillRect(x + 3, y + 1, 8, 12);
       ctx.fillRect(x + 1, y + 3, 12, 8);
@@ -661,6 +772,7 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
     if (act.style === 'mumbai') { ctx.fillStyle = '#ffd23f'; ctx.fillRect(250, 40, 28, 28); }
+    if (act.weather === 'rain') { ctx.fillStyle = 'rgba(110, 122, 138, .22)'; ctx.fillRect(0, 0, W, H); }
     else if (act.style === 'calgary') { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillRect(244, 52, 26, 26); }
     else { ctx.fillStyle = '#ff8b5e'; ctx.fillRect(236, 120, 34, 34); }
     ctx.fillStyle = act.style === 'japan' ? 'rgba(255,236,224,.8)' : 'rgba(255,255,255,.85)';
@@ -1065,7 +1177,11 @@
     }
     renderGround();
     renderEnd();
+    platforms.forEach(function (p) { window.ENT.drawPlatform(ctx, p, camX); });
+    blocks.forEach(function (b) { window.ENT.drawBlock(ctx, b, camX, runTime); });
     items.forEach(function (it) { if (!it.hit) drawItem(it); });
+    enemiesArr.forEach(function (e) { window.ENT.drawEnemy(ctx, e, camX, runTime); });
+    drops.forEach(function (d) { window.ENT.drawDrop(ctx, d, camX); });
 
     if (mode === 'monster') { drawMonsterScene(); return; }
     if (mode === 'landing') { renderLanding(); return; }
@@ -1077,6 +1193,7 @@
       }
       return;
     }
+    if (act.weather === 'rain') window.ENT.drawRain(ctx, runTime, W, H);
     var blinking = runTime < invincibleUntil && Math.floor(runTime * 12) % 2 === 0;
     if (!blinking && player) {
       if (act.player === 'both') {
@@ -1134,6 +1251,9 @@
                tokens: sessionTokens, ringGot: ringGot, playerY: player && player.y,
                boardT: boardT, landT: landT, finaleT: finaleT,
                monster: monster && { hp: monster.hp, dead: monster.dead }, kills: monstersKilled,
+               hearts: store.hearts, props: store.props.slice(), onGround: player && player.onGround,
+               drops: drops.length, enemies: enemiesArr.filter(function (e) { return !e.dead; }).length,
+               enemyXs: enemiesArr.map(function (e) { return { x: Math.round(e.x), kind: e.kind, dead: e.dead }; }),
                score: score(false) };
     },
     _warp: function (x) { camX = x; },

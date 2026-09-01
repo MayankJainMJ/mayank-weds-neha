@@ -14,6 +14,9 @@
       unlocked: false,
       hardMode: false,
       tokens: [false, false, false, false, false, false, false, false],
+      hearts: 0,          // persistent collectible count — never resets
+      props: [],          // story props from ?-blocks
+      inviteBits: [],     // act-4 invitation reveals
       rsvp: null,
       updatedAt: 0
     };
@@ -39,6 +42,19 @@
     d.hardMode = bool(p.hardMode);
     if (Array.isArray(p.tokens)) {
       for (var i = 0; i < 8; i++) d.tokens[i] = bool(p.tokens[i]);
+    }
+    d.hearts = int(p.hearts, 0, 999999);
+    if (Array.isArray(p.props)) {
+      for (var k = 0; k < p.props.length && d.props.length < 40; k++) {
+        var pr = str(p.props[k], 24);
+        if (pr && d.props.indexOf(pr) === -1) d.props.push(pr);
+      }
+    }
+    if (Array.isArray(p.inviteBits)) {
+      for (var m = 0; m < p.inviteBits.length && d.inviteBits.length < 8; m++) {
+        var ib = str(p.inviteBits[m], 24);
+        if (ib && d.inviteBits.indexOf(ib) === -1) d.inviteBits.push(ib);
+      }
     }
     if (p.rsvp && typeof p.rsvp === 'object') {
       var names = [];

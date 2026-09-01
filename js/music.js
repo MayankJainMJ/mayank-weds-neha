@@ -96,7 +96,9 @@
     token: function () { [81, 84, 88, 93].forEach(function (n, i) { setTimeout(function () { blip(freq(n), 0.12, 'square', 0.4); }, i * 70); }); },
     clear: function () { [72, 76, 79, 84, 88].forEach(function (n, i) { setTimeout(function () { blip(freq(n), 0.16, 'square', 0.45); }, i * 90); }); },
     shoot: function () { blip(900, 0.09, 'square', 0.35, 300); },
-    boom:  function () { blip(110, 0.3, 'sawtooth', 0.5, 50); }
+    boom:  function () { blip(110, 0.3, 'sawtooth', 0.5, 50); },
+    stomp: function () { blip(420, 0.12, 'square', 0.4, 130); },
+    blockpop: function () { blip(660, 0.09, 'square', 0.4, 990); }
   };
 
   window.MUSIC = {

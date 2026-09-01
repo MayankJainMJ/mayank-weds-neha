@@ -124,6 +124,21 @@ final layout), rain jumpScale measurably lowers apex, full Act 1 run → boardin
 → Act 2 unchanged, hearts NOT reset by continue/death/act change, 0 console
 errors, 390×844.
 
+## Loop-1 verdict (from Mayank directly, 2026-09-01 — no REVIEW.md was produced)
+
+1. **CONFIRMED: auto-run stays.** No free left/right movement. Verticality
+   rides on top of the one-thumb model as planned (§2).
+2. **OVERRULED (OQ2): lives KEEP the ♥ glyph.** Collectible hearts get the
+   right-side HUD slot in GOLD (`♥ N`, marigold #ffd23f) — position + color
+   disambiguate from the red lives on the left. In-world collectible hearts
+   draw pink/gold.
+3. OQ3–7 proceed on the plan's stated defaults (monster stays shoot-only; no
+   pits in Act 1; hearts persist across sessions; hearts feed run-score AND
+   the persistent counter; invitation unlock stays at final-act completion,
+   skip links always live). One consistency addition: laddoo pickups in the
+   not-yet-rethemed Acts 2–3 ALSO increment the persistent heart counter from
+   this loop onward, so the gold HUD number never appears frozen mid-game.
+
 ## Open Questions
 
 1. **Auto-run vs free movement** (§2). Plan assumes auto-run stays. If Codex
