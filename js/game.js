@@ -4,8 +4,8 @@
    Act 3 (both): two flights land in Japan; they run TOGETHER (one tap, both
    jump) past the ring studio and Lake Kawaguchiko to a MANDAP ON A HILL.
    "It's not game over. It's game start."
-   Fixed-timestep physics, rAF render, AABB, 3 lives per act,
-   continue-on-death never blocks the invite. Data: levels.js. Audio: music.js. */
+   Fixed-timestep physics, rAF render, AABB. No lives, no game-over: obstacles
+   cost 2 hearts (Sonic rule) and the journey always continues. levels.js/music.js. */
 (function () {
   'use strict';
 
@@ -117,14 +117,12 @@
       sessionTokens * 100 +
       monstersKilled * 200 +
       (ringGot ? 150 : 0) +
-      (final ? lives * 50 + Math.max(0, 300 - Math.floor(runTime) * 4) : 0));
+      (final ? Math.max(0, 300 - Math.floor(runTime) * 4) : 0));
   }
 
   function hud() {
-    var h = '';
-    for (var i = 0; i < 3; i++) h += i < lives ? '\u2665' : '\u2661';
-    hudLives.textContent = h;
-    hudScore.innerHTML = act.name.split(' \u2014 ')[0] + ' \u00B7 <span style="color:#ffd23f">\u2665</span> ' + store.hearts + (ringGot ? ' \u25CB' : '') + (sessionTokens ? ' \u2726' : '');
+    hudLives.innerHTML = '<span style="color:#ffd23f">\u2665</span> ' + store.hearts;
+    hudScore.innerHTML = act.name.split(' \u2014 ')[0] + (ringGot ? ' \u25CB' : '') + (sessionTokens ? ' \u2726' : '');
   }
 
   function resetPlayer() {
@@ -154,7 +152,7 @@
     resetPlayer();
     buildScenery();
     mode = 'chapter';
-    overlayHTML(act.chapter, [{ a: 'run', label: '\u25B6 GO' }]);
+    overlayHTML(act.chapter.concat(['', 'TAP ANYWHERE = JUMP \u2191', 'GRAB \u2665 \u00B7 DODGE THE REST']), [{ a: 'run', label: '\u25B6 GO' }]);
     hud();
   }
 
@@ -177,14 +175,13 @@
     if (!rafId) rafId = requestAnimationFrame(loop);
   }
 
-  function die() {
-    lives = 0; hud();
-    mode = 'over';
-    window.MUSIC.stop();
-    overlayHTML(
-      ['OUT OF LIVES.', 'BUT LOVE FINDS A WAY.'],
-      [{ a: 'continue', label: '\u25B6 CONTINUE' }]
-    );
+  function takeHit() {
+    // Sonic rule, wedding edition: obstacles cost hearts, never the journey.
+    store.hearts = Math.max(0, store.hearts - 2);
+    window.MWN.save(store);
+    window.MUSIC.sfx('hit');
+    invincibleUntil = runTime + 1.2;
+    hud();
   }
 
   function showActClear() {
@@ -354,14 +351,12 @@
         if (dist > 0 && dist < 110) { ic.state = 'warn'; ic.t = 0; }
       } else if (ic.state === 'warn') {
         ic.t += dt;
-        if (ic.t > 0.25) { ic.state = 'fall'; ic.vy = 0; }
+        if (ic.t > 0.4) { ic.state = 'fall'; ic.vy = 0; }
       } else if (ic.state === 'fall') {
         ic.vy += GRAVITY * dt;
         ic.y += ic.vy * dt;
         if (overlapX(ic.x, 10) && player.y + pad < ic.y + 22 && player.y + PH - pad > ic.y && runTime > invincibleUntil) {
-          lives--; window.MUSIC.sfx('hit'); hud();
-          if (lives <= 0) { die(); return; }
-          invincibleUntil = runTime + 1.4;
+          takeHit();
         }
         if (ic.y + 22 >= GROUND) { ic.state = 'shatter'; ic.t = 0; }
       } else if (ic.state === 'shatter') {
@@ -417,11 +412,7 @@
           window.MUSIC.sfx('stomp');
           hud();
         } else if (now0 > invincibleUntil) {
-          lives--;
-          window.MUSIC.sfx('hit');
-          hud();
-          if (lives <= 0) { die(); return; }
-          invincibleUntil = now0 + 1.4;
+          takeHit();
         }
       }
     }
@@ -455,11 +446,7 @@
           showToast('\u2726 You made each other\u2019s rings at the studio');
           hud();
         } else if (now > invincibleUntil) {
-          lives--;
-          window.MUSIC.sfx('hit');
-          hud();
-          if (lives <= 0) { die(); return; }
-          invincibleUntil = now + 1.4;
+          takeHit();
         }
       }
     }
@@ -780,7 +767,7 @@
   function drawItem(it) {
     var box = HIT[it.t];
     var x = px(it.x - camX), y;
-    var collectible = (it.t === 'laddoo' || it.t === 'token' || it.t === 'ring');
+    var collectible = (it.t === 'laddoo' || it.t === 'heartc' || it.t === 'token' || it.t === 'ring');
     y = collectible ? px(GROUND + it.dy - box.h) : GROUND - box.h;
 
     if (it.t === 'blackice') {
@@ -838,14 +825,17 @@
       ctx.fillStyle = '#ffd23f';
       ctx.fillRect(x + 2, y + 20, 3, 6); ctx.fillRect(x + 11, y + 20, 3, 6);
     } else if (it.t === 'snowdrift') {
-      ctx.fillStyle = '#f4f8fc';
+      ctx.fillStyle = '#8fb4d1';
       ctx.fillRect(x + 2, y + 6, 22, 10);
       ctx.fillRect(x + 6, y, 14, 8);
-      ctx.fillStyle = '#d3e2ee';
+      ctx.fillStyle = '#dceaf5';
+      ctx.fillRect(x + 7, y + 1, 6, 4);
+      ctx.fillStyle = '#4a6d8c';
       ctx.fillRect(x + 2, y + 13, 22, 3);
     } else if (it.t === 'clock') {
-      ctx.fillStyle = '#5a5a6a';
+      ctx.fillStyle = '#2f3b4a';
       ctx.fillRect(x + 8, y + 18, 4, 8);
+      ctx.fillRect(x, y - 2, 20, 22);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(x + 2, y, 16, 18);
       ctx.fillStyle = '#2b2118';
@@ -1349,6 +1339,15 @@
         else drawMayank(walkerX, GROUND - PH, false, true, runTime * 10);
       }
       return;
+    }
+    if (actIdx === 0 && mode === 'run' && runTime < 3 && camX < 600) {
+      ctx.font = '8px "Press Start 2P", monospace';
+      var hint = 'TAP = JUMP \u2191';
+      var hw = ctx.measureText(hint).width + 16;
+      ctx.fillStyle = 'rgba(255,255,255,.95)';
+      ctx.fillRect(PLAYER_X - 8, 300, hw, 26);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillText(hint, PLAYER_X, 317);
     }
     if (act.weather === 'rain') window.ENT.drawRain(ctx, runTime, W, H);
     if (mode === 'boostwait') {

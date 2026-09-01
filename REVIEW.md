@@ -41,3 +41,23 @@ Verdict: proceed.
 4. [low][open] _tick is exposed in prod GAME API; harmless (no cheating vector
    beyond what _warp already allows; page is a wedding invite).
 Verdict: Acts 3+4 close. Ship after full-suite regression.
+
+## UX-1 — Player-feedback assessment (Codex, 2026-09-01)
+User reports: hearts uncollectable + invisible; lives unclear; no onboarding;
+Calgary obstacles invisible on white; too hard — should finish in 1-2 goes.
+1. [high][fixed] game.js drawItem collectible list missing 'heartc' — hearts
+   DREW at ground level while hitboxes floated at dy height. Root cause of
+   both "can't collect" and "can't see".
+2. [high][fixed] Difficulty model replaced: lives/game-over RETIRED. Obstacle
+   hit = -2 hearts (never < 0), 1.2s stumble-invincibility, run never stops.
+   Sonic rule, wedding edition. Score's lives-bonus removed.
+3. [high][fixed] Onboarding: every chapter card ends 'TAP ANYWHERE = JUMP ·
+   GRAB ♥ · DODGE THE REST'; Act 1 opens with an in-world TAP = JUMP bubble
+   for the first 3s.
+4. [med][fixed] HUD: single gold '♥ N' top-left (the only currency), act label
+   top-right. No ambiguous triple-heart lives row.
+5. [med][fixed] Calgary contrast: snowdrifts icy-blue w/ dark base shadow,
+   clocks get dark frames. Gates/plows already dark.
+6. [low][fixed] Icicle warn shake 0.25s → 0.4s.
+Verdict: matches the host's intent — guests finish in one go, hearts are the
+gentle stakes, invitation is the destination.
