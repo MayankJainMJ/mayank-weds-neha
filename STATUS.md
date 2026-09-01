@@ -1,6 +1,6 @@
 # STATUS — Mayank Weds Neha wedding invite site
 
-Spec: [`PLAN.md`](./PLAN.md) · Live target: https://mayankjainmj.github.io/mayank-weds-neha/
+Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/mayank-weds-neha/
 
 ## Phases
 
@@ -9,10 +9,10 @@ Spec: [`PLAN.md`](./PLAN.md) · Live target: https://mayankjainmj.github.io/maya
 | P0 | Repo + deploy; `invite.html` (card/schedule/travel/FAQ, Khanna Pawna Estate maps link); `story.html` (dual-voice draft v1, illustration-only); `rsvp.html` (localStorage + saved-locally banner, song request); splash + skip; `404.html`; weblinks card | **DONE 2026-08-31** | live at https://mayankjainmj.github.io/mayank-weds-neha/ · 2 build/validate rounds run, zero console errors · travel times on invite are estimates — Mayank to verify |
 | P1 | One-act runner prototype — real-phone feasibility GATE | **built + deployed 2026-08-31; awaiting Mayank's real-phone test** | Act 1 Mumbai live: tap-jump, 3 obstacle types, laddoos, 2018 token, flag clear, continue flow. 2 build/validate rounds (bg-reads-as-obstacle fix, button hierarchy, tap-anywhere GO). GATE closes only after Mayank plays it in WhatsApp's browser on his phone |
 | P2 | Full game: 3 acts, chapter cards, illustrated de-rez postcards, havaldar, dragon boss, tokens ×8, scrapbook, vault, eggs E1/E2/E3/E5 | not started | needs P1 pass; no photo dependency (placeholder slots) |
-| P3 | Firebase: anon auth, guest doc, score/tokens, RSVP write, leaderboard + 👑/💎 | not started | needs Mayank's console steps (PLAN §12) + firebaseConfig |
+| P3 | Firebase: anon auth, guest doc, score/tokens, RSVP write, leaderboard + 👑/💎 | not started | needs Mayank's console steps (SPEC §12) + firebaseConfig |
 | P4 | Art/music polish, eggs E4/E7, OG tags, day-arc tuning, QA | not started | |
 
-## Open decisions (from PLAN §14)
+## Open decisions (from SPEC §14)
 
 1. Venue maps link — **RESOLVED**: Khanna Pawna Estate
 2. WhatsApp RSVP fallback — **DROPPED**: localStorage save + auto-resync
@@ -26,6 +26,8 @@ Spec: [`PLAN.md`](./PLAN.md) · Live target: https://mayankjainmj.github.io/maya
 10. Neha preview before guests — pending
 
 ## Changelog
+
+- 2026-09-01 — **v3.0: PLATFORMER RETHEME (4 acts) — two-loop workflow, all acts.** Engine: one-way platforms + support-ref carry, moving platforms (bobbing floes/ski-lifts, shinkansen +120px/s boost roof), ?-blocks (bonk-from-below, land-on-top), stompable enemies (dog/auto/plow) w/ off-screen despawn fix, black-ice jump-suppress zones, warn-then-fall icicles, TAP-TO-BOOST set piece, endScene system (boarding/torii/mandap), persistent gold-heart counter (never resets, feeds score), story props + invitation bits in sanitized state, _tick deterministic test driver. Act 1 Mumbai monsoon (rain jump-damp, train roofs, scaffolding, sea wall, dogs/autos/puddles/vada pav cart, chai + boarding-pass blocks). Act 2 Calgary (floes, rooftops, ski-lift token, plows, icicles, black ice, scarf + coffee blocks). Act 3 Japan co-op (shinkansen ride, ring studio, boost-only Kawaguchiko token, TORII PROPOSAL: 'She said yes. Again.'). FINALE Pawna (slow terrace climb, gold sundowner, Sahyadri ridges + lake glints, invitation revealed via block-hits: date/venue/dress/RSVP — granted on bonk — mandap ending + recap + Claim Your Spot). Bugs fixed via loops: enemy migration leak, stale continue state, icicle no-cue, invite-on-drop-collect. Revert: tag v2.7-runner-stable.
 
 - 2026-08-31 — **v2.7: themed music + monuments.** Audio unlock hardened (AudioContext resumed on PRESS START, every overlay tap and canvas tap — fixes silent-music reports); three genuinely themed tracks replace the generic ones: Act 1 = Bhupali-raga chiptune w/ tanpura drone (160bpm square), Act 2 = Canadian winter-folk lilt w/ sleigh ticks (104bpm triangle), Act 3 = hirajoshi koto-pluck theme (128bpm). Monument skylines added: Mumbai — Gateway of India, CST clock tower, Taj hotel dome, Sea Link pylons+cables; Calgary — Saddledome, Peace Bridge (+ existing Calgary Tower/Rockies); Japan — five-storey pagoda, Tokyo Tower, Himeji-style castle (+ existing Fuji/torii/lake). Verified: ctx running post-gesture, distinct track per act (160/104/128), monuments render, 0 console errors.
 

@@ -1,0 +1,43 @@
+# REVIEW.md — Codex findings (append-only)
+
+## A2-P — Act 2 plan review (Codex, 2026-09-01)
+1. [med] PLAN §1: support-ref refactor replaces walk-off logic — ensure Act 1
+   regression (roofs/scaffold) re-tested after refactor, not assumed.
+2. [med] Icicle trigger distance: must be ahead-only, else icicles dropped
+   behind the player damage him invisibly.
+3. [low] Black ice without pre-cue reads as broken input under auto-run; add
+   signage.
+4. [low] Bobbing token math: verify at extreme phases, not average.
+Verdict: proceed with revisions 1–4 folded in.
+
+## A2-B — Act 2 build review (Codex, 2026-09-01)
+1. [high][fixed] entities.js updateEnemy: unbounded leftward drive = cross-warp
+   ambush state leak. Despawn at camX-70 applied; verify Act 1 autos too (done).
+2. [high][fixed] game.js continue handler kept stale enemiesArr/icicles.
+   loadAct rebuild applied — note hearts re-collectable after continue
+   (accepted: farming persistent hearts is harmless delight).
+3. [med][fixed] icicle needed a readable pre-fall cue (warn shake, 0.25s).
+4. [low][open] token-on-bobbing-chair is expert-tier. Acceptable (optional),
+   revisit only if phone testing says rage.
+5. [low][open] floe bob dy 5-6 is nearly invisible in play; consider dy 8+ for
+   readability in a polish pass.
+Verdict: Act 2 closes. Proceed to Act 3.
+
+## A3-P — Act 3 plan review (Codex)
+1. [med] Boost launch vy -760 with ledge at y250: verify landing window math
+   against speed 180 (window ≈ x2620–2710) — test, don't trust.
+2. [low] During shinkansen boost the HUD should not double-count distance —
+   camX boost only, no score inflation. OK as planned.
+Verdict: proceed.
+
+## A34-B — Acts 3+4 build review (Codex)
+1. [high][fixed] invite:* reveals must fire on block-hit, not on collecting a
+   drop hovering out of reach. Grant-on-bonk applied; decorative pop kept.
+2. [med][accepted] act3 hazards during shinkansen dismount (traindoor 1180)
+   can chain-hit a careless rider; lives+continue absorb it.
+3. [low][open] pawna terraces: falling to base ground means backtrack-free
+   retry (auto-run) — player can miss ALL blocks and still finish; recap shows
+   '? ? ?' which nudges replay. Intended.
+4. [low][open] _tick is exposed in prod GAME API; harmless (no cheating vector
+   beyond what _warp already allows; page is a wedding invite).
+Verdict: Acts 3+4 close. Ship after full-suite regression.

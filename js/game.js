@@ -24,6 +24,11 @@
     lantern:   { w: 14, h: 24 },
     traindoor: { w: 16, h: 46 },
     laddoo:    { w: 14, h: 14 },
+    heartc:    { w: 14, h: 14 },
+    puddle:    { w: 30, h: 8 },
+    blackice:  { w: 56, h: 4 },
+    vending:   { w: 20, h: 30 },
+    cart:      { w: 26, h: 26 },
     token:     { w: 16, h: 16 },
     ring:      { w: 14, h: 14 }
   };
@@ -49,6 +54,8 @@
   var landT = 0;
   var finaleT = 0, coupleX = 0, heartsFx = [];
   var monster = null, monsterDone = false, shots = [], monstersKilled = 0;
+  var platforms = [], blocks = [], enemiesArr = [], drops = [];
+  var support = null, icicles = [], onIce = false, boostDone = false, boosting = false;
   var shootBtn = document.getElementById('shootBtn');
   var store = window.MWN.load();
 
@@ -90,10 +97,11 @@
     if (!a) return;
     if (a === 'run') startAct();
     if (a === 'next') loadAct(actIdx + 1);
-    if (a === 'continue') { lives = 3; camX = 0; resetPlayer(); hideOverlay(); mode = 'run'; lastT = 0; window.MUSIC.start(act.music); }
+    if (a === 'continue') { loadAct(actIdx); startAct(); } // full act rebuild — no stale enemies/icicles
     if (a === 'replay') beginRun();
     if (a === 'resume') { mode = 'run'; hideOverlay(); lastT = 0; }
     if (a === 'goinvite') location.href = 'invite.html';
+    if (a === 'gorsvp') location.href = 'rsvp.html';
   });
 
   if (hudMute) {
@@ -116,7 +124,7 @@
     var h = '';
     for (var i = 0; i < 3; i++) h += i < lives ? '\u2665' : '\u2661';
     hudLives.textContent = h;
-    hudScore.textContent = act.name.split(' \u2014 ')[0] + ' \u00B7 ' + laddoos + (ringGot ? ' \u25CB' : '') + (sessionTokens ? ' \u2726' : '');
+    hudScore.innerHTML = act.name.split(' \u2014 ')[0] + ' \u00B7 <span style="color:#ffd23f">\u2665</span> ' + store.hearts + (ringGot ? ' \u25CB' : '') + (sessionTokens ? ' \u2726' : '');
   }
 
   function resetPlayer() {
@@ -134,6 +142,15 @@
     finaleT = 0; heartsFx = [];
     monster = null; monsterDone = false; shots = [];
     if (shootBtn) shootBtn.hidden = true;
+    platforms = (act.platforms || []).map(function (p) {
+      return { x: p.x, y: p.y, baseY: p.y, w: p.w, kind: p.kind,
+               move: p.move ? { dy: p.move.dy, speed: p.move.speed, phase: Math.random() * 6 } : null };
+    });
+    blocks = (act.blocks || []).map(function (b) { return { x: b.x, y: b.y, drop: b.drop, hit: false, hitFx: 0 }; });
+    enemiesArr = (act.enemies || []).map(function (e) { return { x: e.x, baseX: e.x, kind: e.kind, t: Math.random() * 6, dead: false, deadT: 0 }; });
+    drops = [];
+    icicles = (act.icicles || []).map(function (ic) { return { x: ic.x, y: 150, vy: 0, state: 'hang', t: 0 }; });
+    support = null; onIce = false; boostDone = false; boosting = false;
     resetPlayer();
     buildScenery();
     mode = 'chapter';
@@ -183,12 +200,16 @@
     if (sc > store.bestScore) store.bestScore = sc;
     store.unlocked = true;
     window.MWN.save(store);
+    var IBT = { date: '3 DEC 2026 \u00B7 4:00 PM', venue: 'KHANNA PAWNA ESTATE', dress: 'FESTIVE + A WARM LAYER', rsvp: 'RSVP: CLAIM YOUR SPOT' };
+    var bits = ['date', 'venue', 'dress', 'rsvp'].map(function (k) {
+      return store.inviteBits.indexOf(k) !== -1 ? IBT[k] : '? ? ?';
+    });
     var lines = act.clearLine.concat([
-      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore,
-      '', 'YOU HAVE UNLOCKED', 'YOUR INVITATION'
-    ]);
+      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore, ''
+    ]).concat(bits).concat(['', 'YOU HAVE UNLOCKED', 'YOUR INVITATION']);
     overlayHTML(lines, [
       { a: 'goinvite', label: 'SEE THE INVITATION \u2192' },
+      { a: 'gorsvp', label: 'CLAIM YOUR SPOT \u2192' },
       { a: 'replay', label: 'RUN IT AGAIN', ghost: true }
     ]);
   }
@@ -196,11 +217,22 @@
   /* ---------- input ---------- */
   function jump() {
     if (mode === 'chapter') { startAct(); return; }
+    if (mode === 'boostwait') {
+      boostDone = true; boosting = true;
+      support = null;
+      player.vy = -760;                 // he kneels, she flies
+      player.onGround = false;
+      mode = 'run'; lastT = 0;
+      window.MUSIC.sfx('jump');
+      return;
+    }
     if (mode === 'landing') { landT = 99; return; } // tap to skip
     if (mode === 'boarding') { boardT = Math.max(boardT, 90); return; } // tap to skip
     if (mode !== 'run') return;
     if (player.onGround) {
-      player.vy = JUMP_V;
+      if (onIce) return; // sliding on black ice — jump suppressed until clear
+      support = null;
+      player.vy = JUMP_V * ((act.physics && act.physics.jumpScale) || 1);
       player.onGround = false;
       window.MUSIC.sfx('jump');
     }
@@ -235,12 +267,163 @@
     runTime += dt;
     player.frame += dt * 10;
 
+    // moving platforms bob; carried player follows his support
+    platforms.forEach(function (p) {
+      if (p.move) p.y = p.baseY + Math.sin(runTime * p.move.speed + p.move.phase) * p.move.dy;
+    });
+    if (player.onGround && support && support !== 'ground') {
+      player.y = support.y - PH;
+      if (support.kind === 'shinkansen') camX += 120 * dt;   // bullet-train boost
+    }
+    var prevY = player.y;
     player.vy += GRAVITY * dt;
     player.y += player.vy * dt;
-    if (player.y >= GROUND - PH) {
-      player.y = GROUND - PH;
-      player.vy = 0;
-      player.onGround = true;
+
+    var worldX = camX + PLAYER_X;
+    var pad = 3;
+    function overlapX(ox, ow) { return worldX + pad < ox + ow && worldX + PW - pad > ox; }
+
+    // ?-block head-hit (rising)
+    if (player.vy < 0) {
+      for (var bi = 0; bi < blocks.length; bi++) {
+        var bk = blocks[bi];
+        var bBottom = bk.y + 16;
+        if (!overlapX(bk.x, 16)) continue;
+        if (prevY >= bBottom - 1 && player.y < bBottom) {
+          player.y = bBottom;
+          player.vy = 90;
+          if (!bk.hit) {
+            bk.hit = true; bk.hitFx = 1;
+            window.MUSIC.sfx('blockpop');
+            if (bk.drop.indexOf('invite:') === 0) {
+              // invitation reveals ON the hit (the drop is celebration only)
+              var ibb = bk.drop.replace('invite:', '');
+              if (store.inviteBits.indexOf(ibb) === -1) store.inviteBits.push(ibb);
+              window.MWN.save(store);
+              window.MUSIC.sfx('token');
+              var IBT2 = { date: '\u2709 3 DEC 2026 \u00B7 4:00 PM', venue: '\u2709 KHANNA PAWNA ESTATE', dress: '\u2709 FESTIVE + A WARM LAYER', rsvp: '\u2709 RSVP: CLAIM YOUR SPOT \u2192' };
+              showToast(IBT2[ibb] || ibb);
+              drops.push({ x: bk.x + 1, y: bk.y - 16, type: bk.drop, t: 0, deco: true });
+            } else {
+              drops.push({ x: bk.x + 1, y: bk.y - 16, type: bk.drop === 'heart' ? 'heart' : bk.drop, t: 0 });
+            }
+          }
+        }
+      }
+    }
+
+    // landing: base ground + platform tops + block tops
+    if (player.vy >= 0) {
+      var feetPrev = prevY + PH, feetNew = player.y + PH;
+      var best = null, bestRef = null;
+      function tryTop(top, ox, ow, ref) {
+        if (!overlapX(ox, ow)) return;
+        if (feetPrev <= top + 6 && feetNew >= top) {
+          if (best === null || top < best) { best = top; bestRef = ref; }
+        }
+      }
+      platforms.forEach(function (p) { tryTop(p.y, p.x, p.w, p); });
+      blocks.forEach(function (b) { tryTop(b.y, b.x, 16, b); });
+      if (feetNew >= GROUND && (best === null || GROUND < best)) { best = GROUND; bestRef = 'ground'; }
+      if (best !== null) {
+        player.y = best - PH;
+        player.vy = 0;
+        player.onGround = true;
+        support = bestRef;
+        if (boosting) boosting = false;
+      }
+    }
+
+    // walked off an elevated surface (support-ref based)
+    if (player.onGround && support && support !== 'ground') {
+      var sw = support.w || 16;
+      if (!overlapX(support.x, sw)) { support = null; player.onGround = false; }
+    }
+    // black ice: jump suppressed while sliding over a zone
+    onIce = false;
+    if (player.onGround && support === 'ground') {
+      for (var zi = 0; zi < items.length; zi++) {
+        if (items[zi].t === 'blackice' && overlapX(items[zi].x, 56)) { onIce = true; break; }
+      }
+    }
+    // icicles: drop when the runner approaches (ahead-only, per Codex A2-P#2)
+    for (var ii = 0; ii < icicles.length; ii++) {
+      var ic = icicles[ii];
+      if (ic.state === 'hang') {
+        var dist = ic.x - worldX;
+        if (dist > 0 && dist < 110) { ic.state = 'warn'; ic.t = 0; }
+      } else if (ic.state === 'warn') {
+        ic.t += dt;
+        if (ic.t > 0.25) { ic.state = 'fall'; ic.vy = 0; }
+      } else if (ic.state === 'fall') {
+        ic.vy += GRAVITY * dt;
+        ic.y += ic.vy * dt;
+        if (overlapX(ic.x, 10) && player.y + pad < ic.y + 22 && player.y + PH - pad > ic.y && runTime > invincibleUntil) {
+          lives--; window.MUSIC.sfx('hit'); hud();
+          if (lives <= 0) { die(); return; }
+          invincibleUntil = runTime + 1.4;
+        }
+        if (ic.y + 22 >= GROUND) { ic.state = 'shatter'; ic.t = 0; }
+      } else if (ic.state === 'shatter') {
+        ic.t += dt;
+      }
+    }
+
+    // entities tick
+    blocks.forEach(function (b) { if (b.hitFx > 0) b.hitFx = Math.max(0, b.hitFx - dt * 5); });
+    enemiesArr.forEach(function (e) { window.ENT.updateEnemy(e, dt, camX, W); });
+    for (var di = drops.length - 1; di >= 0; di--) {
+      var dp = drops[di];
+      window.ENT.updateDrop(dp, dt);
+      if (dp.deco) { if (dp.t > 1.2) drops.splice(di, 1); continue; }
+      if (dp.t > 0.25 && overlapX(dp.x, 14) && player.y + pad < dp.y + 14 && player.y + PH - pad > dp.y) {
+        if (dp.type === 'heart') {
+          laddoos++; store.hearts++; window.MWN.save(store);
+          window.MUSIC.sfx('coin');
+        } else if (dp.type.indexOf('invite:') === 0) {
+          var ib = dp.type.replace('invite:', '');
+          if (store.inviteBits.indexOf(ib) === -1) store.inviteBits.push(ib);
+          window.MWN.save(store);
+          window.MUSIC.sfx('token');
+          var IBT = { date: '\u2709 3 DEC 2026 \u00B7 4:00 PM', venue: '\u2709 KHANNA PAWNA ESTATE', dress: '\u2709 FESTIVE + A WARM LAYER', rsvp: '\u2709 RSVP: CLAIM YOUR SPOT \u2192' };
+          showToast(IBT[ib] || ib);
+        } else {
+          var pid = dp.type.replace('prop:', '');
+          if (store.props.indexOf(pid) === -1) store.props.push(pid);
+          window.MWN.save(store);
+          window.MUSIC.sfx('token');
+          var PT = { chai: '\u2615 Chai break, Mumbai style', boardingpass: '\u{1F3AB} Boarding pass acquired', scarf: '\u{1F9E3} Her Calgary scarf', coffee: '\u2615 Double-double, extra warm' };
+          showToast(PT[pid] || pid);
+        }
+        drops.splice(di, 1);
+        hud();
+      }
+    }
+
+    // stompable enemies
+    var now0 = runTime;
+    for (var ei = 0; ei < enemiesArr.length; ei++) {
+      var en = enemiesArr[ei];
+      if (en.dead) continue;
+      var es = window.ENT.SIZES[en.kind];
+      if (!overlapX(en.x, es.w)) continue;
+      var eTop = GROUND - es.h;
+      if (player.y + PH > eTop && player.y < GROUND) {
+        if (player.vy > 0 && (prevY + PH) <= eTop + 12) {
+          en.dead = true; en.deadT = 0;
+          player.vy = -320;
+          player.onGround = false;
+          laddoos++; store.hearts++; window.MWN.save(store);
+          window.MUSIC.sfx('stomp');
+          hud();
+        } else if (now0 > invincibleUntil) {
+          lives--;
+          window.MUSIC.sfx('hit');
+          hud();
+          if (lives <= 0) { die(); return; }
+          invincibleUntil = now0 + 1.4;
+        }
+      }
     }
 
     var px2 = PLAYER_X, py = player.y;
@@ -252,13 +435,14 @@
       var box = HIT[it.t];
       var sx = it.x - camX;
       if (sx < -60 || sx > W + 60) continue;
-      var collectible = (it.t === 'laddoo' || it.t === 'token' || it.t === 'ring');
+      if (it.t === 'blackice') continue; // zone, handled above — never damages
+      var collectible = (it.t === 'laddoo' || it.t === 'heartc' || it.t === 'token' || it.t === 'ring');
       var oy = collectible ? GROUND + it.dy - box.h : GROUND - box.h;
-      var pad = 3; // forgiveness
       if (px2 + pad < sx + box.w && px2 + PW - pad > sx &&
           py + pad < oy + box.h && py + PH - pad > oy) {
-        if (it.t === 'laddoo') {
-          it.hit = true; laddoos++; window.MUSIC.sfx('coin'); hud();
+        if (it.t === 'laddoo' || it.t === 'heartc') {
+          it.hit = true; laddoos++; store.hearts++; window.MWN.save(store);
+          window.MUSIC.sfx('coin'); hud();
         } else if (it.t === 'token') {
           it.hit = true; sessionTokens++;
           store.tokens[act.tokenIndex] = true; window.MWN.save(store);
@@ -288,11 +472,16 @@
       if (shootBtn) shootBtn.hidden = false;
       return;
     }
-    if (act.boarding && camX >= act.flagX - 200) {
+    if (act.boost && !boostDone && camX >= act.boost.x - 160) {
+      mode = 'boostwait';
+      player.y = GROUND - PH; player.vy = 0; player.onGround = true;
+      return;
+    }
+    if (act.endScene === 'boarding' && camX >= act.flagX - 200) {
       mode = 'boarding'; boardT = 0; walkerX = PLAYER_X; planeOff = 0;
       return;
     }
-    if (act.mandap && camX >= act.flagX - 190) {
+    if ((act.endScene === 'mandap' || act.endScene === 'torii') && camX >= act.flagX - 190) {
       mode = 'finale'; finaleT = 0; coupleX = PLAYER_X;
       player.y = GROUND - PH;
       return;
@@ -376,12 +565,20 @@
       hh.y += hh.vy * dt; hh.life -= dt;
       if (hh.life <= 0) heartsFx.splice(i, 1);
     }
-    if (finaleT > 3) finishGame();
+    if (finaleT > 3) {
+      if (act.endScene === 'torii') {
+        mode = 'clear';
+        window.MUSIC.sfx('clear');
+        overlayHTML(act.clearLine, [{ a: 'next', label: act.nextLabel }]);
+      } else {
+        finishGame();
+      }
+    }
   }
 
   /* the ground swells into a hill under the mandap */
   function hillLift(screenX) {
-    if (!act.mandap) return 0;
+    if (act.endScene !== 'mandap' && act.endScene !== 'torii') return 0;
     var mx = act.flagX - camX;
     var d = Math.abs(screenX - mx);
     if (d > 150) return 0;
@@ -422,6 +619,17 @@
       }
       for (i = 0; i < 42; i++) {
         flakes.push({ x0: Math.random() * W, y0: Math.random() * H, spd: 22 + Math.random() * 26, w: 1 + Math.random() * 2 });
+      }
+    } else if (act.style === 'pawna') {
+      scenery.push({ t: 'ridge', x: 100 });
+      scenery.push({ t: 'ridge', x: 700 });
+      scenery.push({ t: 'ridge', x: 1300 });
+      scenery.push({ t: 'lakeglint', x: 300, w: 500 });
+      scenery.push({ t: 'lakeglint', x: 1100, w: 400 });
+      x = 0;
+      while (x < (act.flagX + 600) * 0.55 + W) {
+        if (Math.random() < .5) scenery.push({ t: 'marigold', x: x });
+        x += 90 + Math.random() * 120;
       }
     } else {
       x = 0;
@@ -547,6 +755,27 @@
     for (var g = 0; g < 6; g++) ctx.fillRect(mx - 44 + g * 17, top - 58 + (g % 2) * 3, 3, 3);
   }
 
+  function drawBigTorii() {
+    var mx = px(act.flagX - camX);
+    if (mx > W + 160) return;
+    // hill
+    ctx.fillStyle = '#6f9a6a';
+    ctx.beginPath();
+    ctx.moveTo(mx - 150, GROUND);
+    ctx.quadraticCurveTo(mx, GROUND - 52, mx + 150, GROUND);
+    ctx.closePath(); ctx.fill();
+    var top = GROUND - 24;
+    ctx.fillStyle = '#c94f4f';
+    ctx.fillRect(mx - 42, top - 84, 8, 84);
+    ctx.fillRect(mx + 34, top - 84, 8, 84);
+    ctx.fillRect(mx - 56, top - 94, 112, 9);   // upper lintel
+    ctx.fillRect(mx - 46, top - 78, 92, 6);    // lower beam
+    ctx.fillStyle = '#8f3b2e';
+    ctx.fillRect(mx - 60, top - 96, 120, 4);   // kasagi cap
+    ctx.fillStyle = '#ffd23f';                  // shimenawa knot glints
+    ctx.fillRect(mx - 10, top - 76, 4, 4); ctx.fillRect(mx + 8, top - 76, 4, 4);
+  }
+
   /* ---------- item skins ---------- */
   function drawItem(it) {
     var box = HIT[it.t];
@@ -554,7 +783,23 @@
     var collectible = (it.t === 'laddoo' || it.t === 'token' || it.t === 'ring');
     y = collectible ? px(GROUND + it.dy - box.h) : GROUND - box.h;
 
-    if (it.t === 'laddoo') {
+    if (it.t === 'blackice') {
+      window.ENT.drawBlackIce(ctx, x);
+    } else if (it.t === 'vending') {
+      var vy0 = GROUND - 30;
+      ctx.fillStyle = '#c94f4f';
+      ctx.fillRect(x, vy0, 20, 30);
+      ctx.fillStyle = '#f4f7fa';
+      ctx.fillRect(x + 3, vy0 + 3, 14, 12);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillRect(x + 3, vy0 + 18, 8, 6);
+    } else if (it.t === 'heartc') {
+      window.ENT.drawHeartC(ctx, x, y, runTime);
+    } else if (it.t === 'puddle') {
+      window.ENT.drawPuddle(ctx, x);
+    } else if (it.t === 'cart') {
+      window.ENT.drawCart(ctx, x);
+    } else if (it.t === 'laddoo') {
       ctx.fillStyle = '#fb8500';
       ctx.fillRect(x + 3, y + 1, 8, 12);
       ctx.fillRect(x + 1, y + 3, 12, 8);
@@ -655,13 +900,17 @@
       g.addColorStop(0, '#8ecae6'); g.addColorStop(.6, '#bde0fe'); g.addColorStop(1, '#ffe8b6');
     } else if (act.style === 'calgary') {
       g.addColorStop(0, '#7fa8cc'); g.addColorStop(.6, '#d8e6f2'); g.addColorStop(1, '#f4f8fc');
+    } else if (act.style === 'pawna') {
+      g.addColorStop(0, '#f6b26b'); g.addColorStop(.55, '#f18f4a'); g.addColorStop(1, '#ffd166');
     } else {
       g.addColorStop(0, '#8c6bb1'); g.addColorStop(.55, '#f2909e'); g.addColorStop(1, '#ffd9a0');
     }
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
     if (act.style === 'mumbai') { ctx.fillStyle = '#ffd23f'; ctx.fillRect(250, 40, 28, 28); }
+    if (act.weather === 'rain') { ctx.fillStyle = 'rgba(110, 122, 138, .22)'; ctx.fillRect(0, 0, W, H); }
     else if (act.style === 'calgary') { ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fillRect(244, 52, 26, 26); }
+    else if (act.style === 'pawna') { ctx.fillStyle = '#ff7b3e'; ctx.fillRect(226, 150, 40, 40); }
     else { ctx.fillStyle = '#ff8b5e'; ctx.fillRect(236, 120, 34, 34); }
     ctx.fillStyle = act.style === 'japan' ? 'rgba(255,236,224,.8)' : 'rgba(255,255,255,.85)';
     clouds.forEach(function (c) {
@@ -794,6 +1043,24 @@
         ctx.beginPath();                                  // top roof
         ctx.moveTo(sx + 12, GROUND - 62); ctx.lineTo(sx + 28, GROUND - 74); ctx.lineTo(sx + 44, GROUND - 62);
         ctx.closePath(); ctx.fill();
+      } else if (s.t === 'ridge') {
+        // Sahyadri ridgeline, warm dusk
+        ctx.fillStyle = 'rgba(110, 75, 60, .45)';
+        ctx.beginPath();
+        ctx.moveTo(sx - 160, GROUND); ctx.lineTo(sx - 40, GROUND - 88); ctx.lineTo(sx + 60, GROUND - 30);
+        ctx.lineTo(sx + 150, GROUND - 70); ctx.lineTo(sx + 260, GROUND);
+        ctx.closePath(); ctx.fill();
+      } else if (s.t === 'lakeglint') {
+        // Pawna Lake glinting below the climb
+        ctx.fillStyle = 'rgba(255, 209, 102, .35)';
+        ctx.fillRect(sx, GROUND - 14, s.w, 14);
+        ctx.fillStyle = 'rgba(255, 240, 200, .55)';
+        for (var lg = 0; lg < 5; lg++) ctx.fillRect(sx + 30 + lg * (s.w / 5), GROUND - 10 + (lg % 2) * 4, 20, 2);
+      } else if (s.t === 'marigold') {
+        ctx.fillStyle = 'rgba(251, 133, 0, .7)';
+        ctx.fillRect(sx, GROUND - 10, 5, 5); ctx.fillRect(sx + 7, GROUND - 14, 5, 5); ctx.fillRect(sx + 13, GROUND - 8, 5, 5);
+        ctx.fillStyle = 'rgba(90, 110, 60, .6)';
+        ctx.fillRect(sx + 6, GROUND - 8, 3, 8);
       } else if (s.t === 'rockies') {
         ctx.fillStyle = 'rgba(120, 138, 160, .4)';
         ctx.beginPath();
@@ -894,8 +1161,8 @@
   }
 
   function renderGround() {
-    var g1 = act.style === 'mumbai' ? '#4a7c59' : act.style === 'calgary' ? '#e9f0f6' : '#6f9a6a';
-    var g2 = act.style === 'mumbai' ? '#3b6349' : act.style === 'calgary' ? '#c9d8e4' : '#5b8258';
+    var g1 = act.style === 'mumbai' ? '#4a7c59' : act.style === 'calgary' ? '#e9f0f6' : act.style === 'pawna' ? '#8a9a55' : '#6f9a6a';
+    var g2 = act.style === 'mumbai' ? '#3b6349' : act.style === 'calgary' ? '#c9d8e4' : act.style === 'pawna' ? '#75844a' : '#5b8258';
     ctx.fillStyle = g1;
     ctx.fillRect(0, GROUND, W, H - GROUND);
     ctx.fillStyle = g2;
@@ -907,8 +1174,9 @@
   }
 
   function renderEnd() {
-    if (act.mandap) { drawMandap(); return; }
-    if (act.boarding) {
+    if (act.endScene === 'mandap') { drawMandap(); return; }
+    if (act.endScene === 'torii') { drawBigTorii(); return; }
+    if (act.endScene === 'boarding') {
       // airport at the end of the act: parked plane + destination sign
       var fx = px(act.flagX - camX);
       if (fx > W + 180) return;
@@ -1065,7 +1333,12 @@
     }
     renderGround();
     renderEnd();
+    platforms.forEach(function (p) { window.ENT.drawPlatformExt(ctx, p, camX, runTime); });
+    icicles.forEach(function (ic) { window.ENT.drawIcicle(ctx, ic, camX); });
+    blocks.forEach(function (b) { window.ENT.drawBlock(ctx, b, camX, runTime); });
     items.forEach(function (it) { if (!it.hit) drawItem(it); });
+    enemiesArr.forEach(function (e) { window.ENT.drawEnemy(ctx, e, camX, runTime); });
+    drops.forEach(function (d) { window.ENT.drawDrop(ctx, d, camX); });
 
     if (mode === 'monster') { drawMonsterScene(); return; }
     if (mode === 'landing') { renderLanding(); return; }
@@ -1077,9 +1350,25 @@
       }
       return;
     }
+    if (act.weather === 'rain') window.ENT.drawRain(ctx, runTime, W, H);
+    if (mode === 'boostwait') {
+      drawMayank(PLAYER_X - 22, GROUND - PH + 8, false, false, 0); // kneel
+      drawNeha(PLAYER_X, GROUND - PH, false, 0);
+      ctx.font = '8px "Press Start 2P", monospace';
+      var bl = 'TAP TO BOOST!';
+      var bw = ctx.measureText(bl).width + 16;
+      ctx.fillStyle = 'rgba(255,255,255,.95)';
+      ctx.fillRect(W / 2 - bw / 2, 210, bw, 26);
+      ctx.fillStyle = '#2b2118';
+      ctx.fillText(bl, W / 2 - bw / 2 + 8, 227);
+      return;
+    }
     var blinking = runTime < invincibleUntil && Math.floor(runTime * 12) % 2 === 0;
     if (!blinking && player) {
-      if (act.player === 'both') {
+      if (act.player === 'both' && boosting) {
+        drawMayank(PLAYER_X - 22, GROUND - PH + 8, false, false, 0); // still kneeling
+        drawNeha(PLAYER_X, player.y, false, player.frame);
+      } else if (act.player === 'both') {
         drawMayank(PLAYER_X - 24, player.y, false, player.onGround, player.frame + 0.5);
         drawNeha(PLAYER_X, player.y, player.onGround, player.frame);
       } else if (act.player === 'neha') {
@@ -1109,6 +1398,8 @@
       dt = Math.min(0.05, (t - lastT) / 1000);
       lastT = t;
       updateMonster(dt);
+    } else if (mode === 'boostwait') {
+      lastT = t;
     } else if (mode === 'landing') {
       if (!lastT) lastT = t;
       dt = Math.min(0.05, (t - lastT) / 1000);
@@ -1134,10 +1425,30 @@
                tokens: sessionTokens, ringGot: ringGot, playerY: player && player.y,
                boardT: boardT, landT: landT, finaleT: finaleT,
                monster: monster && { hp: monster.hp, dead: monster.dead }, kills: monstersKilled,
+               hearts: store.hearts, props: store.props.slice(), onGround: player && player.onGround,
+               onIce: onIce, supportKind: support === 'ground' ? 'ground' : (support && support.kind) || null,
+               icicleStates: icicles.map(function (ic) { return ic.state; }),
+               drops: drops.length, enemies: enemiesArr.filter(function (e) { return !e.dead; }).length,
+               enemyXs: enemiesArr.map(function (e) { return { x: Math.round(e.x), kind: e.kind, dead: e.dead }; }),
                score: score(false) };
     },
     _warp: function (x) { camX = x; },
     _skip: function () { if (mode === 'landing') landT = 99; if (mode === 'boarding') boardT = 90; },
+    _freeze: function () { if (mode === 'run') mode = 'paused'; },
+    _tick: function (ms) { // deterministic manual driver for tests (rAF-independent)
+      var steps = Math.max(1, Math.round(ms / (1000 * STEP)));
+      for (var i = 0; i < steps; i++) {
+        if (mode === 'run') update(STEP);
+        else if (mode === 'boarding') updateBoarding(STEP);
+        else if (mode === 'landing') updateLanding(STEP);
+        else if (mode === 'finale') updateFinale(STEP);
+        else if (mode === 'monster') updateMonster(STEP);
+        else break;
+      }
+      render();
+      return mode;
+    },
+    _go: function () { if (mode === 'paused') { mode = 'run'; lastT = 0; hideOverlay(); } },
     _shoot: shoot,
     _jump: jump
   };
