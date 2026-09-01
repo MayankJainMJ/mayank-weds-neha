@@ -278,14 +278,16 @@
 
     var worldX = camX + PLAYER_X;
     var pad = 3;
+    var pairLead = (act.player === 'both') ? 24 : 0; // back sprite (him) also collects
     function overlapX(ox, ow) { return worldX + pad < ox + ow && worldX + PW - pad > ox; }
+    function overlapC(ox, ow) { return worldX - pairLead + pad < ox + ow && worldX + PW - pad > ox; }
 
     // ?-block head-hit (rising)
     if (player.vy < 0) {
       for (var bi = 0; bi < blocks.length; bi++) {
         var bk = blocks[bi];
         var bBottom = bk.y + 16;
-        if (!overlapX(bk.x, 16)) continue;
+        if (!overlapC(bk.x, 16)) continue;
         if (prevY >= bBottom - 1 && player.y < bBottom) {
           player.y = bBottom;
           player.vy = 90;
@@ -371,7 +373,7 @@
       var dp = drops[di];
       window.ENT.updateDrop(dp, dt);
       if (dp.deco) { if (dp.t > 1.2) drops.splice(di, 1); continue; }
-      if (dp.t > 0.25 && overlapX(dp.x, 14) && player.y + pad < dp.y + 14 && player.y + PH - pad > dp.y) {
+      if (dp.t > 0.25 && overlapC(dp.x, 14) && player.y + pad < dp.y + 14 && player.y + PH - pad > dp.y) {
         if (dp.type === 'heart') {
           laddoos++; store.hearts++; window.MWN.save(store);
           window.MUSIC.sfx('coin');
@@ -429,7 +431,8 @@
       if (it.t === 'blackice') continue; // zone, handled above — never damages
       var collectible = (it.t === 'laddoo' || it.t === 'heartc' || it.t === 'token' || it.t === 'ring');
       var oy = collectible ? GROUND + it.dy - box.h : GROUND - box.h;
-      if (px2 + pad < sx + box.w && px2 + PW - pad > sx &&
+      var leftEdge = collectible ? px2 - pairLead : px2; // pair-wide pickups, fair hazards
+      if (leftEdge + pad < sx + box.w && px2 + PW - pad > sx &&
           py + pad < oy + box.h && py + PH - pad > oy) {
         if (it.t === 'laddoo' || it.t === 'heartc') {
           it.hit = true; laddoos++; store.hearts++; window.MWN.save(store);
@@ -553,7 +556,7 @@
       if (hh.life <= 0) heartsFx.splice(i, 1);
     }
     if (finaleT > 3) {
-      if (act.endScene === 'torii') {
+      if (actIdx < window.LEVELS.acts.length - 1) {
         mode = 'clear';
         window.MUSIC.sfx('clear');
         overlayHTML(act.clearLine, [{ a: 'next', label: act.nextLabel }]);
@@ -669,25 +672,61 @@
   function drawNeha(x, y, running, frame) {
     x = px(x); y = px(y);
     var f = running ? (Math.floor(frame) % 2) : 0;
+    // feet peeking under the lehenga
     ctx.fillStyle = '#3b2d20';
     if (running) {
-      if (f === 0) { ctx.fillRect(x + 2, y + 20, 5, 6); ctx.fillRect(x + 11, y + 22, 5, 4); }
-      else { ctx.fillRect(x + 2, y + 22, 5, 4); ctx.fillRect(x + 11, y + 20, 5, 6); }
-    } else { ctx.fillRect(x + 3, y + 20, 5, 6); ctx.fillRect(x + 10, y + 20, 5, 6); }
+      if (f === 0) { ctx.fillRect(x + 3, y + 23, 4, 3); ctx.fillRect(x + 11, y + 24, 4, 2); }
+      else { ctx.fillRect(x + 3, y + 24, 4, 2); ctx.fillRect(x + 11, y + 23, 4, 3); }
+    } else { ctx.fillRect(x + 4, y + 23, 4, 3); ctx.fillRect(x + 10, y + 23, 4, 3); }
+    // lehenga skirt — flared
     ctx.fillStyle = '#e85d75';
-    ctx.fillRect(x + 1, y + 9, 16, 12);
-    ctx.fillStyle = '#ffd23f';
-    ctx.fillRect(x + 1, y + 19, 16, 2);
-    ctx.fillStyle = '#241a12';
-    ctx.fillRect(x + 1, y + 2, 3, 13);
+    ctx.fillRect(x + 4, y + 14, 10, 3);
+    ctx.fillRect(x + 3, y + 17, 12, 3);
+    ctx.fillRect(x + 2, y + 20, 14, 3);
+    ctx.fillStyle = '#ffd23f';                       // gold hem
+    ctx.fillRect(x + 2, y + 22, 14, 2);
+    ctx.fillStyle = '#c9455f';                       // skirt fold shading
+    ctx.fillRect(x + 8, y + 15, 2, 7);
+    // choli
+    ctx.fillStyle = '#d94f70';
+    ctx.fillRect(x + 4, y + 9, 10, 5);
+    ctx.fillStyle = '#ffd23f';                       // waistband
+    ctx.fillRect(x + 4, y + 13, 10, 1);
+    // arms
     ctx.fillStyle = '#e8b88a';
-    ctx.fillRect(x + 4, y + 1, 11, 9);
+    ctx.fillRect(x + 2, y + 10, 2, 4); ctx.fillRect(x + 14, y + 10, 2, 4);
+    ctx.fillStyle = '#ffd23f';                       // bangles
+    ctx.fillRect(x + 2, y + 13, 2, 1); ctx.fillRect(x + 14, y + 13, 2, 1);
+    // long hair down the back
+    ctx.fillStyle = '#241a12';
+    ctx.fillRect(x + 1, y + 2, 3, 15);
+    ctx.fillRect(x + 2, y + 16, 2, 3);
+    // head
+    ctx.fillStyle = '#e8b88a';
+    ctx.fillRect(x + 4, y + 2, 11, 8);
+    // hair top + side sweep
     ctx.fillStyle = '#241a12';
     ctx.fillRect(x + 3, y, 12, 3);
+    ctx.fillRect(x + 3, y + 2, 2, 5);
+    ctx.fillRect(x + 13, y + 2, 2, 2);
+    // flower in her hair
+    ctx.fillStyle = '#ffb3c1';
+    ctx.fillRect(x + 2, y - 1, 4, 4);
+    ctx.fillStyle = '#ffd23f';
+    ctx.fillRect(x + 3, y, 2, 2);
+    // bindi
     ctx.fillStyle = '#d64545';
-    ctx.fillRect(x + 9, y + 4, 1, 1);
+    ctx.fillRect(x + 9, y + 4, 2, 2);
+    // eye with lash line
     ctx.fillStyle = '#241a12';
-    ctx.fillRect(x + 12, y + 4, 2, 2);
+    ctx.fillRect(x + 12, y + 4, 3, 1);
+    ctx.fillRect(x + 12, y + 5, 2, 2);
+    // smile
+    ctx.fillStyle = '#b3543f';
+    ctx.fillRect(x + 12, y + 8, 2, 1);
+    // earring
+    ctx.fillStyle = '#ffd23f';
+    ctx.fillRect(x + 14, y + 8, 2, 2);
   }
 
   function drawPlane(x, y) {

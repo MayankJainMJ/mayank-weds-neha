@@ -61,3 +61,20 @@ Calgary obstacles invisible on white; too hard — should finish in 1-2 goes.
 6. [low][fixed] Icicle warn shake 0.25s → 0.4s.
 Verdict: matches the host's intent — guests finish in one go, hearts are the
 gentle stakes, invitation is the destination.
+
+## QA-2 — Co-op pickup + structure feedback (Codex, 2026-09-01)
+1. [high][CONFIRMED REAL + fixed] In 'both' mode the pair shared ONE hitbox
+   (front sprite only); Mayank was decorative — hearts touching only him were
+   missed. Fix: collectibles/blocks/drops use a pair-wide pickup box
+   (worldX-24..worldX+PW); hazards still judge only the front sprite (kept
+   forgiving). Verified: late-jump heart that only the back sprite overlapped
+   now collects.
+2. [med][fixed] Act 4 removed per host: 3 acts; Act 3 renamed TOGETHER (Japan
+   scenery kept), torii = their mandap, torii scene now ENDS the game with
+   score + invitation recap. Invitation blocks (date/venue/dress/rsvp) moved
+   into Act 3.
+3. [med][fixed] invite:date block sat too low over its ledge (head already
+   past block bottom → bonk could never fire). Raised y300→276. Lesson:
+   block bottom must clear standing-head height of its floor.
+4. [med][fixed] Neha sprite redesign: flared lehenga + gold hem, choli,
+   bangles, long back hair, flower, bindi, lash line, earring, smile.

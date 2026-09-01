@@ -7,7 +7,7 @@
    Fuji over Kawaguchiko, and a MANDAP ON A HILL instead of a castle.
    laddoo / token / ring dy = height above ground top (negative = up). */
 window.LEVELS = {
-  acts: ['act1', 'act2', 'act3', 'act4'],
+  acts: ['act1', 'act2', 'act3'],
 
   act1: {
     id: 'act1',
@@ -170,10 +170,9 @@ window.LEVELS = {
     style: 'japan',
     player: 'both',
     music: 'japan',
-    name: 'ACT 3 \u2014 JAPAN',
-    chapter: ['ACT 3 \u2014 JAPAN', '', 'TWO FLIGHTS LAND.', 'SAKURA. SHINKANSEN.', 'TWO HANDMADE RINGS.', '', 'ONE TAP, BOTH JUMP.'],
-    clearLine: ['UNDER THE TORII \u2014', 'TWO HANDMADE RINGS,', 'EXCHANGED. \u2726', '', 'SHE SAID YES. AGAIN.'],
-    nextLabel: '\u25B6 TO THE HILLS',
+    name: 'ACT 3 \u2014 TOGETHER',
+    chapter: ['ACT 3 \u2014 TOGETHER', '', 'TWO FLIGHTS LAND.', 'SAME CITY. SAME ROAD.', 'TWO HANDMADE RINGS.', '', 'ONE TAP, BOTH JUMP.', 'HIT THE \u2726 BLOCKS \u2014', 'THE INVITATION IS INSIDE.'],
+    clearLine: ['UNDER THE TORII \u2014', 'THEIR MANDAP.', '', 'IT\u2019S NOT GAME OVER.', 'IT\u2019S GAME START. \u2726'],
     landing: true,
     endScene: 'torii',
     speed: 180,
@@ -190,10 +189,10 @@ window.LEVELS = {
       { x: 2620, y: 250, w: 90,  kind: 'station' }
     ],
     blocks: [
-      { x: 600,  y: 300, drop: 'heart' },
-      { x: 1500, y: 280, drop: 'heart' },
-      { x: 2000, y: 316, drop: 'heart' },
-      { x: 3300, y: 316, drop: 'heart' }
+      { x: 600,  y: 276, drop: 'invite:date' },
+      { x: 1500, y: 280, drop: 'invite:venue' },
+      { x: 2000, y: 316, drop: 'invite:dress' },
+      { x: 3300, y: 316, drop: 'invite:rsvp' }
     ],
     enemies: [],
     icicles: [],
@@ -236,53 +235,4 @@ window.LEVELS = {
     ]
   },
 
-  act4: {
-    id: 'act4',
-    style: 'pawna',
-    player: 'both',
-    music: 'pawna',
-    name: 'FINALE \u2014 PAWNA',
-    chapter: ['FINALE \u2014 LONAVALA', '', 'NOT A RACE.', 'A SLOW CLIMB, TOGETHER,', 'TO A MANDAP ON A HILL.', '', 'HIT THE BLOCKS \u2014', 'THE INVITATION IS INSIDE.'],
-    clearLine: ['IT\u2019S NOT GAME OVER.', 'IT\u2019S GAME START. \u2726'],
-    endScene: 'mandap',
-    speed: 120,
-    flagX: 3000,
-    physics: {},
-    platforms: [
-      { x: 400,  y: 364, w: 260, kind: 'terrace' },
-      { x: 760,  y: 336, w: 260, kind: 'terrace' },
-      { x: 1120, y: 308, w: 260, kind: 'terrace' },
-      { x: 1480, y: 336, w: 220, kind: 'terrace' },
-      { x: 1800, y: 300, w: 260, kind: 'terrace' },
-      { x: 2160, y: 272, w: 300, kind: 'terrace' }
-    ],
-    blocks: [
-      { x: 500,  y: 312, drop: 'invite:date' },
-      { x: 1200, y: 254, drop: 'invite:venue' },
-      { x: 1900, y: 248, drop: 'invite:dress' },
-      { x: 2300, y: 218, drop: 'invite:rsvp' }
-    ],
-    enemies: [],
-    icicles: [],
-    items: [
-      { t: 'heartc', x: 470,  dy: -80 },
-      { t: 'heartc', x: 560,  dy: -80 },
-      { t: 'heartc', x: 830,  dy: -108 },
-      { t: 'heartc', x: 920,  dy: -108 },
-      { t: 'heartc', x: 1190, dy: -136 },
-      { t: 'heartc', x: 1280, dy: -136 },
-      { t: 'heartc', x: 1550, dy: -108 },
-      { t: 'heartc', x: 1870, dy: -144 },
-      { t: 'heartc', x: 1960, dy: -144 },
-      { t: 'heartc', x: 2230, dy: -172 },
-      { t: 'heartc', x: 2320, dy: -172 },
-      { t: 'heartc', x: 2410, dy: -172 }
-    ],
-    taunts: [
-      { x: 300,  text: 'SAHYADRIS AHEAD' },
-      { x: 1050, text: 'PAWNA LAKE BELOW \u2193' },
-      { x: 1750, text: 'ALMOST HOME' },
-      { x: 2550, text: 'THE MANDAP \u2192' }
-    ]
-  }
 };
