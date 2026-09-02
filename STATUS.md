@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/neha
 
 ## Changelog
 
+- 2026-09-02 — **v4.4: full leaderboard reset ("as if no one played").** RESET_EPOCH bumped to 3 (all devices self-zero game stats on next visit, names + RSVPs preserved); entire guests collection wiped server-side via owner CLI after backing up to Websites/guests-backup-*.json (outside the public repo). Real RSVPs (The Bride, Jyoti Yadav) will re-sync from their devices; backup holds them regardless.
+
 - 2026-09-02 — **v4.3: reset epoch.** `RESET_EPOCH = 2` in store.js: any device carrying an older/missing epoch self-wipes its GAME stats on next visit (bestScore, hearts, tokens, plays, local board, invite bits, unlocked) while PRESERVING name + RSVP, then re-syncs zeros over its old Firestore doc — making console cleanup stick. Future global resets = bump the constant. Unit-verified both paths (stale wipe w/ name+rsvp kept; current-epoch untouched).
 
 - 2026-09-02 — **v4.2: champion challenge line.** Invite deck's final card gains one live gold line under "Play the game" — top scorer from Firestore ("🏆 <name> · <score> — think you can beat it?"), hidden on error/no-data. cloud.js gains renderChamp(); invite page now also auto-resyncs local state on visit.

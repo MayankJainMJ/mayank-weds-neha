@@ -7,7 +7,7 @@
   // Global fresh-start switch: bump this and every device self-resets its GAME
   // stats on next visit (then re-syncs zeros over its old Firestore doc).
   // Names and RSVPs always survive a reset.
-  var RESET_EPOCH = 2;
+  var RESET_EPOCH = 3;
 
   function defaults() {
     return {
