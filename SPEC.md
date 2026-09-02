@@ -2,7 +2,7 @@
 
 **Status:** build-ready (P1 gated) · **Date:** 2026-08-31 (v2 same day — storyline finalized after research + 2 validation loops) · **Author:** Mayank + agents
 (Codex as Indian-wedding invitation planner/validator, Claude as researcher/builder — 2 loops per round)
-**Live target:** `https://mayankjainmj.github.io/mayank-weds-neha/` · **Progress:** [`STATUS.md`](./STATUS.md) · **Loop files:** `PLAN.md` (builder) / `REVIEW.md` (Codex) / `HANDOFF.md` (builder)
+**Live target:** `https://mayankjainmj.github.io/neha-weds-mayank/` · **Progress:** [`STATUS.md`](./STATUS.md) · **Loop files:** `PLAN.md` (builder) / `REVIEW.md` (Codex) / `HANDOFF.md` (builder)
 **Hosting runbook:** `../Shoulder Rehab/NEW-WEBSITE-PLAYBOOK.md` · **Story source:** `../proposal/` (repo `for-neha`)
 
 > A wedding invitation disguised as a 90s retro game, telling a true 8-year
@@ -49,7 +49,7 @@ Locked with Mayank:
   down its HP (4 in Act 1, 5 in Act 2 — "IT FOLLOWED HER ACROSS THE OCEAN");
   +200 per kill; on death the run resumes toward the flight. Act 3 has no
   monster — together, distance is already dead.
-- 2026-08-31: URL/repo/folder **`mayank-weds-neha`**; wedding facts (Pawna
+- 2026-08-31: URL/repo/folder **`neha-weds-mayank`**; wedding facts (Pawna
   hilltop, 2–4 Dec 2026, wedding 3 Dec 4 PM sundowner, RSVP deadline end Oct);
   runner mechanics; original pixel art only; Anonymous Auth; game never blocks
   content; pure static, no build tools.
@@ -275,7 +275,7 @@ Anonymous Auth (guests won't OAuth; public-read leaderboard) — rules §8.4.
 ## §7 — Module layout
 
 ```
-mayank-weds-neha/
+neha-weds-mayank/
 ├── PLAN.md, STATUS.md
 ├── index.html          # splash + game canvas + cutscene/postcard layer + unlock
 ├── invite.html         # card + schedule + getting-there + FAQ (golden hour)
@@ -440,7 +440,7 @@ Each phase deploys green; the live site is never broken.
 ## §11 — Verification
 
 Per edit: `node --check` every JS file / extracted script block. Serve
-`python3 -m http.server 8765` from inside `mayank-weds-neha/`; never `file://`.
+`python3 -m http.server 8765` from inside `neha-weds-mayank/`; never `file://`.
 
 - **P0:** all four pages render at 390×844; skip works; story page scroll-
   reveals cleanly (no photo elements anywhere); RSVP (incl. song) persists
@@ -461,7 +461,7 @@ Per edit: `node --check` every JS file / extracted script block. Serve
 
 ## §12 — Firebase console steps (Mayank runs, before P3)
 
-1. console.firebase.google.com → Add project → `mayank-weds-neha` → disable
+1. console.firebase.google.com → Add project → `neha-weds-mayank` → disable
    Analytics → Create.
 2. Build → Firestore Database → Create → `asia-south1 (Mumbai)` → production.
 3. Firestore → Rules → paste §8.4 → Publish.
