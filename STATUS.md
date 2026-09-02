@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/neha
 
 ## Changelog
 
+- 2026-09-02 — **v4.3: reset epoch.** `RESET_EPOCH = 2` in store.js: any device carrying an older/missing epoch self-wipes its GAME stats on next visit (bestScore, hearts, tokens, plays, local board, invite bits, unlocked) while PRESERVING name + RSVP, then re-syncs zeros over its old Firestore doc — making console cleanup stick. Future global resets = bump the constant. Unit-verified both paths (stale wipe w/ name+rsvp kept; current-epoch untouched).
+
 - 2026-09-02 — **v4.2: champion challenge line.** Invite deck's final card gains one live gold line under "Play the game" — top scorer from Firestore ("🏆 <name> · <score> — think you can beat it?"), hidden on error/no-data. cloud.js gains renderChamp(); invite page now also auto-resyncs local state on visit.
 
 - 2026-09-02 — **v4.1: P3 CLOUD SYNC LIVE (Firebase).** `js/cloud.js` (ES module, gstatic v10 CDN): anonymous auth on demand, debounced push of `{name, bestScore, plays, tokensCount, hearts, rsvp, device, updatedAt}` to `guests/{uid}` (merge), auto-resync on every visit, all failures silent — localStorage remains source of truth. RSVPs now LAND IN THE FIRESTORE CONSOLE; banner confirms "sent to Neha & Mayank"; Top Players board on the RSVP page goes GLOBAL with 👑 for RSVP'd guests (local rows remain instant fallback). Game end schedules a score push. Validated E2E against the production project from localhost. Project: neha-weds-mayank (asia-south1, anonymous auth, SPEC §8.4 rules).

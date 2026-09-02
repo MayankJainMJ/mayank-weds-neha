@@ -4,10 +4,15 @@
   'use strict';
 
   var KEY = 'mwn.v1';
+  // Global fresh-start switch: bump this and every device self-resets its GAME
+  // stats on next visit (then re-syncs zeros over its old Firestore doc).
+  // Names and RSVPs always survive a reset.
+  var RESET_EPOCH = 2;
 
   function defaults() {
     return {
       v: 1,
+      epoch: RESET_EPOCH,
       name: '',
       bestScore: 0,
       plays: 0,
@@ -36,6 +41,10 @@
   function sanitizeState(p) {
     var d = defaults();
     if (!p || typeof p !== 'object') return d;
+    if (int(p.epoch, 0, 999) !== RESET_EPOCH) {
+      // stale epoch: keep who they are and their RSVP, wipe the game
+      p = { name: p.name, rsvp: p.rsvp };
+    }
     d.name = str(p.name, 40);
     d.bestScore = int(p.bestScore, 0, 9999);
     d.plays = int(p.plays, 0, 100000);
