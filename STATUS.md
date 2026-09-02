@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/maya
 
 ## Changelog
 
+- 2026-09-01 — **v3.5: end-screen redesign (Codex Option C, approved).** Final overlay reduced to the thesis + '<NAME> · SCORE n' + single 'OPEN YOUR INVITATION →' button (torii line, Claim Your Spot, Run It Again, and skip-link removed; overlay 1s earlier). TOP PLAYERS ✦ moved to the RSVP page's leaderboard block (device-local top 5, empty-state copy, 'Beat them — play the game' link) — the slot where the future Firebase global board lands.
+
 - 2026-09-01 — **v3.4: Top Players board on the final screen.** Invitation-bits list ('? ? ?' lines) removed from the game-end overlay; replaced with a device-local TOP PLAYERS ✦ leaderboard (top 3, upsert-by-name best score, stored as `scores[]` in mwn.v1 through the sanitizer). Invitation reveals still toast during play. Global cross-guest leaderboard remains gated on the Firebase console steps (SPEC §12).
 
 - 2026-09-01 — **v3.3: wedding-card redesign + personalization (2 Codex rounds).** Invite page rebuilt as a swipeable card carousel (cover / 2 Dec / 3 Dec / getting there / good to know / RSVP) on maroon silk with gold double-framed cream cards, toran header, Shubh Vivah cover; 4 Dec removed. Player name captured at PRESS START (skippable) → personalized final recap and 'Hi <name>!' + prefill on RSVP (gold-framed form). Fixed state-clobber bug that erased the name; recap '? ? ?' relabelled as missed-block invitation lines.

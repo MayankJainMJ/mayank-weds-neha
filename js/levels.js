@@ -172,7 +172,7 @@ window.LEVELS = {
     music: 'japan',
     name: 'ACT 3 \u2014 TOGETHER',
     chapter: ['ACT 3 \u2014 TOGETHER', '', 'TWO FLIGHTS LAND.', 'SAME CITY. SAME ROAD.', 'TWO HANDMADE RINGS.', '', 'ONE TAP, BOTH JUMP.', 'HIT THE \u2726 BLOCKS \u2014', 'THE INVITATION IS INSIDE.'],
-    clearLine: ['UNDER THE TORII \u2014', 'THEIR MANDAP.', '', 'IT\u2019S NOT GAME OVER.', 'IT\u2019S GAME START. \u2726'],
+    clearLine: ['IT\u2019S NOT GAME OVER.', 'IT\u2019S GAME START. \u2726'],
     landing: true,
     endScene: 'torii',
     speed: 180,

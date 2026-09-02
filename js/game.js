@@ -77,13 +77,13 @@
     showToast._t = setTimeout(function () { toast.classList.remove('show'); }, 2600);
   }
 
-  function overlayHTML(lines, buttons) {
+  function overlayHTML(lines, buttons, noSkip) {
     var h = '<div class="pixel-dialog">';
     h += '<p>' + lines.join('<br>') + '</p>';
     buttons.forEach(function (b) {
       h += '<button class="btn ' + (b.ghost ? 'btn-ghost" style="color:#2b2118"' : 'btn-primary"') + ' data-a="' + b.a + '">' + b.label + '</button>';
     });
-    h += '<a class="skip-link" style="display:block;margin-top:1rem" href="invite.html">Skip to the invitation \u2192</a>';
+    if (!noSkip) h += '<a class="skip-link" style="display:block;margin-top:1rem" href="invite.html">Skip to the invitation \u2192</a>';
     h += '</div>';
     overlay.innerHTML = h;
     overlay.style.display = 'flex';
@@ -208,18 +208,12 @@
     store.scores.sort(function (a, b) { return b.s - a.s; });
     store.scores = store.scores.slice(0, 5);
     window.MWN.save(store);
-    var board = store.scores.slice(0, 3).map(function (e, i) {
-      return (i + 1) + '. ' + e.n.toUpperCase() + ' \u00B7 ' + e.s;
-    });
     var lines = act.clearLine.concat([
-      '', (store.name ? store.name.toUpperCase() + ' \u00B7 ' : '') + 'SCORE ' + sc,
-      '', 'TOP PLAYERS \u2726'
-    ]).concat(board).concat(['', 'YOU HAVE UNLOCKED', 'YOUR INVITATION']);
-    overlayHTML(lines, [
-      { a: 'goinvite', label: 'SEE THE INVITATION \u2192' },
-      { a: 'gorsvp', label: 'CLAIM YOUR SPOT \u2192' },
-      { a: 'replay', label: 'RUN IT AGAIN', ghost: true }
+      '', (store.name ? store.name.toUpperCase() + ' \u00B7 ' : '') + 'SCORE ' + sc
     ]);
+    overlayHTML(lines, [
+      { a: 'goinvite', label: 'OPEN YOUR INVITATION \u2192' }
+    ], true);
   }
 
   /* ---------- input ---------- */
@@ -566,7 +560,7 @@
       hh.y += hh.vy * dt; hh.life -= dt;
       if (hh.life <= 0) heartsFx.splice(i, 1);
     }
-    if (finaleT > 3) {
+    if (finaleT > 2) {
       if (actIdx < window.LEVELS.acts.length - 1) {
         mode = 'clear';
         window.MUSIC.sfx('clear');

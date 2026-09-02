@@ -56,6 +56,23 @@
   /* ---------- prefill ---------- */
 
   nameEl.value = state.name || '';
+  var lbRows = document.getElementById('lbRows');
+  if (lbRows) {
+    if (state.scores && state.scores.length) {
+      state.scores.slice(0, 5).forEach(function (e, i) {
+        var row = document.createElement('p');
+        row.style.cssText = 'font-size:.95rem;margin:.3rem 0;letter-spacing:.02em';
+        row.innerHTML = (i + 1) + '. <b>' + e.n.replace(/[<>&]/g, '') + '</b> \u00B7 <span style="color:#ffd23f">' + e.s + '</span>';
+        lbRows.appendChild(row);
+      });
+    } else {
+      var empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.style.cssText = 'font-size:.88rem;line-height:1.6';
+      empty.textContent = 'No runs on this phone yet \u2014 the board is yours for the taking.';
+      lbRows.appendChild(empty);
+    }
+  }
   var greet = document.getElementById('greet');
   if (greet && state.name) {
     greet.textContent = 'Hi ' + state.name + '!';
