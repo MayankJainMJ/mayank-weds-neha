@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var els = document.querySelectorAll('.reveal');
+  var els = document.querySelectorAll('.reveal, .reveal-l, .reveal-r');
   if (!('IntersectionObserver' in window)) {
     Array.prototype.forEach.call(els, function (el) { el.classList.add('visible'); });
     return;
