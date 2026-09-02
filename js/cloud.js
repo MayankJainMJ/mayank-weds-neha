@@ -21,6 +21,10 @@ const CFG = {
 
 let app = null, db = null, auth = null, uid = null, timer = null;
 
+// test artifacts that can't be deleted client-side (rules) — hidden everywhere
+const BLOCKLIST = ['ping', 'test player'];
+const blocked = v => BLOCKLIST.includes(String(v.name || '').trim().toLowerCase());
+
 function init() {
   if (!app) {
     app = initializeApp(CFG);
@@ -76,6 +80,7 @@ async function renderBoard() {
     const rows = [];
     snap.forEach(d => {
       const v = d.data();
+      if (blocked(v)) return;
       if ((v.bestScore | 0) > 0 || v.name) rows.push(v);
     });
     if (!rows.length) return; // keep the device-local fallback rows
@@ -104,9 +109,9 @@ async function renderChamp() {
   if (!el) return;
   try {
     init();
-    const snap = await getDocs(query(collection(db, 'guests'), orderBy('bestScore', 'desc'), limit(1)));
+    const snap = await getDocs(query(collection(db, 'guests'), orderBy('bestScore', 'desc'), limit(5)));
     let top = null;
-    snap.forEach(d => { top = d.data(); });
+    snap.forEach(d => { const v = d.data(); if (!top && !blocked(v)) top = v; });
     if (!top || (top.bestScore | 0) <= 0 || !top.name) return; // line stays hidden
     const nm = String(top.name).replace(/[<>&]/g, '');
     el.textContent = '\u{1F3C6} ' + nm + ' \u00B7 ' + (top.bestScore | 0) + ' \u2014 think you can beat it?';
