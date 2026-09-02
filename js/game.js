@@ -211,6 +211,7 @@
     store.scores = store.scores.slice(0, 5);
     window.MWN.save(store);
     lastScore = sc;
+    if (window.CLOUD) window.CLOUD.schedulePush();
     var lines = act.clearLine.concat([
       '', (store.name ? store.name.toUpperCase() + ' \u00B7 ' : '') + 'SCORE ' + sc
     ]);

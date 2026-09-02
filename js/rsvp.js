@@ -56,6 +56,12 @@
   /* ---------- prefill ---------- */
 
   nameEl.value = state.name || '';
+  window.addEventListener('mwn-synced', function () {
+    if (savedBanner.classList.contains('show') && savedBanner.textContent.indexOf('sent') === -1) {
+      savedBanner.textContent = savedBanner.textContent.replace('saved on this phone \u2014 it will sync automatically', 'sent to Neha & Mayank');
+      if (savedBanner.textContent.indexOf('\u2713') === -1) savedBanner.textContent += ' \u00B7 sent \u2713';
+    }
+  });
   var lbRows = document.getElementById('lbRows');
   if (lbRows) {
     if (state.scores && state.scores.length) {
@@ -147,5 +153,6 @@
     savedBanner.classList.add('show');
     savedBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
     showToast(state.rsvp.attending ? 'Spot claimed \u{1F525}' : 'Saved \u{1F494}');
+    if (window.CLOUD) window.CLOUD.schedulePush();
   });
 })();
