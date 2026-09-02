@@ -78,3 +78,20 @@ gentle stakes, invitation is the destination.
    block bottom must clear standing-head height of its floor.
 4. [med][fixed] Neha sprite redesign: flared lehenga + gold hem, choli,
    bangles, long back hair, flower, bindi, lash line, earring, smile.
+
+## W-1 — Wedding-invite design pass (Codex, 2 rounds, 2026-09-01)
+R1: palette locked — deep maroon silk ground (#4a0e2b family), gold #d4af37
+frames/rules, marigold + cream; card-suite metaphor = carousel IS the Indian
+invite tradition (cover + inserts + RSVP card); toran header (marigold garland
++ mango-leaf zigzag); 'Shubh Vivah' eyebrow; no religious iconography without
+the couple's explicit ask.
+R2 critiques applied: arrows + dots + swipe-hint (swipe-only is
+undiscoverable); internal card scroll as overflow safety; 4 Dec removed, date
+line is 2–3 DECEMBER 2026; one pixel-heart separator keeps the game-world tie.
+Bugs found in build: [high] name saved on splash was CLOBBERED by game.js's
+stale in-memory store on beginRun (two-copies-of-state) — beginRun now
+re-loads storage first. [med] '? ? ?' recap lines misread as leaderboard —
+now labelled '<NAME>, YOUR INVITATION:' and '? ? ? — A ✦ BLOCK YOU MISSED'.
+Verified: name dialog (skippable) → recap personalization → 'Hi <name>!' on
+RSVP + prefill; carousel next/prev/swipe/dots/keyboard; page not scrollable;
+no '4 December' anywhere; 0 console errors.

@@ -165,6 +165,7 @@
   }
 
   function beginRun() {
+    store = window.MWN.load(); // re-sync — splash dialog may have just saved the name
     laddoos = 0; sessionTokens = 0; ringGot = false; runTime = 0;
     monstersKilled = 0;
     store.plays += 1; window.MWN.save(store);
@@ -199,10 +200,11 @@
     window.MWN.save(store);
     var IBT = { date: '3 DEC 2026 \u00B7 4:00 PM', venue: 'KHANNA PAWNA ESTATE', dress: 'FESTIVE + A WARM LAYER', rsvp: 'RSVP: CLAIM YOUR SPOT' };
     var bits = ['date', 'venue', 'dress', 'rsvp'].map(function (k) {
-      return store.inviteBits.indexOf(k) !== -1 ? IBT[k] : '? ? ?';
+      return store.inviteBits.indexOf(k) !== -1 ? IBT[k] : '? ? ? \u2014 A \u2726 BLOCK YOU MISSED';
     });
     var lines = act.clearLine.concat([
-      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore, ''
+      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore,
+      '', (store.name ? store.name.toUpperCase() + ', ' : '') + 'YOUR INVITATION:'
     ]).concat(bits).concat(['', 'YOU HAVE UNLOCKED', 'YOUR INVITATION']);
     overlayHTML(lines, [
       { a: 'goinvite', label: 'SEE THE INVITATION \u2192' },

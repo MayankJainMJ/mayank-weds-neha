@@ -56,6 +56,11 @@
   /* ---------- prefill ---------- */
 
   nameEl.value = state.name || '';
+  var greet = document.getElementById('greet');
+  if (greet && state.name) {
+    greet.textContent = 'Hi ' + state.name + '!';
+    greet.hidden = false;
+  }
   if (state.rsvp) {
     setRadio('attending', state.rsvp.attending ? 'yes' : 'no');
     setRadio('arrivalDay', state.rsvp.arrivalDay);

@@ -22,6 +22,7 @@
     <div class="bonfire" aria-hidden="true">
       <svg viewBox="0 0 8 8" shape-rendering="crispEdges" class="flicker"><rect x="3" y="1" width="1" height="2" fill="#ffd23f"/><rect x="2" y="2" width="3" height="2" fill="#fb8500"/><rect x="2" y="4" width="4" height="2" fill="#e85d75"/><rect x="1" y="6" width="6" height="1" fill="#7b4a12"/></svg>
     </div>
+    <p class="greet-line reveal" id="greet" hidden></p>
     <h1 class="names reveal" style="font-size:clamp(1.7rem,7vw,2.6rem)">Claim your spot<br>on the hill</h1>
     <div class="divider reveal"></div>
   </header>
@@ -29,7 +30,7 @@
   <main class="section wrap" style="padding-top:.6rem">
     <div class="saved-banner" id="savedBanner" role="status" aria-live="polite"></div>
 
-    <form id="rsvpForm" class="card-dark" novalidate>
+    <form id="rsvpForm" class="card-dark gold-frame" novalidate>
       <div class="form-group">
         <label for="name">Your name</label>
         <input type="text" id="name" maxlength="40" autocomplete="name" placeholder="Sharma ji's beta" required>

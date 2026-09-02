@@ -72,6 +72,15 @@
     <div id="gameOverlay" class="game-overlay"></div>
   </div>
 
+  <div class="pixel-dialog-backdrop" id="nameDlg">
+    <div class="pixel-dialog" role="dialog" aria-modal="true" aria-label="Your name">
+      <p>PLAYER ONE,<br>WHAT'S YOUR NAME?</p>
+      <input type="text" id="playerName" class="pixel-input" maxlength="20" placeholder="YOUR NAME" autocomplete="name">
+      <button class="btn btn-pixel" id="nameGo" style="width:100%">&#9654; START</button>
+      <a href="#" id="nameSkip" class="skip-link" style="display:block;margin-top:.9rem">Skip &rarr;</a>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="js/store.js"></script>
@@ -80,10 +89,34 @@
   <script src="js/levels.js"></script>
   <script src="js/game.js"></script>
   <script>
-    document.getElementById('pressStart').addEventListener('click', function () {
-      window.MUSIC.unlock();
-      window.GAME.begin();
-    });
+    (function () {
+      var dlg = document.getElementById('nameDlg');
+      var input = document.getElementById('playerName');
+      function begin() {
+        dlg.classList.remove('open');
+        window.GAME.begin();
+      }
+      document.getElementById('pressStart').addEventListener('click', function () {
+        window.MUSIC.unlock();
+        var st = window.MWN.load();
+        if (st.name) { window.GAME.begin(); return; }
+        dlg.classList.add('open');
+        setTimeout(function () { input.focus(); }, 120);
+      });
+      document.getElementById('nameGo').addEventListener('click', function () {
+        var st = window.MWN.load();
+        st.name = input.value.trim().slice(0, 20);
+        window.MWN.save(window.MWN.sanitizeState(st));
+        begin();
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') document.getElementById('nameGo').click();
+      });
+      document.getElementById('nameSkip').addEventListener('click', function (e) {
+        e.preventDefault();
+        begin();
+      });
+    })();
   </script>
 </body>
 </html>

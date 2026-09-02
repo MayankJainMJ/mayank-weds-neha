@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/maya
 
 ## Changelog
 
+- 2026-09-01 — **v3.3: wedding-card redesign + personalization (2 Codex rounds).** Invite page rebuilt as a swipeable card carousel (cover / 2 Dec / 3 Dec / getting there / good to know / RSVP) on maroon silk with gold double-framed cream cards, toran header, Shubh Vivah cover; 4 Dec removed. Player name captured at PRESS START (skippable) → personalized final recap and 'Hi <name>!' + prefill on RSVP (gold-framed form). Fixed state-clobber bug that erased the name; recap '? ? ?' relabelled as missed-block invitation lines.
+
 - 2026-09-01 — **v3.2: co-op pickup fix + 3-act structure.** Pair-wide collectible hitbox in TOGETHER act (real bug — back sprite was decorative); Act 4 removed, Act 3 renamed TOGETHER and now ends the game at the torii ("their mandap") with the invitation recap; invitation ?-blocks moved into Act 3 (date block geometry fixed); Neha sprite redesigned (lehenga, long hair, flower, bindi).
 
 - 2026-09-01 — **v3.1: guest-experience pass (player feedback via Codex).** Fixed heart draw-vs-hitbox mismatch (uncollectable/invisible hearts). Lives + game-over removed: obstacle hits cost 2 hearts, run never stops — completable in one go. Onboarding: chapter-card control hints + in-world TAP = JUMP bubble. HUD simplified to gold ♥ count + act label. Calgary obstacle contrast recolor. Icicle warning lengthened.
