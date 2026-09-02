@@ -99,7 +99,23 @@ async function renderBoard() {
   }
 }
 
-window.CLOUD = { schedulePush, pushNow, renderBoard };
+async function renderChamp() {
+  const el = document.getElementById('champLine');
+  if (!el) return;
+  try {
+    init();
+    const snap = await getDocs(query(collection(db, 'guests'), orderBy('bestScore', 'desc'), limit(1)));
+    let top = null;
+    snap.forEach(d => { top = d.data(); });
+    if (!top || (top.bestScore | 0) <= 0 || !top.name) return; // line stays hidden
+    const nm = String(top.name).replace(/[<>&]/g, '');
+    el.textContent = '\u{1F3C6} ' + nm + ' \u00B7 ' + (top.bestScore | 0) + ' \u2014 think you can beat it?';
+    el.hidden = false;
+  } catch (e) { /* stays hidden */ }
+}
+
+window.CLOUD = { schedulePush, pushNow, renderBoard, renderChamp };
 
 schedulePush();   // auto-resync anything saved locally, every visit
 renderBoard();    // global board (rsvp page only — no-op elsewhere)
+renderChamp();    // challenge line (invite deck's last card — no-op elsewhere)
