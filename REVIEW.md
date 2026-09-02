@@ -95,3 +95,26 @@ now labelled '<NAME>, YOUR INVITATION:' and '? ? ? — A ✦ BLOCK YOU MISSED'.
 Verified: name dialog (skippable) → recap personalization → 'Hi <name>!' on
 RSVP + prefill; carousel next/prev/swipe/dots/keyboard; page not scrollable;
 no '4 December' anywhere; 0 console errors.
+
+## R2 — Two-act restructure + bundle (Codex, 2026-09-02)
+Structure: acts=[act1,act2]; act3 deleted; planes (boarding+landing), TAP TO
+BOOST, co-op 'both' mode + pair-wide pickup all DELETED per host. Both acts
+end climbing terraces to the Torii-Gate Mandap; Act 1 = he arrives and waits;
+Act 2 = groomWaiting (he's visible under the torii, heart bobbing), she walks
+to him, RINGS APPEAR AT THE FINALE (no pickup item), marigold-petal shower +
+hearts. Kawaguchiko token dropped (2 tokens remain). Invite ?-blocks split
+2+2 (act1: date+venue; act2: dress+rsvp). Approved sign lines shipped
+(SAME MOON 12,000 KM · THE MANDAP → · 12.5 HOURS APART · DOORON DOORON… ·
+HE'S AT THE MANDAP →); EXCEL BHEJ DO removed.
+Bundle: [1] countdown on invite cover ('92 days to go' verified) · [2] Google
+Calendar button (Dec 2–3 all-day, location set) · [3] SHARE on end screen
+(score brag + wa.me fallback) and invite last card · [4] golden-hour climb
+(sky lerps to sundowner over final 800px — both acts arrive in 4 PM light) ·
+[5] mandap dressing: marigold string, flickering diyas, bonfire, sakura
+flanks · [6] petal shower at rings · [9] koto track takes over for the climb
+(verified track switch 128bpm).
+Verified E2E: act1 → mandap-wait interstitial → act2 → groom visible → finale
+rings+petals → minimal end screen (name + share); rsvp-block bonk registers;
+climb music switch; countdown/calendar/share on invite; story+rsvp pages
+clean; 0 console errors. Dead-code sweep: no boarding/landing/boost/'both'/
+shinkansen references remain in game.js.

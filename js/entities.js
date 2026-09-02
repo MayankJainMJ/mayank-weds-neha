@@ -225,35 +225,6 @@
     ctx.fillRect(x, y - 22, 5, 22);                   // backrest
   }
 
-  function drawStationLedge(ctx, p, camX) {
-    var x = Math.round(p.x - camX), y = Math.round(p.y);
-    ctx.fillStyle = '#8d99ae';
-    ctx.fillRect(x, y, p.w, 6);
-    ctx.fillStyle = '#6b7688';
-    ctx.fillRect(x + 2, y + 6, p.w - 4, 8);
-    ctx.fillStyle = '#ffd23f';                        // platform edge line
-    ctx.fillRect(x, y, p.w, 2);
-  }
-
-  function drawShinkansenPlat(ctx, p, camX, runTime) {
-    var x = Math.round(p.x - camX), y = Math.round(p.y);
-    ctx.fillStyle = '#f4f7fa';
-    ctx.fillRect(x, y, p.w, 14);
-    ctx.beginPath();                                  // nose
-    ctx.moveTo(x + p.w, y);
-    ctx.lineTo(x + p.w + 26, y + 14);
-    ctx.lineTo(x + p.w, y + 14);
-    ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#3d6bb0';
-    ctx.fillRect(x, y + 9, p.w + 18, 3);
-    ctx.fillStyle = '#9fc2e8';
-    for (var i = x + 8; i < x + p.w - 10; i += 22) ctx.fillRect(i, y + 3, 12, 4);
-    // speed lines while boosting look
-    ctx.fillStyle = 'rgba(255,255,255,.5)';
-    var off = Math.round(runTime * 300) % 30;
-    for (var l = x - off; l < x + p.w; l += 30) ctx.fillRect(l, y - 4, 12, 2);
-  }
-
   function drawBlackIce(ctx, x) {
     ctx.fillStyle = 'rgba(30, 45, 70, .8)';
     ctx.fillRect(x, GROUND - 3, 56, 3);
@@ -300,8 +271,6 @@
     if (p.kind === 'terrace') return drawTerrace(ctx, p, camX);
     if (p.kind === 'icefloe') return drawFloe(ctx, p, camX);
     if (p.kind === 'skilift') return drawSkilift(ctx, p, camX);
-    if (p.kind === 'station') return drawStationLedge(ctx, p, camX);
-    if (p.kind === 'shinkansen') return drawShinkansenPlat(ctx, p, camX, runTime);
     return drawPlatform(ctx, p, camX);
   }
 

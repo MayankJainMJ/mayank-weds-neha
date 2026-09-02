@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/neha
 
 ## Changelog
 
+- 2026-09-02 — **v4.0: two acts, one mountain.** Act 3 + planes + boost + co-op deleted. Both acts climb golden-hour terraces to the Torii-Gate Mandap: he arrives and waits (Act 1), she finds him there (Act 2) — rings appear at the finale with a marigold-petal shower; diyas, bonfire, marigold string and sakura dress the mandap; koto track scores the climb. New long-distance sign lines (EXCEL BHEJ DO out). Invite blocks split across acts. Invite deck: wedding countdown, Add-to-Calendar, Share buttons; end screen gains SHARE THE INVITE.
+
 - 2026-09-01 — **v3.6: story page 'family album' redesign (Codex proposal, approved: scroll + thread, copy frozen).** Maroon-silk world + toran header; each beat is a cream double-gold-framed album card with ✦ corners; gold year-medallions ride a vertical gold timeline thread connecting all six beats + closing card; pixel icons in gold-ringed medallions; his bubbles maroon-tinted sliding in from the left, hers rose-tinted from the right (voices converge); closing card: Claim your spot (primary) / Back to the invitation / Play the game; gold footer. Copy untouched.
 
 - 2026-09-01 — **v3.5: end-screen redesign (Codex Option C, approved).** Final overlay reduced to the thesis + '<NAME> · SCORE n' + single 'OPEN YOUR INVITATION →' button (torii line, Claim Your Spot, Run It Again, and skip-link removed; overlay 1s earlier). TOP PLAYERS ✦ moved to the RSVP page's leaderboard block (device-local top 5, empty-state copy, 'Beat them — play the game' link) — the slot where the future Firebase global board lands.

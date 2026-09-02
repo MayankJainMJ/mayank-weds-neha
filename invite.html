@@ -33,6 +33,7 @@
       <div class="gold-divider"></div>
       <p class="lead"><b>are getting married in the hills.</b></p>
       <p class="big-date" style="margin-top:1rem">2 &ndash; 3 DECEMBER 2026</p>
+      <p class="eyebrow" id="countdown" style="margin-top:.5rem"></p>
       <p class="muted" style="margin-top:.4rem;font-size:.9rem">Khanna Pawna Estate &middot; Pawna, Lonavala</p>
       <p class="pixel-heart-sep">&hearts; &hearts; &hearts;</p>
       <p class="swipe-hint">swipe or tap &rsaquo; to open the invitation</p>
@@ -97,6 +98,8 @@
       <div class="gold-divider"></div>
       <p class="muted" style="font-size:.9rem">RSVP by 31 October 2026</p>
       <a class="btn btn-primary" style="margin-top:1.2rem;width:100%;max-width:280px" href="rsvp.html">RSVP &rarr;</a>
+      <a class="btn btn-ghost" style="margin-top:.7rem;width:100%;max-width:280px;color:#6b1839" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Neha+%26+Mayank%27s+Wedding&dates=20261202/20261204&location=Khanna+Pawna+Estate%2C+Pawna%2C+Lonavala&details=Come+for+the+wedding.+Come+early+for+everything+else.+https%3A%2F%2Fmayankjainmj.github.io%2Fneha-weds-mayank%2F" target="_blank" rel="noopener">&#128197; Add to calendar</a>
+      <button class="btn btn-ghost" id="shareInvite" style="margin-top:.7rem;width:100%;max-width:280px;color:#6b1839">&#128140; Share the invite</button>
       <a class="btn btn-ghost" style="margin-top:.7rem;width:100%;max-width:280px;color:#6b1839" href="story.html">How we got here &rarr;</a>
       <a class="btn btn-ghost" style="margin-top:.7rem;width:100%;max-width:280px;color:#6b1839" href="index.html">&#9654; Play the game</a>
       <p class="muted" style="margin-top:1.1rem;font-size:.75rem">Pawna &middot; Lonavala &middot; 2&ndash;3 December 2026</p>
@@ -144,6 +147,26 @@
     if (e.key === 'ArrowRight') show(idx + 1);
     if (e.key === 'ArrowLeft') show(idx - 1);
   });
+
+  // wedding countdown
+  var cd = document.getElementById('countdown');
+  if (cd) {
+    var days = Math.ceil((new Date('2026-12-03T00:00:00+05:30') - Date.now()) / 864e5);
+    cd.textContent = days > 1 ? '\u23F3 ' + days + ' days to go'
+      : days === 1 ? '\u23F3 TOMORROW \u2726'
+      : days === 0 ? 'IT\u2019S TODAY \u2726'
+      : 'JUST MARRIED \u2726';
+  }
+  // share
+  var shareBtn = document.getElementById('shareInvite');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function () {
+      var url = 'https://mayankjainmj.github.io/neha-weds-mayank/';
+      var txt = 'Neha \u2665 Mayank are getting married in the hills \u2014 2\u20133 Dec 2026, Pawna. Open the invite: ' + url;
+      if (navigator.share) navigator.share({ title: 'Neha \u2665 Mayank', text: txt }).catch(function () {});
+      else window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+    });
+  }
 
   var sx = null, sy = null;
   document.getElementById('deck').addEventListener('touchstart', function (e) {
