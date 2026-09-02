@@ -623,7 +623,8 @@ textarea { min-height: 84px; resize: vertical; }
 }
 .greet-line { color: #ffd98a; font-family: 'Playfair Display', Georgia, serif; font-size: 1.15rem; margin-bottom: .4rem; }
 
-/* pixel name input (splash) */
+/* pixel name input (splash) — input[type=text] beats a bare class, so match its specificity */
+input.pixel-input[type="text"],
 .pixel-input {
   font-family: 'Press Start 2P', monospace;
   font-size: .7rem;
@@ -637,6 +638,7 @@ textarea { min-height: 84px; resize: vertical; }
   text-transform: uppercase;
 }
 .pixel-input:focus { outline: 3px solid #fb8500; }
+input.pixel-input[type="text"]::placeholder { color: #9a8f80; }
 
 
 /* ============ story page: family-album treatment ============ */
