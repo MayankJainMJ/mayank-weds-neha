@@ -16,7 +16,8 @@
       tokens: [false, false, false, false, false, false, false, false],
       hearts: 0,          // persistent collectible count — never resets
       props: [],          // story props from ?-blocks
-      inviteBits: [],     // act-4 invitation reveals
+      inviteBits: [],     // invitation reveals (in-game toasts)
+      scores: [],         // device-local leaderboard [{n, s}]
       rsvp: null,
       updatedAt: 0
     };
@@ -54,6 +55,14 @@
       for (var m = 0; m < p.inviteBits.length && d.inviteBits.length < 8; m++) {
         var ib = str(p.inviteBits[m], 24);
         if (ib && d.inviteBits.indexOf(ib) === -1) d.inviteBits.push(ib);
+      }
+    }
+    if (Array.isArray(p.scores)) {
+      for (var q = 0; q < p.scores.length && d.scores.length < 10; q++) {
+        var sc = p.scores[q];
+        if (sc && typeof sc.n === 'string' && sc.n) {
+          d.scores.push({ n: str(sc.n, 20), s: int(sc.s, 0, 9999) });
+        }
       }
     }
     if (p.rsvp && typeof p.rsvp === 'object') {

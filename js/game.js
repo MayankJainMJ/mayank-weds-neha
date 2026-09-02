@@ -198,14 +198,23 @@
     if (sc > store.bestScore) store.bestScore = sc;
     store.unlocked = true;
     window.MWN.save(store);
-    var IBT = { date: '3 DEC 2026 \u00B7 4:00 PM', venue: 'KHANNA PAWNA ESTATE', dress: 'FESTIVE + A WARM LAYER', rsvp: 'RSVP: CLAIM YOUR SPOT' };
-    var bits = ['date', 'venue', 'dress', 'rsvp'].map(function (k) {
-      return store.inviteBits.indexOf(k) !== -1 ? IBT[k] : '? ? ? \u2014 A \u2726 BLOCK YOU MISSED';
+    // device-local leaderboard: upsert this player's best
+    var pname = (store.name || 'PLAYER 1').toUpperCase();
+    var found = false;
+    store.scores.forEach(function (e) {
+      if (e.n.toUpperCase() === pname) { found = true; if (sc > e.s) e.s = sc; }
+    });
+    if (!found) store.scores.push({ n: store.name || 'PLAYER 1', s: sc });
+    store.scores.sort(function (a, b) { return b.s - a.s; });
+    store.scores = store.scores.slice(0, 5);
+    window.MWN.save(store);
+    var board = store.scores.slice(0, 3).map(function (e, i) {
+      return (i + 1) + '. ' + e.n.toUpperCase() + ' \u00B7 ' + e.s;
     });
     var lines = act.clearLine.concat([
-      '', 'SCORE ' + sc + ' \u00B7 BEST ' + store.bestScore,
-      '', (store.name ? store.name.toUpperCase() + ', ' : '') + 'YOUR INVITATION:'
-    ]).concat(bits).concat(['', 'YOU HAVE UNLOCKED', 'YOUR INVITATION']);
+      '', (store.name ? store.name.toUpperCase() + ' \u00B7 ' : '') + 'SCORE ' + sc,
+      '', 'TOP PLAYERS \u2726'
+    ]).concat(board).concat(['', 'YOU HAVE UNLOCKED', 'YOUR INVITATION']);
     overlayHTML(lines, [
       { a: 'goinvite', label: 'SEE THE INVITATION \u2192' },
       { a: 'gorsvp', label: 'CLAIM YOUR SPOT \u2192' },
