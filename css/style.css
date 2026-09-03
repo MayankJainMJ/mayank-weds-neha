@@ -164,8 +164,8 @@ h2.section-title {
 
 /* ---------- splash ---------- */
 .splash {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh - 18px);
+  min-height: calc(100dvh - 18px); /* garland strip above — page must not scroll */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -727,3 +727,69 @@ input.pixel-input[type="text"]::placeholder { color: #9a8f80; }
   margin: .5rem 0 .2rem;
 }
 .story-footer { text-align: center; color: #d4af37; font-size: .8rem; padding: .5rem 0 2.4rem; opacity: .8; }
+
+/* ============ one-screen compaction (no page scrolls) ============ */
+body.bg-night { min-height: 100dvh; }
+
+/* rsvp: tighter rhythm so the whole form fits one screen */
+#rsvpForm { padding: 1.05rem 1rem .9rem; }
+#rsvpForm .form-group { margin-bottom: .8rem; }
+#rsvpForm .form-group > label { font-size: .84rem; margin-bottom: .35rem; }
+#rsvpForm input[type="text"] { padding: 10px 13px; font-size: .95rem; }
+#rsvpForm .choice { padding: 9px 11px; font-size: .86rem; gap: .55rem; }
+#rsvpForm .choice-row { gap: .45rem; }
+.choice-row.cols { flex-direction: row; }
+.choice-row.cols .choice { flex: 1; align-items: flex-start; }
+#rsvpForm .tent-line { font-size: .74rem; margin-top: .55rem; line-height: 1.45; }
+.saved-banner { padding: .55rem .8rem; font-size: .78rem; margin-bottom: .7rem; line-height: 1.4; }
+
+/* compact nav row under the form */
+.nav-row { display: flex; gap: .6rem; padding: .8rem 0 max(1rem, env(safe-area-inset-bottom)); }
+.nav-row .btn { flex: 1; font-size: .82rem; padding: 10px 12px; }
+
+/* leaderboard modal */
+.lb-modal {
+  position: fixed; inset: 0; z-index: 70;
+  background: rgba(8, 6, 18, .78);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 20px;
+}
+.lb-modal[hidden] { display: none; }
+.lb-box { position: relative; width: 100%; max-width: 360px; max-height: 82dvh; overflow-y: auto; text-align: center; }
+.lb-close {
+  position: absolute; top: 6px; right: 10px;
+  background: none; border: none; color: var(--cream);
+  font-size: 1.7rem; line-height: 1; cursor: pointer; opacity: .75; padding: 6px;
+}
+.lb-close:hover { opacity: 1; }
+
+/* short phones: squeeze a little more */
+@media (max-height: 760px) {
+  .invite-hero .names { font-size: 1.2rem !important; }
+  #rsvpForm .form-group { margin-bottom: .55rem; }
+  #rsvpForm .choice { padding: 7px 10px; font-size: .8rem; }
+  #rsvpForm input[type="text"] { padding: 8px 12px; font-size: .9rem; }
+  #rsvpForm .btn { padding: 11px 24px; font-size: .92rem; }
+  #rsvpForm .tent-line { display: none; }
+  .deadline-banner { padding: 6px 12px; font-size: .78rem; }
+  .nav-row { padding-top: .5rem; }
+  .nav-row .btn { padding: 8px 10px; font-size: .78rem; }
+}
+
+/* editing an existing RSVP: deadline + tent joke already served their purpose */
+body.editing .deadline-banner, body.editing .tent-line { display: none; }
+
+/* very short phones (SE class) */
+@media (max-height: 700px) {
+  .invite-hero { padding-top: .6rem !important; }
+  .invite-hero .names { font-size: 1.05rem !important; }
+  .deadline-banner { display: none; }
+  #rsvpForm { padding: .85rem .85rem .75rem; }
+  #rsvpForm .form-group { margin-bottom: .45rem; }
+  #rsvpForm .form-group > label { font-size: .76rem; margin-bottom: .25rem; }
+  #rsvpForm .choice { padding: 6px 9px; font-size: .76rem; gap: .45rem; }
+  #rsvpForm input[type="text"] { padding: 7px 11px; font-size: .88rem; }
+  #rsvpForm .btn { padding: 10px 20px; font-size: .88rem; }
+  .greet-line { display: none; }
+}

@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/neha
 
 ## Changelog
 
+- 2026-09-02 — **v4.5: one-screen everything (no page scrolls).** Story page deleted entirely (+ its invite link). Invite card 6 slimmed: "Be there" eyebrow + Share-the-invite button removed. RSVP page refit: compact hero/form, arrival & +1 radios two-column, +1 name label dropped, leaderboard moved into a modal (Top Players button in nav row), RSVP'd state collapses form into summary + "Edit my RSVP" (editing hides deadline banner/tent line), short-phone media tiers at 760/700px. Splash height minus garland; stale "2-4 DEC" fixed to 2-3; css links version-stamped (?v=45) to bust GH Pages cache. Playwright-verified zero overflow at 390x844 / 375x667 / 430x932 across fresh, RSVP'd-summary and editing states + full submit->edit->resubmit + modal flows.
+
 - 2026-09-02 — **RSVP copy fixes.** Submit button now context-aware: "Can't make it" swaps "Claim my spot" for "Send my response". All alcohol references removed sitewide: invite card 1 "grab a drink" -> "grab a chai"; card 3 "We eat. We drink. We dance." -> "We eat. We dance." (dry event). Playwright-verified button swap + sitewide drink-free sweep.
 
 - 2026-09-02 — **v4.4: full leaderboard reset ("as if no one played").** RESET_EPOCH bumped to 3 (all devices self-zero game stats on next visit, names + RSVPs preserved); entire guests collection wiped server-side via owner CLI after backing up to Websites/guests-backup-*.json (outside the public repo). Real RSVPs (The Bride, Jyoti Yadav) will re-sync from their devices; backup holds them regardless.

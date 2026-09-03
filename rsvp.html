@@ -11,24 +11,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 8 8%27%3E%3Crect x=%271%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%275%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%271%27 y=%273%27 width=%276%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%272%27 y=%275%27 width=%274%27 height=%271%27 fill=%27%23e85d75%27/%3E%3Crect x=%273%27 y=%276%27 width=%272%27 height=%271%27 fill=%27%23a4133c%27/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=45">
 </head>
 <body class="bg-night">
 
   <div class="stars" aria-hidden="true"></div>
   <div class="deadline-banner">RSVP by 31 October 2026</div>
 
-  <header class="invite-hero wrap" style="padding-top:2.8rem;padding-bottom:1.2rem">
-    <div class="bonfire" aria-hidden="true">
-      <svg viewBox="0 0 8 8" shape-rendering="crispEdges" class="flicker"><rect x="3" y="1" width="1" height="2" fill="#ffd23f"/><rect x="2" y="2" width="3" height="2" fill="#fb8500"/><rect x="2" y="4" width="4" height="2" fill="#e85d75"/><rect x="1" y="6" width="6" height="1" fill="#7b4a12"/></svg>
-    </div>
+  <header class="invite-hero wrap" style="padding-top:1.1rem;padding-bottom:.3rem">
     <p class="greet-line reveal" id="greet" hidden></p>
-    <h1 class="names reveal" style="font-size:clamp(1.7rem,7vw,2.6rem)">Claim your spot<br>on the hill</h1>
-    <div class="divider reveal"></div>
+    <h1 class="names reveal" style="font-size:clamp(1.3rem,5.4vw,1.8rem)">Claim your spot on the hill</h1>
   </header>
 
-  <main class="section wrap" style="padding-top:.6rem">
+  <main class="section wrap" style="padding-top:.4rem;padding-bottom:0">
     <div class="saved-banner" id="savedBanner" role="status" aria-live="polite"></div>
+    <button type="button" class="btn btn-ghost" id="editRsvp" hidden style="width:100%;margin-bottom:.6rem;font-size:.85rem;padding:10px 16px">&#9999;&#65039; Edit my RSVP</button>
 
     <form id="rsvpForm" class="card-dark gold-frame" novalidate>
       <div class="form-group">
@@ -47,23 +44,22 @@
       <div id="detailsBlock">
         <div class="form-group">
           <label>When are you arriving?</label>
-          <div class="choice-row" id="arrivalRow">
-            <label class="choice"><input type="radio" name="arrivalDay" value="2">2 Dec — coming up early (good choice)</label>
+          <div class="choice-row cols" id="arrivalRow">
+            <label class="choice"><input type="radio" name="arrivalDay" value="2">2 Dec — up early (good choice)</label>
             <label class="choice"><input type="radio" name="arrivalDay" value="3">3 Dec — straight to the wedding</label>
           </div>
         </div>
 
         <div class="form-group">
           <label>Are you bringing a +1?</label>
-          <div class="choice-row" id="plusRow">
+          <div class="choice-row cols" id="plusRow">
             <label class="choice"><input type="radio" name="plusOne" value="no" checked>Just me</label>
             <label class="choice"><input type="radio" name="plusOne" value="yes">Yes — plus one</label>
           </div>
         </div>
 
-        <div class="form-group" id="plusNameGroup" style="display:none">
-          <label for="plusName">Their name</label>
-          <input type="text" id="plusName" maxlength="40" placeholder="Your +1's name">
+        <div class="form-group" id="plusNameGroup" style="display:none;margin-bottom:.4rem">
+          <input type="text" id="plusName" maxlength="40" placeholder="Your +1's name" aria-label="Your +1's name">
         </div>
 
       </div>
@@ -71,17 +67,21 @@
       <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%">Claim my spot &#128293;</button>
       <p class="tent-line">No RSVP by 31 October? You sleep in the camp tent. On the floor.</p>
     </form>
-
-    <div class="leaderboard-teaser" style="margin-top:2.2rem" id="leaderboard">
-      <p class="lead" style="font-size:1rem"><b>&#127942; Top Players &#10022;</b></p>
-      <div id="lbRows" style="margin-top:.7rem"></div>
-      <a class="btn btn-ghost" style="margin-top:1rem;font-size:.85rem;padding:10px 22px" href="index.html">&#9654; Beat them — play the game</a>
-    </div>
   </main>
 
-  <nav class="wrap page-nav" aria-label="Continue">
-    <a class="btn btn-ghost" href="invite.html">&larr; Back to the invitation</a>
+  <nav class="wrap nav-row" aria-label="Continue">
+    <a class="btn btn-ghost" href="invite.html">&larr; Invitation</a>
+    <button type="button" class="btn btn-ghost" id="lbOpen">&#127942; Top Players</button>
   </nav>
+
+  <div class="lb-modal" id="lbModal" hidden>
+    <div class="lb-box card-dark gold-frame" role="dialog" aria-modal="true" aria-label="Top Players">
+      <button type="button" class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+      <p class="lead" style="font-size:1rem"><b>&#127942; Top Players &#10022;</b></p>
+      <div id="lbRows" style="margin-top:.7rem"></div>
+      <a class="btn btn-ghost" style="margin-top:1rem;font-size:.85rem;padding:10px 22px" href="index.html">&#9654; Beat them &mdash; play the game</a>
+    </div>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

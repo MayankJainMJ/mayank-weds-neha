@@ -86,6 +86,19 @@
     greet.textContent = 'Hi ' + state.name + '!';
     greet.hidden = false;
   }
+  var editBtn = document.getElementById('editRsvp');
+
+  /* RSVP'd: collapse the form into summary + edit button (page stays one screen) */
+  function showSummary() {
+    savedBanner.textContent = state.rsvp.attending
+      ? '\u2713 You\u2019ve RSVP\u2019d \u2014 ' + (state.rsvp.partySize > 1 ? 'you + 1, ' : '') + 'arriving on the ' + (state.rsvp.arrivalDay === '2' ? '2nd' : '3rd') + '. See you on the hill!'
+      : '\u2713 Your response is saved. Changed your mind? The hill awaits.';
+    savedBanner.classList.add('show');
+    form.hidden = true;
+    editBtn.hidden = false;
+    document.body.classList.remove('editing');
+  }
+
   if (state.rsvp) {
     setRadio('attending', state.rsvp.attending ? 'yes' : 'no');
     setRadio('arrivalDay', state.rsvp.arrivalDay);
@@ -93,11 +106,15 @@
       setRadio('plusOne', 'yes');
       plusNameEl.value = (state.rsvp.partyNames && state.rsvp.partyNames[0]) || '';
     }
-    savedBanner.textContent = state.rsvp.attending
-      ? '\u2713 You\u2019ve RSVP\u2019d \u2014 ' + (state.rsvp.partySize > 1 ? 'you + 1, ' : '') + 'arriving on the ' + (state.rsvp.arrivalDay === '2' ? '2nd' : '3rd') + '. Edit anytime below.'
-      : '\u2713 Your response is saved. Changed your mind? Edit below \u2014 the hill awaits.';
-    savedBanner.classList.add('show');
+    showSummary();
   }
+
+  editBtn.addEventListener('click', function () {
+    savedBanner.classList.remove('show');
+    editBtn.hidden = true;
+    form.hidden = false;
+    document.body.classList.add('editing');
+  });
   updatePlusVisibility();
   updateDetailsVisibility();
   highlightChoices();
@@ -113,6 +130,18 @@
   radios('plusOne').forEach(function (r) {
     r.addEventListener('change', function () { updatePlusVisibility(); highlightChoices(); });
   });
+
+  /* ---------- leaderboard modal ---------- */
+
+  var lbModal = document.getElementById('lbModal');
+  var lbOpen = document.getElementById('lbOpen');
+  var lbClose = document.getElementById('lbClose');
+  if (lbModal && lbOpen) {
+    lbOpen.addEventListener('click', function () { lbModal.hidden = false; });
+    lbClose.addEventListener('click', function () { lbModal.hidden = true; });
+    lbModal.addEventListener('click', function (e) { if (e.target === lbModal) lbModal.hidden = true; });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lbModal.hidden = true; });
+  }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -149,11 +178,10 @@
     };
     state = window.MWN.save(window.MWN.sanitizeState(state));
 
+    showSummary();
     savedBanner.textContent = state.rsvp.attending
-      ? '\u2713 RSVP saved on this phone \u2014 it will sync automatically. See you on the ' + (state.rsvp.arrivalDay === '2' ? '2nd' : '3rd') + '!'
+      ? '\u2713 RSVP saved \u2014 it will sync automatically. See you on the ' + (state.rsvp.arrivalDay === '2' ? '2nd' : '3rd') + '!'
       : '\u2713 Saved. You will be missed (and mentioned at the bonfire).';
-    savedBanner.classList.add('show');
-    savedBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
     showToast(state.rsvp.attending ? 'Spot claimed \u{1F525}' : 'Saved \u{1F494}');
     if (window.CLOUD) window.CLOUD.schedulePush();
   });
