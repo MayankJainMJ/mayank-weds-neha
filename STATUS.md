@@ -27,6 +27,8 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/neha
 
 ## Changelog
 
+- 2026-09-02 — **RSVP copy fixes.** Submit button now context-aware: "Can't make it" swaps "Claim my spot" for "Send my response". All alcohol references removed sitewide: invite card 1 "grab a drink" -> "grab a chai"; card 3 "We eat. We drink. We dance." -> "We eat. We dance." (dry event). Playwright-verified button swap + sitewide drink-free sweep.
+
 - 2026-09-02 — **v4.4: full leaderboard reset ("as if no one played").** RESET_EPOCH bumped to 3 (all devices self-zero game stats on next visit, names + RSVPs preserved); entire guests collection wiped server-side via owner CLI after backing up to Websites/guests-backup-*.json (outside the public repo). Real RSVPs (The Bride, Jyoti Yadav) will re-sync from their devices; backup holds them regardless.
 
 - 2026-09-02 — **v4.3: reset epoch.** `RESET_EPOCH = 2` in store.js: any device carrying an older/missing epoch self-wipes its GAME stats on next visit (bestScore, hearts, tokens, plays, local board, invite bits, unlocked) while PRESERVING name + RSVP, then re-syncs zeros over its old Firestore doc — making console cleanup stick. Future global resets = bump the constant. Unit-verified both paths (stale wipe w/ name+rsvp kept; current-epoch untouched).
