@@ -9,133 +9,64 @@
   <meta property="og:description" content="A sundowner wedding on a hilltop overlooking Pawna Lake. 2–3 December 2026.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 8 8%27%3E%3Crect x=%271%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%275%27 y=%272%27 width=%272%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%271%27 y=%273%27 width=%276%27 height=%272%27 fill=%27%23e85d75%27/%3E%3Crect x=%272%27 y=%275%27 width=%274%27 height=%271%27 fill=%27%23e85d75%27/%3E%3Crect x=%273%27 y=%276%27 width=%272%27 height=%271%27 fill=%27%23a4133c%27/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=48">
+  <link rel="stylesheet" href="css/style.css?v=49">
 </head>
-<body class="bg-paper">
+<body class="bg-sakura">
+<script src="js/theme.js"></script>
 
-<div class="deck-wrap">
-  <main class="deck" id="deck" aria-label="Wedding invitation cards">
+<main class="invite-single" aria-label="Wedding invitation">
+  <section class="invite-card">
+    <p class="inv-eyebrow">The wedding of</p>
+    <h1 class="inv-names" id="names">Neha<span class="inv-and">and</span>Mayank</h1>
+    <p class="inv-caps inv-day">Wednesday &amp; Thursday</p>
+    <p class="inv-script">December, 02 &ndash; 03</p>
+    <p class="inv-caps">Two thousand &middot; twenty six</p>
+    <div class="inv-rule" aria-hidden="true"></div>
+    <p class="inv-venue">Khanna Pawna Estate<br><span>Pawna &middot; Lonavala</span></p>
+    <p class="inv-note">A sundowner wedding on a hilltop.<br>We eat, we dance, we sit around the bonfire<br>&mdash; and nobody has to drive home.</p>
+    <a class="btn btn-primary inv-rsvp" href="rsvp.html">RSVP &rarr;</a>
+    <p class="inv-links">
+      <button type="button" class="linklike" id="gtkOpen">Good to know</button>
+      <span aria-hidden="true">&middot;</span>
+      <a class="linklike" href="https://maps.google.com/?q=Khanna+Pawna+Estate" target="_blank" rel="noopener">Map</a>
+      <span aria-hidden="true">&middot;</span>
+      <a class="linklike" href="index.html">Play the game</a>
+    </p>
+    <p id="champLine" hidden class="inv-champ"></p>
+  </section>
+</main>
 
-    <!-- 1 · cover -->
-    <section class="wcard" data-card>
-      <span class="corner tl">&#10022;</span><span class="corner tr">&#10022;</span>
-      <span class="corner bl">&#10022;</span><span class="corner br">&#10022;</span>
-      <p class="eyebrow">Shubh Vivah</p>
-      <p class="eyebrow" style="margin-top:.3rem">With the blessings of our families</p>
-      <h1 class="names serif" id="names" style="color:#6b1839;font-size:clamp(2rem,8.5vw,3rem);margin:.8rem 0 .2rem">Neha <span aria-hidden="true">&hearts;</span> Mayank</h1>
-      <div class="gold-divider"></div>
-      <p class="lead"><b>are getting married in the hills.</b></p>
-      <p class="big-date" style="margin-top:1rem">2 &ndash; 3 DECEMBER 2026</p>
-      <p class="muted" style="margin-top:.4rem;font-size:.9rem">Khanna Pawna Estate &middot; Pawna, Lonavala</p>
-      <p style="color:#b98c28;font-size:1rem;letter-spacing:.6em;margin:.6rem 0">&#10086;</p>
-      <p class="swipe-hint">swipe or tap &rsaquo; to open the invitation</p>
-    </section>
-
-    <!-- 2 · the two days -->
-    <section class="wcard" data-card>
-      <span class="corner tl">&#10022;</span><span class="corner tr">&#10022;</span>
-      <span class="corner bl">&#10022;</span><span class="corner br">&#10022;</span>
-      <p class="eyebrow">Come up early</p>
-      <h2>2 December</h2>
-      <p>Arrive, settle in, grab a chai,<br>catch up, eat too much<br>and make yourself at home.</p>
-      <div class="gold-divider"></div>
-      <p class="eyebrow">The wedding</p>
-      <h2>3 December &middot; 4:00 PM</h2>
-      <p>A sundowner wedding on a hilltop<br>overlooking Pawna Lake.</p>
-      <p style="margin-top:.7rem"><b>We eat. We dance.<br>We sit around the bonfire.<br>And nobody has to drive home.</b></p>
-    </section>
-
-    <!-- 3 · getting there & good to know -->
-    <section class="wcard" data-card>
-      <span class="corner tl">&#10022;</span><span class="corner tr">&#10022;</span>
-      <span class="corner bl">&#10022;</span><span class="corner br">&#10022;</span>
-      <p class="eyebrow">Getting there</p>
-      <h2>Khanna Pawna Estate</h2>
-      <!-- NOTE: travel times are estimates — verify before wide sharing -->
-      <p>&#128663; From <b>Mumbai</b>: ~3 hours<br>&#128747; From <b>Pune</b>: ~2 hours</p>
-      <a class="btn btn-primary" style="margin-top:.8rem;font-size:.9rem;padding:11px 24px" href="https://maps.google.com/?q=Khanna+Pawna+Estate" target="_blank" rel="noopener">Open in Google Maps</a>
-      <div class="gold-divider"></div>
-      <div style="text-align:left;max-width:300px">
-        <p style="margin-bottom:.55rem;font-size:.9rem"><b>Where do I sleep?</b><br>On the hill, with us. Nobody drives home.</p>
-        <p style="margin-bottom:.55rem;font-size:.9rem"><b>What do I pack?</b><br>December hilltop nights get properly cold &mdash; bring a warm layer you can dance in.</p>
-        <p style="font-size:.9rem"><b>What do I wear?</b><br>Festive and comfortable. It&rsquo;s a hill, not a hotel lobby &mdash; heels at your own risk.</p>
-      </div>
-    </section>
-
-    <!-- 4 · rsvp -->
-    <section class="wcard" data-card>
-      <span class="corner tl">&#10022;</span><span class="corner tr">&#10022;</span>
-      <span class="corner bl">&#10022;</span><span class="corner br">&#10022;</span>
-      <h2>Claim your spot<br>on the hill</h2>
-      <div class="gold-divider"></div>
-      <p class="muted" style="font-size:.9rem">RSVP by 31 October 2026</p>
-      <a class="btn btn-primary" style="margin-top:1.2rem;width:100%;max-width:280px" href="rsvp.html">RSVP &rarr;</a>
-      <a class="btn btn-ghost" style="margin-top:.7rem;width:100%;max-width:280px;color:#6b1839" href="index.html">&#9654; Play the game</a>
-      <p id="champLine" hidden style="margin-top:.7rem;font-size:.8rem;font-weight:600;color:#a07818"></p>
-      <p class="muted" style="margin-top:1.1rem;font-size:.75rem">Pawna &middot; Lonavala &middot; 2&ndash;3 December 2026</p>
-    </section>
-  </main>
-
-  <nav class="deck-nav" aria-label="Card navigation">
-    <button id="prevCard" aria-label="Previous card">&lsaquo;</button>
-    <div class="deck-dots" id="dots"></div>
-    <button id="nextCard" aria-label="Next card">&rsaquo;</button>
-  </nav>
+<div class="lb-modal" id="gtkModal" hidden>
+  <div class="lb-box gtk-box" role="dialog" aria-modal="true" aria-label="Good to know">
+    <button type="button" class="lb-close" id="gtkClose" aria-label="Close">&times;</button>
+    <p class="inv-eyebrow" style="margin-bottom:.8rem">Good to know</p>
+    <div class="gtk-body">
+      <p><b>Getting there</b><br>&#128663; From Mumbai: ~3 hours &middot; &#128747; From Pune: ~2 hours<br><a class="linklike" href="https://maps.google.com/?q=Khanna+Pawna+Estate" target="_blank" rel="noopener">Open in Google Maps &rarr;</a></p>
+      <p><b>Come up early?</b><br>Yes &mdash; arrive on the 2nd, settle in, grab a chai, eat too much. Wedding is on the 3rd at 4:00 PM.</p>
+      <p><b>Where do I sleep?</b><br>On the hill, with us. Nobody drives home.</p>
+      <p><b>What do I pack?</b><br>December hilltop nights get properly cold &mdash; bring a warm layer you can dance in.</p>
+      <p><b>What do I wear?</b><br>Festive and comfortable. It&rsquo;s a hill, not a hotel lobby &mdash; heels at your own risk.</p>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="js/lotus.js"></script>
-<script src="js/eggs.js"></script>
 <script>
 (function () {
   'use strict';
-  var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
-  var dots = document.getElementById('dots');
-  var idx = 0;
-
-  cards.forEach(function (_, i) {
-    var d = document.createElement('span');
-    if (i === 0) d.className = 'on';
-    dots.appendChild(d);
-  });
-  var dotEls = Array.prototype.slice.call(dots.children);
-
-  function show(i) {
-    idx = Math.max(0, Math.min(cards.length - 1, i));
-    cards.forEach(function (c, j) {
-      c.classList.remove('off-l', 'off-r');
-      if (j < idx) c.classList.add('off-l');
-      else if (j > idx) c.classList.add('off-r');
-    });
-    dotEls.forEach(function (d, j) { d.classList.toggle('on', j === idx); });
-  }
-  show(0);
-
-  document.getElementById('nextCard').addEventListener('click', function () { show(idx + 1); });
-  document.getElementById('prevCard').addEventListener('click', function () { show(idx - 1); });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight') show(idx + 1);
-    if (e.key === 'ArrowLeft') show(idx - 1);
-  });
-
-  var sx = null, sy = null;
-  document.getElementById('deck').addEventListener('touchstart', function (e) {
-    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
-  }, { passive: true });
-  document.getElementById('deck').addEventListener('touchend', function (e) {
-    if (sx === null) return;
-    var dx = e.changedTouches[0].clientX - sx;
-    var dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-      if (dx < 0) show(idx + 1); else show(idx - 1);
-    }
-    sx = sy = null;
-  }, { passive: true });
+  var m = document.getElementById('gtkModal');
+  document.getElementById('gtkOpen').addEventListener('click', function () { m.hidden = false; });
+  document.getElementById('gtkClose').addEventListener('click', function () { m.hidden = true; });
+  m.addEventListener('click', function (e) { if (e.target === m) m.hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') m.hidden = true; });
 })();
 </script>
-  <script type="module" src="js/cloud.js"></script>
+<script src="js/sakura.js"></script>
+<script src="js/lotus.js"></script>
+<script src="js/eggs.js"></script>
+<script type="module" src="js/cloud.js"></script>
 </body>
 </html>

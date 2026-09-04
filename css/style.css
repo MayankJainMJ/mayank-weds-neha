@@ -911,3 +911,264 @@ body.bg-paper {
   .lotus-sway { animation: none; }
   .drift { display: none; }
 }
+
+/* ============ sakura theme + single-page invite ============ */
+body.bg-sakura {
+  min-height: 100dvh;
+  color: #6b5a52;
+  background: linear-gradient(170deg, #fdf6f4 0%, #fbeef0 50%, #f8e7ea 100%);
+  font-family: 'Montserrat', sans-serif;
+}
+.bg-sakura main, .bg-sakura .invite-hero, .bg-sakura .nav-row,
+.bg-sakura .deadline-banner, .bg-sakura .saved-banner, .bg-sakura #editRsvp { position: relative; z-index: 1; }
+
+/* theme toggle chip */
+.theme-toggle {
+  position: fixed; top: 10px; right: 10px; z-index: 60;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, .12);
+  background: rgba(255, 255, 255, .55);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  font-size: 1.1rem; cursor: pointer; line-height: 1;
+}
+
+/* sakura clusters */
+.scluster { position: absolute; pointer-events: none; }
+.scluster .twig { position: absolute; inset: 0; width: 100%; height: 100%; }
+.scluster .sp { position: absolute; }
+.sc-tl { top: -18px; left: -24px; width: min(42vw, 230px); height: min(34vw, 185px); transform-origin: 0 0; }
+.sc-br { bottom: -10px; right: -26px; width: min(64vw, 340px); height: min(40vw, 215px); transform-origin: 100% 100%; }
+.sband { position: absolute; left: 0; right: 0; bottom: 0; height: 20vh; pointer-events: none; }
+.sband .sp { position: absolute; }
+.rsvp-page .sc-tl { width: min(30vw, 160px); height: min(24vw, 130px); top: -22px; left: -20px; opacity: .9; }
+.sak { display: block; }
+
+/* single-page invite card */
+.invite-single {
+  min-height: 100dvh;
+  display: flex; align-items: center; justify-content: center;
+  padding: max(20px, 4vh) 22px;
+}
+.invite-card {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 340px;
+  text-align: center;
+  border-radius: 6px;
+  padding: clamp(1.4rem, 4.5vh, 2.6rem) 1.4rem;
+}
+.bg-sakura .invite-card {
+  background: rgba(255, 253, 253, .92);
+  box-shadow: 0 22px 60px rgba(122, 66, 88, .18), 0 4px 16px rgba(122, 66, 88, .1);
+  color: #6b5a52;
+}
+.bg-paper .invite-card {
+  background: rgba(255, 248, 236, .96);
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 0 6px rgba(212, 175, 55, .22), 0 14px 34px rgba(107, 24, 57, .28);
+  color: #3a1220;
+}
+
+/* invitation typography (reference: gold serif caps + script) */
+.inv-eyebrow {
+  font-size: .72rem; letter-spacing: .34em; text-transform: uppercase;
+  color: #9a8578; font-weight: 600;
+}
+.bg-paper .inv-eyebrow { color: #b06000; }
+.inv-names {
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(2rem, 8.4vw, 2.7rem);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #c9a24b;
+  line-height: 1.14;
+  margin: .7rem 0 .55rem;
+  display: flex; flex-direction: column; align-items: center; gap: .1em;
+}
+.bg-paper .inv-names { color: #6b1839; }
+.inv-and {
+  font-family: 'Great Vibes', cursive;
+  text-transform: none; letter-spacing: .02em;
+  font-size: .58em; color: #8a7968; font-weight: 400;
+  margin: -.15em 0;
+}
+.bg-paper .inv-and { color: #b98c28; }
+.inv-caps {
+  font-size: .72rem; letter-spacing: .3em; text-transform: uppercase;
+  color: #6b5a52; font-weight: 600; margin: .3rem 0;
+}
+.bg-paper .inv-caps { color: #4a2530; }
+.inv-day { margin-top: .7rem; }
+.inv-script {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(1.9rem, 8vw, 2.5rem);
+  color: #c9863f; line-height: 1.15; margin: .15rem 0;
+}
+.bg-paper .inv-script { color: #b98c28; }
+.inv-rule { width: 120px; height: 1px; background: #d9c1a8; margin: .85rem auto; position: relative; }
+.inv-rule::after {
+  content: '\2766'; position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -52%); font-size: .7rem; color: #c9a24b;
+  background: inherit; padding: 0 8px; background: transparent;
+}
+.inv-venue {
+  font-size: .8rem; letter-spacing: .22em; text-transform: uppercase;
+  font-weight: 700; color: #6b5a52; line-height: 1.8;
+}
+.inv-venue span { font-weight: 400; font-size: .72rem; opacity: .85; }
+.bg-paper .inv-venue { color: #4a2530; }
+.inv-note {
+  font-family: 'Playfair Display', Georgia, serif; font-style: italic;
+  font-size: .86rem; line-height: 1.65; color: #8a7264; margin: .9rem 0 1.2rem;
+}
+.bg-paper .inv-note { color: #6b4a3a; }
+.inv-rsvp { width: 100%; max-width: 250px; }
+.bg-sakura .btn-primary {
+  background: linear-gradient(135deg, #eb9db5, #dd7396);
+  color: #fff; box-shadow: 0 8px 24px rgba(221, 115, 150, .4);
+}
+.inv-links { margin-top: .9rem; font-size: .8rem; color: #9a8578; display: flex; gap: .55rem; justify-content: center; align-items: center; }
+.linklike {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; color: inherit; text-decoration: underline;
+  text-underline-offset: 3px; text-decoration-color: rgba(0, 0, 0, .25);
+}
+.inv-champ { margin-top: .8rem; font-size: .74rem; font-weight: 600; color: #c9863f; }
+
+/* good-to-know modal body */
+.gtk-box { text-align: left; }
+.gtk-body p { font-size: .84rem; line-height: 1.55; margin-bottom: .8rem; }
+.gtk-body b { display: block; margin-bottom: .1rem; }
+.bg-sakura .lb-box.gtk-box, .bg-sakura .lb-box {
+  background: #fffdfd; color: #6b5a52; border: none;
+  box-shadow: 0 22px 60px rgba(90, 40, 60, .3);
+}
+.bg-sakura .lb-close { color: #6b5a52; }
+
+/* sakura RSVP: white panel, dark text (reference right panel) */
+.bg-sakura .deadline-banner { background: linear-gradient(135deg, #eb9db5, #dd7396); color: #fff; }
+.bg-sakura h1.names { color: #b8637f; font-family: 'Playfair Display', Georgia, serif; }
+.bg-sakura .greet-line { color: #c9863f; }
+.bg-sakura .card-dark.gold-frame { border: none !important; box-shadow: 0 18px 50px rgba(122, 66, 88, .16); }
+#rsvpForm { max-width: 420px; margin-left: auto; margin-right: auto; }
+.bg-sakura #rsvpForm { padding: 1.5rem 1.4rem 1.2rem; }
+.form-title { line-height: 1.3; }
+.bg-sakura .form-title { color: #b8637f; font-family: 'Playfair Display', Georgia, serif; }
+.bg-paper .form-title { color: #ffd98a; }
+.bg-sakura .card-dark {
+  background: rgba(255, 253, 253, .94);
+  border: none;
+  box-shadow: 0 18px 50px rgba(122, 66, 88, .16);
+  color: #6b5a52;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.bg-sakura .card-dark input[type="text"] {
+  background: #fff; border-color: #e5cdd5; color: #5a4a52;
+}
+.bg-sakura .card-dark input[type="text"]::placeholder { color: #b9a5ad; }
+.bg-sakura .card-dark input[type="text"]:focus { border-color: #dd7396; background: #fff; }
+.bg-sakura .choice { background: #fdf7f8; border-color: #e5cdd5; color: #6b5a52; }
+.bg-sakura .choice input { accent-color: #dd7396; }
+.bg-sakura .choice.selected { border-color: #dd7396; background: rgba(221, 115, 150, .1); }
+.bg-sakura .saved-banner { background: rgba(111, 148, 80, .12); border-color: rgba(111, 148, 80, .4); color: #557a3a; }
+.bg-sakura .tent-line { color: #9a8578; }
+.bg-sakura .nav-row .btn-ghost, .bg-sakura #editRsvp { color: #b8637f; }
+.bg-sakura .lb-modal p, .bg-sakura .lb-box .muted { color: #8a7264; }
+.bg-sakura .lb-box [style*="ffd23f"] { color: #c9863f !important; }
+
+@media (max-height: 700px) {
+  .invite-card { padding: 1.1rem 1.2rem; }
+  .inv-names { font-size: 1.7rem; margin: .6rem 0 .5rem; }
+  .inv-script { font-size: 1.6rem; }
+  .inv-note { margin: .6rem 0 .8rem; }
+  .inv-rule { margin: .7rem auto; }
+}
+
+/* ============ loop-3: stationery typography refinement (sakura) ============ */
+.bg-sakura .inv-eyebrow { font-size: 12px; font-weight: 500; letter-spacing: .38em; color: #776966; margin-bottom: 14px; }
+.bg-sakura .inv-names { font-weight: 500; letter-spacing: .16em; color: #b88732; font-size: clamp(1.85rem, 8vw, 2.35rem); }
+.bg-sakura .inv-and { font-size: 16px; color: #8e7b76; }
+.bg-sakura .inv-script { font-size: 30px; color: #b88732; margin: 10px 0 6px; }
+.bg-sakura .inv-caps { font-size: 12px; font-weight: 500; letter-spacing: .24em; color: #675b58; }
+.bg-sakura .inv-venue { font-size: 14px; font-weight: 600; letter-spacing: .22em; color: #5f534f; margin-top: 6px; }
+.bg-sakura .inv-venue span { font-size: 11px; font-weight: 400; letter-spacing: .28em; }
+.bg-sakura .inv-note { font-size: 14px; line-height: 1.55; color: #8c7470; }
+.bg-sakura .inv-rsvp {
+  height: 48px; line-height: 48px; padding: 0 30px;
+  border-radius: 2px;
+  background: #c9879d;
+  box-shadow: 0 6px 18px rgba(201, 135, 157, .35);
+  font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: #fff;
+}
+.bg-sakura .inv-links { font-size: 11px; color: #8c7470; margin-top: 14px; gap: 14px; }
+.bg-sakura .inv-champ { font-size: 11px; color: #8c7470; margin-top: 10px; }
+
+/* rsvp panel: clean stationery column */
+.bg-sakura .form-title { font-size: 23px; line-height: 1.05; color: #b65e79; }
+.bg-sakura .card-dark .form-group > label { font-size: 12px; font-weight: 600; letter-spacing: .04em; color: #675b58; }
+.bg-sakura .card-dark input[type="text"],
+.bg-sakura .choice {
+  border: 1px solid #ddbfc8; border-radius: 2px;
+  font-size: 14px; color: #675b58; min-height: 44px;
+}
+.bg-sakura .choice.selected { border-color: #c9879d; background: rgba(201, 135, 157, .1); }
+.bg-sakura #rsvpForm .btn-primary {
+  border-radius: 2px; background: #c9879d;
+  font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #fff;
+  box-shadow: 0 6px 18px rgba(201, 135, 157, .35);
+}
+.bg-sakura .nav-row .btn { border-radius: 2px; }
+.bg-sakura #editRsvp { border-radius: 2px; }
+
+/* ============ loop-4: cross-theme parity ============ */
+/* lotus invite CTA: flat antique gold, stationery corners */
+.bg-paper .inv-rsvp {
+  background: #c88a35; border-radius: 4px; height: 48px; line-height: 48px; padding: 0 30px;
+  box-shadow: none; font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #fff8ec;
+}
+.bg-paper .inv-eyebrow { letter-spacing: .3em; }
+.bg-paper .inv-names { letter-spacing: .12em; }
+.bg-paper .inv-venue { letter-spacing: .22em; }
+
+/* lotus RSVP: converge to light panel — cream paper, maroon ink */
+.bg-paper .card-dark {
+  background: #fff9f0;
+  color: #4a1028;
+  border: 1.5px solid rgba(74, 16, 40, .3);
+  box-shadow: 0 18px 44px rgba(74, 16, 40, .22);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.bg-paper .card-dark.gold-frame { border: 1.5px solid rgba(212, 175, 55, .8) !important; box-shadow: 0 0 0 5px rgba(212, 175, 55, .14), 0 18px 44px rgba(74, 16, 40, .22); }
+.bg-paper .form-title { color: #6b1839; font-family: 'Playfair Display', Georgia, serif; }
+.bg-paper .card-dark .form-group > label { color: #4a1028; }
+.bg-paper .card-dark input[type="text"] { background: #fff; border-color: rgba(74, 16, 40, .35); color: #4a1028; }
+.bg-paper .card-dark input[type="text"]::placeholder { color: rgba(74, 16, 40, .4); }
+.bg-paper .card-dark input[type="text"]:focus { border-color: #c88a35; background: #fff; }
+.bg-paper .choice { background: #fffdf8; border-color: rgba(74, 16, 40, .3); color: #4a1028; }
+.bg-paper .choice.selected { border-color: #c88a35; background: rgba(200, 138, 53, .12); }
+.bg-paper .card-dark .tent-line { color: #7a5a48; }
+.bg-paper .saved-banner { background: rgba(74, 124, 89, .14); border-color: rgba(74, 124, 89, .5); color: #2e5d3a; }
+.bg-paper #rsvpForm .btn-primary { border-radius: 4px; letter-spacing: .1em; }
+
+/* custom radio controls (both themes) */
+.choice input[type="radio"] {
+  appearance: none; -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #ddbfc8; background: transparent; margin: 0;
+  display: inline-block; flex: none; transition: border-color .15s, background .15s;
+}
+.bg-sakura .choice input[type="radio"]:checked { border-color: #c9879d; background: radial-gradient(circle, #c9879d 0 4.5px, transparent 5px); }
+.bg-paper .choice input[type="radio"] { border-color: rgba(74, 16, 40, .5); }
+.bg-paper .choice input[type="radio"]:checked { border-color: #4a1028; background: radial-gradient(circle, #c88a35 0 4.5px, transparent 5px); }
+
+/* clearance: toggle below deadline banner; fewer petals over controls */
+.rsvp-page .theme-toggle { top: 48px; }
+.rsvp-page .sc-br { width: min(45vw, 240px); height: min(28vw, 150px); opacity: .92; }
+.rsvp-page .lo-br1 { width: min(38vw, 270px); }
+.rsvp-page .lo-tl { width: min(28vw, 200px); }
+
+/* loop-5 final nitpicks */
+.bg-sakura.rsvp-page .invite-hero { padding-top: calc(1.1rem + 24px); }
+.bg-sakura .tent-line, .bg-sakura .inv-note { color: #9b777d; }
+.bg-paper #rsvpForm .btn-primary { letter-spacing: .06em; }
+.bg-paper .orn { opacity: .85; }

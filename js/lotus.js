@@ -7,6 +7,7 @@
    Petals stay individual <g> elements so bloom/sway animations keep working. */
 (function () {
   'use strict';
+  if (!document.body.classList.contains('bg-paper')) return;
 
   /* pointed lotus petals, base at (0,0), tip near (0,-46) — two mirrored
      leaning silhouettes alternated so no two neighbours match */
