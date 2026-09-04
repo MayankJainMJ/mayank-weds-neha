@@ -21,7 +21,9 @@
     b.type = 'button';
     b.className = 'theme-toggle';
     b.title = t === 'lotus' ? 'Switch to cherry blossom' : 'Switch to lotus';
-    b.textContent = t === 'lotus' ? '\u{1F338}' : '\u{1FAB7}';
+    b.innerHTML = t === 'lotus'
+      ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="#c7839d"><circle cx="12" cy="7" r="3.2"/><circle cx="7" cy="10.5" r="3.2"/><circle cx="17" cy="10.5" r="3.2"/><circle cx="9" cy="15.5" r="3.2"/><circle cx="15" cy="15.5" r="3.2"/><circle cx="12" cy="11.5" r="2" fill="#f3e2b8"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="20" height="20" fill="#a96e26"><path d="M12 4 C 9 8, 9 13, 12 17 C 15 13, 15 8, 12 4 Z"/><path d="M5 9 C 6 13, 9 16, 12 17 C 11 13, 9 10, 5 9 Z" opacity=".75"/><path d="M19 9 C 18 13, 15 16, 12 17 C 13 13, 15 10, 19 9 Z" opacity=".75"/></svg>';
     b.addEventListener('click', function () {
       try { localStorage.setItem('mwn.theme', t === 'lotus' ? 'sakura' : 'lotus'); } catch (e) {}
       location.reload();

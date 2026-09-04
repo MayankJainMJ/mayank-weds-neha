@@ -25,7 +25,7 @@
     var p = document.createElement('p');
     p.id = 'invCount';
     p.className = 'inv-count';
-    p.innerHTML = days > 1 ? '&mdash;&nbsp; in ' + txt + ' &nbsp;&mdash;' : '&mdash;&nbsp; ' + txt + ' &nbsp;&mdash;';
+    p.textContent = days > 1 ? 'in ' + txt : txt;
     var year = document.querySelector('.inv-year');
     if (year) year.insertAdjacentElement('afterend', p);
   }
@@ -42,7 +42,7 @@
     b.type = 'button';
     b.id = 'replayEntry';
     b.className = 'linklike';
-    b.textContent = '\u2709 Replay';
+    b.textContent = 'Replay';
     b.addEventListener('click', function () { play(true); });
     links.appendChild(sep);
     links.appendChild(b);
@@ -70,7 +70,7 @@
       names.style.transition = 'opacity .6s ease';
       names.style.opacity = '1';
       setTimeout(function () { ink.remove(); }, 700);
-    }, 2100);
+    }, 2750);
   }
 
   /* ---------- envelope ---------- */
@@ -83,12 +83,13 @@
         '<div class="env">' +
           '<div class="env-back"></div>' +
           '<div class="env-card"></div>' +
-          '<div class="env-front">' + window.LOGO.full(86) + '<p class="env-names">Neha &amp; Mayank</p></div>' +
+          '<div class="env-front"><p class="env-names">Neha &amp; Mayank</p><div class="env-rule"></div></div>' +
           '<div class="env-flap"></div>' +
           '<button type="button" class="env-seal" aria-label="Break the seal and open your invitation">' +
             '<svg viewBox="0 0 100 100" aria-hidden="true">' +
               '<path class="wax-rim" d="M50 3 C 68 1, 84 10, 92 26 C 99 40, 98 60, 90 74 C 81 90, 64 98, 47 97 C 30 96, 14 86, 7 70 C 1 55, 3 36, 12 22 C 21 9, 34 4, 50 3 Z"/><path class="wax" transform="translate(50,50) scale(.92) translate(-50,-50)" d="M50 3 C 68 1, 84 10, 92 26 C 99 40, 98 60, 90 74 C 81 90, 64 98, 47 97 C 30 96, 14 86, 7 70 C 1 55, 3 36, 12 22 C 21 9, 34 4, 50 3 Z"/>' +
-              '<g class="seal-mono" transform="translate(19,23) scale(.31)">' + window.LOGO.seal(200, 'currentColor').replace(/<\/?svg[^>]*>/g, '') + '</g>' +
+              '<g class="seal-emboss" transform="translate(19,24.2) scale(.31)">' + window.LOGO.seal(200, 'currentColor').replace(/<\/?svg[^>]*>/g, '') + '</g>' +
+      '<g class="seal-mono" transform="translate(19,23) scale(.31)">' + window.LOGO.seal(200, 'currentColor').replace(/<\/?svg[^>]*>/g, '') + '</g>' +
             '</svg>' +
           '</button>' +
           '<p class="env-hint">tap the seal to open</p>' +
@@ -110,10 +111,10 @@
       opened = true;
       try { localStorage.setItem('mwn.intro', '1'); } catch (e) {}
       ov.classList.add('env-open');            /* seal cracks, flap lifts, card rises */
+      setTimeout(inkNames, 600);               /* ink begins as the flap lifts — write overlaps the reveal */
       setTimeout(function () {
         document.body.classList.remove('hold-bloom');  /* release background bloom */
         ov.classList.add('env-gone');
-        inkNames();
       }, 950);
       setTimeout(function () {
         ov.remove();
@@ -122,6 +123,16 @@
     });
   }
 
+  /* the pets belong on the card, large enough to read as illustration */
+  function addCardLogo() {
+    if (document.querySelector('.card-logo')) return;
+    var d = document.createElement('div');
+    d.className = 'card-logo';
+    d.innerHTML = window.LOGO.full(92);
+    card.insertBefore(d, card.firstChild);
+  }
+
+  addCardLogo();
   addCountdown();
   addReplay();
 

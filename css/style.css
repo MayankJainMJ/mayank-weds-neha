@@ -1396,7 +1396,7 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .bg-sakura .env-flap { background: linear-gradient(180deg, #f0c3d2, #ecb5c8); }
 .bg-paper .env-flap { background: linear-gradient(180deg, #eddcb9, #e6d0a8); }
 .env-seal {
-  position: absolute; left: 50%; top: 54%; z-index: 4;
+  position: absolute; left: 50%; top: 44%; z-index: 4;
   width: 76px; height: 76px; margin: -38px 0 0 -38px;
   background: none; border: none; padding: 0; cursor: pointer;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .3));
@@ -1405,7 +1405,7 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 }
 .env-seal:active { transform: scale(.93); }
 .env-seal svg { width: 100%; height: 100%; }
-.bg-sakura .env-seal .wax { fill: #c05e78; }
+.bg-sakura .env-seal .wax { fill: #ad5872; }
 .bg-paper .env-seal .wax { fill: #9c6b1e; }
 .env-seal .seal-mono { color: rgba(255, 248, 236, .92); }
 @keyframes sealglint {
@@ -1414,8 +1414,8 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 }
 .env-hint {
   position: absolute; left: 0; right: 0; bottom: -44px;
-  text-align: center; font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(90, 60, 70, .65);
+  text-align: center; font-size: 12px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase;
+  color: #6d4a56;
   opacity: 0; animation: hintin .8s ease 2s forwards;
 }
 @keyframes hintin { to { opacity: 1; } }
@@ -1500,3 +1500,40 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .bg-sakura .env-seal .wax-rim { fill: #a94b64; }
 .bg-paper .env-seal .wax-rim { fill: #7d5416; }
 .env-front svg { margin-bottom: 0; }
+
+/* critical-loop-1: entry refinement */
+.env { width: min(74vw, 315px); height: min(48vw, 202px); }
+.env-scene { margin-top: -8vh; }
+.env-back { box-shadow: 0 22px 54px rgba(90, 40, 60, .22); }
+.env-seal {
+  width: 98px; height: 98px; margin: -49px 0 0 -49px;
+  animation: none;
+  filter: drop-shadow(0 3px 7px rgba(0, 0, 0, .25));
+}
+.bg-sakura .env-seal .wax-rim { fill: #832844; }
+.env-seal .seal-emboss { color: rgba(0, 0, 0, .28); }
+.env-names { font-size: 1.45rem; margin-bottom: 8px; margin-top: 12px; }
+.env-rule { width: 74px; height: 1px; background: rgba(82, 103, 156, .4); margin: 0 auto 14px; }
+.card-logo { display: flex; justify-content: center; margin: -6px 0 0; }
+@media (max-height: 720px) { .card-logo svg { width: 72px; height: 61px; } .invite-card { padding-top: 1rem; } }
+@media (max-height: 600px) { .card-logo { display: none; } }
+
+/* tighter card rhythm (-25%) + calmer countdown + legible note */
+.invite-card { padding: clamp(1.2rem, 3.6vh, 2rem) 1.4rem; }
+.bg-sakura .inv-eyebrow { margin-bottom: 10px; }
+.inv-names { margin: .5rem 0 .4rem; }
+.inv-day { margin-top: .5rem; }
+.bg-sakura .inv-script { margin: 6px 0 4px; }
+.inv-rule { margin: .65rem auto; }
+.inv-note { margin: .65rem 0 .95rem; }
+.bg-sakura .inv-note { color: #766867; }
+.inv-count { letter-spacing: .3em; }
+
+/* softer ink write: longer continuous stroke, feathered edge */
+.ink-line {
+  background: linear-gradient(90deg, #b88732 0%, #b88732 47%, rgba(184, 135, 50, 0) 53%);
+  background-size: 210% 100%;
+  background-position: 100% 0;
+  animation: inkwrite 2.1s cubic-bezier(.35, 0, .35, 1) .15s forwards;
+}
+.bg-paper .ink-line { background-image: linear-gradient(90deg, #6b1839 0%, #6b1839 47%, rgba(107, 24, 57, 0) 53%); }
