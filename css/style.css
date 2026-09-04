@@ -1181,3 +1181,14 @@ body.bg-sakura {
   color: #b88732; margin: .2rem 0 0;
 }
 .bg-paper .inv-year { color: #6b1839; }
+
+/* ============ mobile polish (device-emulation audit) ============ */
+/* iOS zooms the page when a focused input is under 16px — never allow that */
+input[type="text"], textarea { font-size: 16px !important; }
+
+/* tiny text links need real thumb targets without changing visual layout */
+.linklike { display: inline-block; padding: 12px 6px; margin: -10px -2px; }
+
+/* 44px minimum touch targets */
+.theme-toggle { width: 44px; height: 44px; }
+.lb-close { padding: 8px 14px; }
