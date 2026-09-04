@@ -896,7 +896,8 @@ body.bg-paper {
 .bg-paper .deck-dots span { background: rgba(107, 24, 57, .22); }
 .bg-paper .deck-dots span.on { background: #b98c28; }
 .bg-paper .wcard { box-shadow: 0 0 0 6px rgba(212, 175, 55, .22), 0 14px 34px rgba(107, 24, 57, .28); background: rgba(255, 248, 236, .94); }
-.bg-paper .deck { margin: 22px 26px 6px; }
+.bg-paper .deck { margin: 30px 34px 8px; }
+@media (min-height: 800px) { .bg-paper .deck { margin: 38px 38px 10px; } }
 .bg-paper .card-dark {
   background: linear-gradient(160deg, rgba(62, 13, 38, .96), rgba(43, 9, 27, .96));
   border-color: rgba(212, 175, 55, .5);
