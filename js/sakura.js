@@ -105,7 +105,9 @@
         '<div class="sp" style="left:12%;top:34%">' + bud(22, delay + .7) + '</div>' +
         '<div class="sp" style="left:38%;top:2%">' + bud(18, delay + .85) + '</div>' +
         '<div class="sp" style="left:20%;top:52%">' + leaf(30, 40) + '</div>' +
-        '<div class="sp" style="left:52%;top:16%">' + leaf(24, -30) + '</div>';
+        '<div class="sp" style="left:52%;top:16%">' + leaf(24, -30) + '</div>' +
+        '<div class="sp" style="left:60%;top:40%">' + blossom(34, delay + .75, true) + '</div>' +
+        '<div class="sp" style="left:6%;top:14%">' + bud(20, delay + .95) + '</div>';
     } else if (kind === 'br') {
       h += twigB +
         '<div class="sp" style="right:0;top:8%">' + blossom(62, delay, true) + '</div>' +
@@ -113,7 +115,10 @@
         '<div class="sp" style="right:44%;top:6%">' + blossom(36, delay + .5, false) + '</div>' +
         '<div class="sp" style="right:14%;top:56%">' + bud(24, delay + .7) + '</div>' +
         '<div class="sp" style="right:36%;top:44%">' + leaf(30, 160) + '</div>' +
-        '<div class="sp" style="right:56%;top:24%">' + leaf(24, -140) + '</div>';
+        '<div class="sp" style="right:56%;top:24%">' + leaf(24, -140) + '</div>' +
+        '<div class="sp" style="right:8%;top:44%">' + blossom(40, delay + .85, false) + '</div>' +
+        '<div class="sp" style="right:60%;top:2%">' + blossom(32, delay + 1.0, true) + '</div>' +
+        '<div class="sp" style="right:30%;top:60%">' + leaf(22, 120) + '</div>';
     } else { /* bl small */
       h += '<div class="sp" style="left:0;top:22%">' + blossom(44, delay, false) + '</div>' +
         '<div class="sp" style="left:34%;top:0">' + bud(20, delay + .4) + '</div>' +
@@ -125,7 +130,7 @@
   /* dense bottom border band: blossoms cropped by the viewport edge */
   function bottomBand(delay) {
     var h = '<div class="sband">';
-    var xs = [2, 14, 27, 41, 56, 70, 84, 94];
+    var xs = [2, 10, 18, 27, 35, 44, 53, 62, 70, 79, 87, 94];
     xs.forEach(function (x, i) {
       var sz = 34 + ((i * 17) % 26);
       var kind = i % 3;
@@ -204,7 +209,7 @@
   fg.className = 'lotus-fg';
   fg.setAttribute('aria-hidden', 'true');
   var petals = '';
-  for (var i = 0; i < 9; i++) petals += driftPetal(i);
+  for (var i = 0; i < 14; i++) petals += driftPetal(i);
   fg.innerHTML = cluster('tl', .3) + cluster('br', .9) + bottomBand(1.2) + petals;
 
   document.body.insertBefore(bg, document.body.firstChild);

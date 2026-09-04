@@ -30,24 +30,6 @@
     if (year) year.insertAdjacentElement('afterend', p);
   }
 
-  /* ---------- replay control ---------- */
-  function addReplay() {
-    if (document.getElementById('replayEntry')) return;
-    var links = document.querySelector('.inv-links');
-    if (!links) return;
-    var sep = document.createElement('span');
-    sep.setAttribute('aria-hidden', 'true');
-    sep.textContent = '\u00B7';
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.id = 'replayEntry';
-    b.className = 'linklike';
-    b.textContent = 'Replay';
-    b.addEventListener('click', function () { play(true); });
-    links.appendChild(sep);
-    links.appendChild(b);
-  }
-
   /* ---------- names ink-write ---------- */
   function inkNames() {
     var names = document.querySelector('.inv-names');
@@ -128,13 +110,12 @@
     if (document.querySelector('.card-logo')) return;
     var d = document.createElement('div');
     d.className = 'card-logo';
-    d.innerHTML = window.LOGO.full(92);
+    d.innerHTML = '<picture><source srcset="img/logo.webp" type="image/webp"><img src="img/logo.png" alt="Neha and Mayank" decoding="async"></picture>';
     card.insertBefore(d, card.firstChild);
   }
 
   addCardLogo();
   addCountdown();
-  addReplay();
 
   if (!seen && !reduced) {
     /* wait for fonts so the reveal is never half-dressed; cap the wait */
