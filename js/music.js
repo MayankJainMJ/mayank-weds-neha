@@ -42,9 +42,21 @@
     bass: [48, 0, 0, 0, 55, 0, 0, 0],
     tick: false
   };
-  // legacy names still work
-  TRACKS.mumbai = TRACKS.india;
-  TRACKS.calgary = TRACKS.canada;
+  // MARIO MODE: one original bouncy platformer chiptune for the whole game
+  // (Mario-flavored feel - swing square lead, walking triangle bass - but an
+  //  original melody; Nintendo's actual themes are copyrighted.)
+  TRACKS.mario = {
+    bpm: 176, lead: 'square', dur: 0.11, vol: 0.42,
+    mel:  [67, 67, 0, 67, 0, 64, 67, 0, 72, 0, 0, 0, 76, 0, 72, 0,
+           69, 0, 65, 0, 62, 0, 67, 64, 0, 60, 62, 64, 0, 67, 0, 0,
+           72, 0, 71, 69, 71, 0, 72, 0, 74, 0, 71, 0, 67, 0, 64, 0,
+           65, 67, 69, 0, 72, 69, 65, 0, 62, 64, 65, 0, 60, 0, 0, 0],
+    bass: [48, 0, 52, 0, 55, 0, 52, 0, 53, 0, 57, 0, 55, 0, 52, 0],
+    tick: false
+  };
+  // legacy names all route to mario
+  TRACKS.mumbai = TRACKS.mario;
+  TRACKS.calgary = TRACKS.mario;
 
   function freq(n) { return 440 * Math.pow(2, (n - 69) / 12); }
 
@@ -78,7 +90,7 @@
   function start(name) {
     if (!ensure()) return;
     stop();
-    track = TRACKS[name] || TRACKS.india;
+    track = TRACKS.mario; /* mario mode: every act, one game groove */
     step = 0;
     var interval = 60000 / track.bpm / 2; // 8th notes
     timer = setInterval(function () {

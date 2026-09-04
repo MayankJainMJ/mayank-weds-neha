@@ -1338,3 +1338,165 @@ input[type="text"], textarea { font-size: 16px !important; }
 .footlink::after { display: none; }
 .foot-dot { display: none; }
 .foot-nav { gap: 26px; }
+
+/* ============ the entry moment: envelope + seal + ink ============ */
+.env-ov {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .45s ease;
+}
+.bg-sakura .env-ov { background: linear-gradient(170deg, #fdf6f4, #f8e7ea); }
+.bg-paper .env-ov { background: linear-gradient(168deg, #ecd4cc, #e4c4bd); }
+.env-ov.env-in { opacity: 1; }
+.env-ov.env-gone { opacity: 0; pointer-events: none; }
+body.env-locked { overflow: hidden; }
+body.hold-bloom .lotus-fg .petal,
+body.hold-bloom .lotus-fg .drift,
+body.hold-bloom .lotus-fg .lotus-stem,
+body.hold-bloom .lotus-fg .lotus-heart,
+body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; }
+
+.env-scene { perspective: 1100px; }
+.env {
+  position: relative; width: min(78vw, 330px); height: min(56vw, 236px);
+  transform-style: preserve-3d;
+}
+.env-back, .env-front, .env-flap, .env-card { position: absolute; border-radius: 6px; }
+.env-back { inset: 0; box-shadow: 0 30px 70px rgba(90, 40, 60, .3); }
+.bg-sakura .env-back { background: #f3d3dd; }
+.bg-paper .env-back { background: #efe0c8; }
+.env-card {
+  left: 4%; right: 4%; top: 6%; height: 88%;
+  background: #fffdfb; box-shadow: 0 4px 18px rgba(0, 0, 0, .12);
+  transition: transform .6s cubic-bezier(.2, .7, .3, 1) .35s;
+}
+.env-front {
+  inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: 12px; overflow: hidden;
+}
+.bg-sakura .env-front { background: linear-gradient(180deg, #f9dfe7 0%, #f5d2dd 100%); }
+.bg-paper .env-front { background: linear-gradient(180deg, #f5e8d0 0%, #eeddc0 100%); }
+.env-front::before, .env-front::after { /* envelope side folds */
+  content: ''; position: absolute; top: 0; bottom: 0; width: 52%;
+  opacity: .35;
+}
+.env-front::before { left: 0; background: linear-gradient(105deg, rgba(0, 0, 0, .07), transparent 55%); }
+.env-front::after { right: 0; background: linear-gradient(255deg, rgba(0, 0, 0, .07), transparent 55%); }
+.env-front svg { margin-bottom: 2px; }
+.env-names {
+  font-family: 'Great Vibes', cursive; font-size: 1.25rem; color: #52679c; opacity: .85;
+}
+.env-flap {
+  left: 0; right: 0; top: 0; height: 54%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  transition: transform .55s cubic-bezier(.4, 0, .3, 1) .12s, z-index 0s .3s;
+  z-index: 3;
+}
+.bg-sakura .env-flap { background: linear-gradient(180deg, #f0c3d2, #ecb5c8); }
+.bg-paper .env-flap { background: linear-gradient(180deg, #eddcb9, #e6d0a8); }
+.env-seal {
+  position: absolute; left: 50%; top: 54%; z-index: 4;
+  width: 76px; height: 76px; margin: -38px 0 0 -38px;
+  background: none; border: none; padding: 0; cursor: pointer;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .3));
+  transition: transform .18s ease;
+  animation: sealglint 3.2s ease-in-out 1.2s infinite;
+}
+.env-seal:active { transform: scale(.93); }
+.env-seal svg { width: 100%; height: 100%; }
+.bg-sakura .env-seal .wax { fill: #c05e78; }
+.bg-paper .env-seal .wax { fill: #9c6b1e; }
+.env-seal .seal-mono { color: rgba(255, 248, 236, .92); }
+@keyframes sealglint {
+  0%, 100% { filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .3)) brightness(1); }
+  50% { filter: drop-shadow(0 4px 14px rgba(0, 0, 0, .35)) brightness(1.12); }
+}
+.env-hint {
+  position: absolute; left: 0; right: 0; bottom: -44px;
+  text-align: center; font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(90, 60, 70, .65);
+  opacity: 0; animation: hintin .8s ease 2s forwards;
+}
+@keyframes hintin { to { opacity: 1; } }
+
+/* opening */
+.env-open .env-seal { animation: sealcrack .5s ease forwards; pointer-events: none; }
+@keyframes sealcrack {
+  30% { transform: scale(1.08); }
+  100% { transform: scale(.6) rotate(14deg); opacity: 0; }
+}
+.env-open .env-flap { transform: rotateX(-168deg); z-index: 1; }
+.env-open .env-card { transform: translateY(-34%) scale(1.04); }
+.env-open .env-hint { opacity: 0; }
+
+/* names ink-write */
+.ink-names { position: relative; margin: 1rem 0 .8rem; }
+.ink-line {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(2.3rem, 10vw, 3rem);
+  display: block; line-height: 1.2;
+  color: transparent;
+  background: linear-gradient(90deg, #b88732 0%, #b88732 50%, transparent 50.5%);
+  background-size: 210% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text;
+  animation: inkwrite 1.7s cubic-bezier(.3, 0, .4, 1) .2s forwards;
+}
+.bg-paper .ink-line { background-image: linear-gradient(90deg, #6b1839 0%, #6b1839 50%, transparent 50.5%); }
+@keyframes inkwrite { to { background-position: 0% 0; } }
+.ink-flourish {
+  width: 170px; height: 14px; color: #c9a24b; display: block; margin: .1rem auto 0;
+}
+.bg-paper .ink-flourish { color: #b98c28; }
+.ink-flourish path { stroke-dasharray: 220; stroke-dashoffset: 220; animation: flourishdraw .9s ease 1.6s forwards; }
+@keyframes flourishdraw { to { stroke-dashoffset: 0; } }
+.ink-names.ink-out { transition: opacity .55s ease; opacity: 0; position: absolute; left: 0; right: 0; }
+
+/* countdown line */
+.inv-count {
+  font-size: 10px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase;
+  color: #9a8578; margin: .45rem 0 0;
+  animation: hintin .8s ease .3s both;
+}
+.bg-paper .inv-count { color: #8a5a3a; }
+
+/* sakura: branches draw themselves */
+.scluster .twig path {
+  stroke-dasharray: 430; stroke-dashoffset: 430;
+  animation: branchdraw 1.5s ease-out forwards;
+}
+.sc-br .twig path { animation-delay: .45s; }
+@keyframes branchdraw { to { stroke-dashoffset: 0; } }
+
+/* sakura: wind-drift petals (sine sway, not straight down) */
+@keyframes driftfall {
+  0%   { opacity: 0; transform: translate3d(0, -4vh, 0) rotate(10deg); }
+  8%   { opacity: .55; }
+  25%  { transform: translate3d(5vw, 24vh, 0) rotate(90deg); }
+  45%  { transform: translate3d(-3vw, 48vh, 0) rotate(170deg); }
+  65%  { transform: translate3d(6vw, 70vh, 0) rotate(240deg); }
+  85%  { opacity: .45; transform: translate3d(-2vw, 92vh, 0) rotate(300deg); }
+  100% { opacity: 0; transform: translate3d(4vw, 108vh, 0) rotate(340deg); }
+}
+
+/* lotus: petals breathe — two furl-and-unfurl cycles after blooming, then settle */
+.bg-paper .lo .petal {
+  animation: bloom 1.6s cubic-bezier(.18, .8, .28, 1) both,
+             lbreathe 9s ease-in-out 4s 2 alternate;
+  animation-delay: calc(var(--d, 0s) + var(--i) * .13s), calc(var(--d, 0s) + 3.5s);
+}
+@keyframes lbreathe {
+  from { transform: rotate(var(--a)) scale(var(--s, 1)); }
+  to   { transform: rotate(calc(var(--a) * .42)) scale(calc(var(--s, 1) * .82)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .env-ov { display: none !important; }
+  .ink-names { display: none; }
+  .scluster .twig path { animation: none; stroke-dashoffset: 0; }
+  .inv-count { animation: none; }
+}
+.bg-sakura .env-seal .wax-rim { fill: #a94b64; }
+.bg-paper .env-seal .wax-rim { fill: #7d5416; }
+.env-front svg { margin-bottom: 0; }
