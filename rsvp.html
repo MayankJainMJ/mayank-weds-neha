@@ -37,7 +37,7 @@
         <label>Are you coming?</label>
         <div class="choice-row" id="attendRow">
           <label class="choice"><input type="radio" name="attending" value="yes">Obviously. Save me a bonfire seat.</label>
-          <label class="choice"><input type="radio" name="attending" value="no">Can't make it &#128148;</label>
+          <label class="choice"><input type="radio" name="attending" value="no">Can't make it</label>
         </div>
       </div>
 
@@ -64,14 +64,15 @@
 
       </div>
 
-      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%">Claim my spot &#128293;</button>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%">Claim my place</button>
       <p class="tent-line">No RSVP by 31 October? You sleep in the camp tent. On the floor.</p>
     </form>
   </main>
 
-  <nav class="wrap nav-row" aria-label="Continue">
-    <a class="btn btn-ghost" href="invite.html">&larr; Invitation</a>
-    <button type="button" class="btn btn-ghost" id="lbOpen">&#127942; Top Players</button>
+  <nav class="wrap foot-nav" aria-label="Continue">
+    <a class="footlink" href="invite.html">&larr; Return to invitation</a>
+    <span aria-hidden="true" class="foot-dot">&middot;</span>
+    <button type="button" class="footlink" id="lbOpen">Top players</button>
   </nav>
 
   <div class="lb-modal" id="lbModal" hidden>

@@ -1192,3 +1192,149 @@ input[type="text"], textarea { font-size: 16px !important; }
 /* 44px minimum touch targets */
 .theme-toggle { width: 44px; height: 44px; }
 .lb-close { padding: 8px 14px; }
+
+/* ============ couture RSVP: de-boxed stationery controls ============ */
+/* options: hairline rows, not cards */
+#rsvpForm .choice {
+  background: none !important;
+  border: none !important;
+  border-bottom: 1px solid #dfc4ce !important;
+  border-radius: 0;
+  min-height: 48px;
+  padding: 11px 4px;
+  font-size: 15px;
+  color: #655557;
+  gap: .8rem;
+  transition: background .25s, transform .25s, color .25s;
+}
+#rsvpForm .choice-row { gap: 0; }
+#rsvpForm .choice-row.cols { flex-direction: column; }
+#rsvpForm .choice.selected {
+  background: rgba(248, 237, 241, .55) !important;
+  transform: translateX(2px);
+  color: #4c3f42;
+  font-weight: 600;
+}
+.bg-paper #rsvpForm .choice { border-bottom-color: #d8c2b8 !important; color: #5a2031; }
+.bg-paper #rsvpForm .choice.selected { background: rgba(247, 235, 221, .55) !important; color: #43101f; }
+
+/* selector circles: 16px hairline, 6px dot + halo when chosen */
+#rsvpForm .choice input[type="radio"] {
+  width: 16px; height: 16px; border-width: 1px; border-color: #c7839d;
+}
+.bg-sakura #rsvpForm .choice input[type="radio"]:checked {
+  border-color: #c7839d;
+  background: radial-gradient(circle, #c7839d 0 3px, transparent 3.5px);
+  box-shadow: 0 0 0 4px rgba(199, 131, 157, .16);
+}
+.bg-paper #rsvpForm .choice input[type="radio"] { border-color: #a96e26; }
+.bg-paper #rsvpForm .choice input[type="radio"]:checked {
+  border-color: #a96e26;
+  background: radial-gradient(circle, #a96e26 0 3px, transparent 3.5px);
+  box-shadow: 0 0 0 4px rgba(169, 110, 38, .16);
+}
+
+/* written-line inputs */
+#rsvpForm input[type="text"] {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid #dfc4ce !important;
+  border-radius: 0;
+  padding: 8px 2px;
+  color: #4c3f42;
+}
+#rsvpForm input[type="text"]:focus { border-bottom-color: #c7839d !important; }
+.bg-paper #rsvpForm input[type="text"] { border-bottom-color: #d8c2b8 !important; color: #43101f; }
+.bg-paper #rsvpForm input[type="text"]:focus { border-bottom-color: #a96e26 !important; }
+
+/* labels: quiet engraved captions */
+#rsvpForm .form-group > label {
+  font-size: 11px !important; font-weight: 600 !important;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #9b8489 !important; margin-bottom: .3rem;
+}
+.bg-paper #rsvpForm .form-group > label { color: #8a6a5a !important; }
+
+/* submit: centered cartouche */
+#rsvpForm .btn-primary {
+  display: block;
+  width: 248px; max-width: calc(100% - 40px);
+  height: 52px; line-height: 52px; padding: 0;
+  margin: 26px auto 0;
+  border-radius: 2px !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  letter-spacing: .18em !important; text-transform: uppercase;
+}
+.bg-sakura #rsvpForm .btn-primary {
+  background: #c7839d; color: #fffdfb;
+  box-shadow: inset 0 0 0 1px #e2b9c8, 0 10px 26px rgba(199, 131, 157, .3);
+}
+.bg-paper #rsvpForm .btn-primary {
+  background: #6a2036; color: #fff9ee;
+  box-shadow: inset 0 0 0 1px #c89542, 0 10px 26px rgba(106, 32, 54, .3);
+}
+
+/* panel proportions */
+#rsvpForm { max-width: 420px; }
+.bg-sakura #rsvpForm { border-radius: 14px; padding: 28px 22px 30px; }
+.bg-paper #rsvpForm { border-radius: 12px; padding: 28px 22px 30px; border: 1px solid rgba(200, 149, 66, .5) !important; box-shadow: 0 18px 44px rgba(74, 16, 40, .18) !important; }
+
+/* footnote navigation: engraved, not buttons */
+.foot-nav {
+  position: relative; z-index: 1;
+  display: flex; justify-content: center; align-items: center; gap: 10px;
+  padding: 2px 0 max(.9rem, env(safe-area-inset-bottom));
+}
+.footlink {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #a96c83; text-decoration: none;
+  padding: 16px 6px; position: relative;
+}
+.footlink::after {
+  content: ''; position: absolute; left: 6px; right: 6px; bottom: 12px;
+  height: 1px; background: #dab3c2;
+}
+.foot-dot { color: #a96c83; opacity: .6; }
+.bg-paper .footlink { color: #6a2036; }
+.bg-paper .footlink::after { background: #be8b39; }
+.bg-paper .foot-dot { color: #6a2036; }
+
+/* tent line: italic serif whisper */
+#rsvpForm .tent-line { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 12px !important; opacity: .75; }
+
+/* short screens: stacked hairline rows need tighter rhythm */
+@media (max-height: 760px) {
+  #rsvpForm .choice { min-height: 42px; padding: 8px 4px; font-size: 14px; }
+  #rsvpForm .btn-primary { height: 46px; line-height: 46px; margin-top: 18px; }
+}
+@media (max-height: 700px) {
+  #rsvpForm .choice { min-height: 38px; padding: 6px 3px; font-size: 13px; }
+  #rsvpForm .tent-line { display: none; }
+}
+.rsvp-page .sband { opacity: .55; height: 14vh; }
+
+/* loop-2 refinements: kill the last web-form tells */
+.deadline-banner {
+  background: none !important;
+  color: #a96c83 !important;
+  font-size: 11px !important; font-weight: 600 !important;
+  letter-spacing: .22em; text-transform: uppercase;
+  padding: 14px 12px 2px !important;
+}
+.bg-paper .deadline-banner { color: #8a5a28 !important; }
+#rsvpForm .choice { border-bottom: none !important; position: relative; }
+#rsvpForm .choice::after {
+  content: ''; position: absolute; left: 24px; right: 0; bottom: 0;
+  height: .5px; background: currentColor; opacity: .35;
+}
+#rsvpForm .btn-primary {
+  border-radius: 28px !important;
+  height: 48px; line-height: 48px;
+}
+.footlink { font-size: 10px; letter-spacing: .16em; }
+.footlink::after { display: none; }
+.foot-dot { display: none; }
+.foot-nav { gap: 26px; }

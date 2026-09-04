@@ -52,7 +52,7 @@
     var attending = radioValue('attending');
     detailsBlock.style.display = attending === 'no' ? 'none' : '';
     var btn = document.getElementById('submitBtn');
-    if (btn) btn.innerHTML = attending === 'no' ? 'Send my response \u{1F498}' : 'Claim my spot \u{1F525}';
+    if (btn) btn.textContent = attending === 'no' ? 'Send my response' : 'Claim my place';
   }
 
   /* ---------- prefill ---------- */
