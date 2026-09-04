@@ -1172,3 +1172,12 @@ body.bg-sakura {
 .bg-sakura .tent-line, .bg-sakura .inv-note { color: #9b777d; }
 .bg-paper #rsvpForm .btn-primary { letter-spacing: .06em; }
 .bg-paper .orn { opacity: .85; }
+
+/* year as engraved numerals, not spelled-out text */
+.inv-year {
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem; font-weight: 600;
+  letter-spacing: .55em; text-indent: .55em; /* re-center tracked text */
+  color: #b88732; margin: .2rem 0 0;
+}
+.bg-paper .inv-year { color: #6b1839; }
