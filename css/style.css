@@ -793,3 +793,100 @@ body.editing .deadline-banner, body.editing .tent-line { display: none; }
   #rsvpForm .btn { padding: 10px 20px; font-size: .88rem; }
   .greet-line { display: none; }
 }
+
+/* author display rules must never defeat the hidden attribute */
+[hidden] { display: none !important; }
+
+/* ============ lotus stationery theme (invite + rsvp) ============ */
+body.bg-paper {
+  min-height: 100dvh;
+  color: #4a2530;
+  background:
+    radial-gradient(120% 90% at 20% 8%, rgba(244, 214, 200, .55), transparent 60%),
+    radial-gradient(130% 100% at 85% 95%, rgba(240, 200, 190, .5), transparent 65%),
+    radial-gradient(100% 80% at 60% 40%, rgba(255, 252, 244, .9), transparent 70%),
+    linear-gradient(170deg, #f7ecdd 0%, #f4e4d2 45%, #f0dccc 100%);
+}
+
+/* fixed decorative layers — never add layout height */
+.lotus-bg, .lotus-fg { position: fixed; inset: 0; overflow: hidden; }
+.lotus-bg { z-index: 0; }
+.lotus-fg { z-index: 2; pointer-events: none; }
+.bg-paper .deck-wrap, .bg-paper main, .bg-paper .invite-hero,
+.bg-paper .nav-row, .bg-paper .deadline-banner, .bg-paper .saved-banner,
+.bg-paper #editRsvp { position: relative; z-index: 1; }
+
+/* faint mandalas */
+.lm { position: absolute; opacity: .13; }
+.lm-tr { top: -70px; right: -80px; }
+.lm-bl { bottom: -110px; left: -110px; }
+.lm-ml { top: 38%; left: -50px; opacity: .09; }
+
+/* corner lotuses */
+.lo { position: absolute; filter: drop-shadow(0 3px 6px rgba(107, 24, 57, .18)); }
+.lo-br1 { right: -14px; bottom: -6px; }
+.lo-br2 { right: 92px; bottom: -18px; }
+.lo-tl { left: -10px; top: 44px; transform: rotate(24deg); }
+.lo-bl { left: -8px; bottom: 26px; transform: rotate(-18deg); }
+
+/* bloom: petals unfurl from a closed bud, staggered */
+.petal {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: rotate(var(--a)) scale(var(--s, 1));
+  animation: bloom 1.6s cubic-bezier(.18, .8, .28, 1) both;
+  animation-delay: calc(var(--d, 0s) + var(--i) * .13s);
+}
+@keyframes bloom {
+  from { opacity: .15; transform: rotate(0deg) scale(calc(var(--s, 1) * .55)) scaleY(.35); }
+  to   { opacity: 1; transform: rotate(var(--a)) scale(var(--s, 1)); }
+}
+.lotus-heart {
+  animation: heartin .8s ease both;
+  animation-delay: calc(var(--d, 0s) + 1.5s);
+}
+@keyframes heartin { from { opacity: 0; } to { opacity: 1; } }
+.lotus-stem { stroke-dasharray: 70; stroke-dashoffset: 70; animation: stemgrow 1.2s ease forwards; animation-delay: calc(var(--d, 0s) * .5); }
+@keyframes stemgrow { to { stroke-dashoffset: 0; } }
+
+/* alive after the bloom: slow breathing sway */
+.lotus-sway { animation: lsway 7.5s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.lotus-sway.s2 { animation-duration: 9.5s; animation-delay: -3s; }
+.lotus-sway.s3 { animation-duration: 11s; animation-delay: -6s; }
+@keyframes lsway { from { rotate: -2deg; } to { rotate: 2.2deg; } }
+
+/* temple bell */
+.lotus-bell { position: absolute; top: 40px; left: 16px; opacity: .92; }
+.bg-paper.rsvp-page .lotus-bell { top: 46px; }
+.bell-swing { transform-box: view-box; transform-origin: 0px 9px; animation: bswing 5.5s ease-in-out infinite; }
+@keyframes bswing { 0%, 100% { transform: rotate(-3.4deg); } 50% { transform: rotate(3.4deg); } }
+
+/* drifting petals */
+.drift { position: absolute; top: -20px; opacity: 0; animation: driftfall var(--dur) linear infinite; animation-delay: var(--dl); }
+@keyframes driftfall {
+  0% { opacity: 0; transform: translate3d(0, -4vh, 0) rotate(10deg); }
+  8% { opacity: .55; }
+  85% { opacity: .45; }
+  100% { opacity: 0; transform: translate3d(7vw, 106vh, 0) rotate(300deg); }
+}
+
+/* paper-theme adaptations of existing components */
+.bg-paper h1.names, .bg-paper .wcard h2 { color: #6b1839; }
+.bg-paper .greet-line { color: #a4133c; }
+.bg-paper .deck-nav button { color: #6b1839; border-color: rgba(107, 24, 57, .45); }
+.bg-paper .deck-dots span { background: rgba(107, 24, 57, .22); }
+.bg-paper .deck-dots span.on { background: #b98c28; }
+.bg-paper .wcard { box-shadow: 0 0 0 6px rgba(212, 175, 55, .22), 0 14px 34px rgba(107, 24, 57, .28); }
+.bg-paper .card-dark {
+  background: linear-gradient(160deg, rgba(62, 13, 38, .96), rgba(43, 9, 27, .96));
+  border-color: rgba(212, 175, 55, .5);
+}
+.bg-paper .saved-banner { background: rgba(74, 124, 89, .16); border-color: rgba(74, 124, 89, .45); color: #2e5d3a; }
+.bg-paper .toast { z-index: 80; }
+.bg-paper .lb-modal { z-index: 70; }
+
+@media (prefers-reduced-motion: reduce) {
+  .petal, .lotus-heart, .lotus-stem { animation: none; opacity: 1; stroke-dashoffset: 0; }
+  .lotus-sway, .bell-swing { animation: none; }
+  .drift { display: none; }
+}
