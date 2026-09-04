@@ -843,9 +843,9 @@ body.bg-paper {
 /* painterly lotuses: large, asymmetric, bleeding off edges */
 .lo { position: absolute; filter: drop-shadow(0 4px 9px rgba(107, 24, 57, .22)); }
 .lo .lotus { width: 100%; height: auto; display: block; }
-.lo-br1 { width: min(44vw, 320px); right: -12vw; bottom: -5vh; transform: rotate(12deg); }
+.lo-br1 { width: min(50vw, 360px); right: -13vw; bottom: -5vh; transform: rotate(12deg); }
 .lo-br2 { width: min(30vw, 210px); right: 17vw; bottom: -8vh; transform: rotate(-7deg); }
-.lo-tl { width: min(32vw, 230px); left: -12vw; top: -6vh; transform: rotate(-155deg); }
+.lo-tl { width: min(38vw, 270px); left: -14vw; top: -7vh; transform: rotate(-155deg); }
 .lo-ml { width: min(26vw, 180px); left: -13vw; top: 27vh; transform: rotate(-8deg); }
 .lo-bl { width: min(19vw, 130px); left: -4vw; bottom: -2vh; transform: rotate(10deg); }
 .lo-bud1 { width: min(9vw, 60px); left: 13vw; bottom: -3vh; transform: rotate(-6deg); }
