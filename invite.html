@@ -28,7 +28,6 @@
       <div class="gold-divider"></div>
       <p class="lead"><b>are getting married in the hills.</b></p>
       <p class="big-date" style="margin-top:1rem">2 &ndash; 3 DECEMBER 2026</p>
-      <p class="eyebrow" id="countdown" style="margin-top:.5rem"></p>
       <p class="muted" style="margin-top:.4rem;font-size:.9rem">Khanna Pawna Estate &middot; Pawna, Lonavala</p>
       <p style="color:#b98c28;font-size:1rem;letter-spacing:.6em;margin:.6rem 0">&#10086;</p>
       <p class="swipe-hint">swipe or tap &rsaquo; to open the invitation</p>
@@ -142,15 +141,6 @@
     if (e.key === 'ArrowLeft') show(idx - 1);
   });
 
-  // wedding countdown
-  var cd = document.getElementById('countdown');
-  if (cd) {
-    var days = Math.ceil((new Date('2026-12-03T00:00:00+05:30') - Date.now()) / 864e5);
-    cd.textContent = days > 1 ? '\u23F3 ' + days + ' days to go'
-      : days === 1 ? '\u23F3 TOMORROW \u2726'
-      : days === 0 ? 'IT\u2019S TODAY \u2726'
-      : 'JUST MARRIED \u2726';
-  }
   var sx = null, sy = null;
   document.getElementById('deck').addEventListener('touchstart', function (e) {
     sx = e.touches[0].clientX; sy = e.touches[0].clientY;
