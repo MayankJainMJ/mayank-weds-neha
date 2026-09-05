@@ -25,6 +25,11 @@ Spec: [`SPEC.md`](./SPEC.md) · Live target: https://mayankjainmj.github.io/neha
 9. RSVP deadline print date (assume 31 Oct 2026) — pending confirm
 10. Neha preview before guests — pending
 
+## Bug fix list (pending — approved, not yet implemented)
+
+1. **Remove easter egg E4 entirely** (`js/eggs.js`): the tap-the-names-8-times → confetti hearts + "Eight taps. Eight years. ♥" toast must go. Delete the egg's listener/DOM/CSS (`.egg-heart`) and drop the `js/eggs.js` include from `invite.html` if nothing else remains in it.
+2. **Names must be non-interactive**: `h1.inv-names` ("NEHA and MAYANK") must not be clickable (no listeners) and not text-selectable (`user-select: none`; also suppress mobile tap-highlight). Keep the entry sequence's temporary programmatic focus (`tabindex="-1"`, removed on blur) — that's for screen readers, not interaction.
+
 ## Changelog
 
 - 2026-09-05 — **v6.4: म counter cleared to transparency.** User manually erased the enclosed paper counter inside the Devanagari म (img/logo.png) so the surface behind shows through; Claude swept 5 stray alpha px, regenerated logo.webp from the edited PNG (alpha channels verified identical), confirmed flap + card renders and 9/9 flow checks. Pets' whites and all strokes untouched.
