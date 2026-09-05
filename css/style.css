@@ -1773,6 +1773,8 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
    the same frame its transform animation starts, so we lower the envelope
    instead: physically truer anyway). */
 body.env-locked .invite-card { visibility: hidden; z-index: 90; will-change: transform; }
+/* pre-script bootstrap lock (inline body-top script) — same hiding, earlier */
+html.env-boot .invite-card { visibility: hidden; }
 /* nothing behind the envelope is reachable while it is up */
 body.env-locked .theme-toggle { visibility: hidden; }
 body.ck-flip .invite-card { visibility: visible; }
@@ -1812,7 +1814,7 @@ body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.g
 
 @media (prefers-reduced-motion: reduce) {
   .ck-ov { display: none !important; }
-  body.env-locked .invite-card { visibility: visible; }
+  body.env-locked .invite-card, html.env-boot .invite-card { visibility: visible; }
   .ck-g, .ck-g.ckh { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
 

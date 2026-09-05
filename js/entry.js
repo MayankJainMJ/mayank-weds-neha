@@ -13,11 +13,14 @@
   if (!card) return;
 
   /* the envelope greets EVERY visit — only ?entry=0 (tests/deep-links)
-     and reduced-motion skip it */
+     and reduced-motion skip it. If the bootstrap's 4s safety net already
+     released the card (entry.js arrived very late), stay skipped rather
+     than yanking the visible invite back behind an envelope. */
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var skip = false;
   try {
     if (new URLSearchParams(location.search).get('entry') === '0') skip = true;
+    if (window.mwnEnvExpired) skip = true;
   } catch (e) {}
 
   /* ---------- countdown ---------- */
@@ -376,13 +379,9 @@
   addCardLogo();
   addCountdown();
 
-  if (!skip && !reduced) {
-    var go = function () { play(); };
-    if (document.fonts && document.fonts.ready) {
-      var done = false;
-      var once = function () { if (!done) { done = true; go(); } };
-      document.fonts.ready.then(once);
-      setTimeout(once, 1400);
-    } else { go(); }
-  }
+  /* play SYNCHRONOUSLY — the fonts gate caused the card to flash before
+     the envelope. env-locked lands in the same task, then the inline
+     bootstrap lock (html.env-boot) hands over without a visible gap. */
+  if (!skip && !reduced) play();
+  document.documentElement.classList.remove('env-boot');
 })();
