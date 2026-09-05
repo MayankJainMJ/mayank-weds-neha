@@ -1723,6 +1723,13 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
   filter: drop-shadow(0 5px 9px rgba(84, 34, 49, .3));
 }
 .ck-seal::after { content: ''; position: absolute; inset: -8px; } /* 48px+ hit target */
+/* focus: a soft wax glow instead of the UA's blue ring */
+.ck-seal:focus { outline: none; }
+.ck-seal:focus-visible {
+  outline: none;
+  filter: drop-shadow(0 5px 9px rgba(84, 34, 49, .3)) drop-shadow(0 0 7px rgba(159, 82, 107, .6));
+}
+.inv-names:focus { outline: none; } /* programmatic focus target, not interactive */
 .ck-seal svg { width: 100%; height: 100%; overflow: visible; }
 .ck-wax { fill: url(#ckwaxg); stroke: #7c3a51; stroke-width: 1.2; }
 .ck-crack { stroke: #5c2438; stroke-width: 1.1; stroke-dasharray: 160; stroke-dashoffset: 160; opacity: 0; }
