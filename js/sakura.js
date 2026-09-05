@@ -10,6 +10,29 @@
   'use strict';
   if (!document.body.classList.contains('bg-sakura')) return;
 
+  /* Blossom Season: perpetual bud->bloom->shed cycle, invite page only.
+     MID = arrive mid-season (negative phase delays); envelope entries start
+     each blossom at grow(0%) so the go1-go4 release choreography still owns
+     the first bloom. Separate RNG seed — paperTexture's stays untouched. */
+  var SEASON = !document.body.classList.contains('rsvp-page');
+  if (SEASON) document.body.classList.add('blossom-season');
+  var MID = false;
+  try {
+    MID = SEASON && (new URLSearchParams(location.search).get('entry') === '0' ||
+                     matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (e) {}
+  var srng = mulberry32(20261203);
+  var PERM = (function () {          /* stratified phases: shuffled even slots */
+    var p = [];
+    for (var i = 0; i < 24; i++) p.push(i);
+    for (var j = p.length - 1; j > 0; j--) {
+      var k = Math.floor(srng() * (j + 1));
+      var t = p[j]; p[j] = p[k]; p[k] = t;
+    }
+    return p;
+  })();
+  var bIdx = 0;
+
   /* sakura petal: rounded obovate with the characteristic tip notch.
      Base at (0,0), tip at (0,-21). */
   var SPETAL = 'M0 0 C -8.5 -4.5, -10.5 -14.5, -4.5 -20.5 C -2.4 -18.7, 1.8 -19.2, 3.6 -20.1 C 9.6 -15.4, 7.6 -5, 0 0 Z';
@@ -34,14 +57,35 @@
     '<feDisplacementMap in="SourceGraphic" in2="n" scale="1.3"/></filter>' +
     '</defs></svg>';
 
-  /* one open blossom: 5 notched petals + stamens */
+  /* one open blossom: 5 notched petals + stamens.
+     Season mode: per-blossom cycle phase (--cy) + duration (--cdur, 20-26s so
+     phases drift apart over minutes), per-petal wind vectors (--dx/--dy/--spin),
+     and NO sedge filter on the group (its region clips detach flights). */
   function blossom(size, delay, deep) {
     var g = deep ? 'sgD' : 'sgP';
-    var s = '<svg class="sak" width="' + size + '" height="' + size + '" viewBox="-26 -26 52 52" aria-hidden="true"><g filter="url(#sedge)">';
+    var vars = '';
+    if (SEASON) {
+      var cdur = 20 + srng() * 6;
+      var slot = PERM[bIdx++ % PERM.length];
+      /* MID: subtract this blossom's --d and use half-slots so the effective
+         delay is ALWAYS negative — no late "snap to bud" on ?entry=0 */
+      var cy = MID ? -((slot + .5) / PERM.length) * cdur - delay - srng() * 1.5
+                   : slot * 0.07 + srng() * 0.2;
+      vars = ' style="--cy:' + cy.toFixed(2) + 's;--cdur:' + cdur.toFixed(2) + 's"';
+    }
+    var s = '<svg class="sak sak-bloom" width="' + size + '" height="' + size + '" viewBox="-26 -26 52 52" aria-hidden="true"' + vars + '><g' + (SEASON ? '' : ' filter="url(#sedge)"') + '>';
     for (var i = 0; i < 5; i++) {
       var a = i * 72 + (i % 2 ? 5 : -4);
       var pd = i % 2 ? SPETAL2 : SPETAL;
-      s += '<g class="petal" style="--a:' + a + 'deg;--i:' + i + ';--s:' + (0.94 + (i % 3) * 0.05).toFixed(2) + ';--d:' + delay + 's">' +
+      var wind = '';
+      if (SEASON) {
+        var ar = a * Math.PI / 180;
+        wind = ';--dx:' + (Math.sin(ar) * 10 + 24 + srng() * 18).toFixed(1) + 'px' +
+               ';--dy:' + (-Math.cos(ar) * 10 + 40 + srng() * 22).toFixed(1) + 'px' +
+               ';--spin:' + ((srng() < .5 ? -1 : 1) * (70 + srng() * 80)).toFixed(0) + 'deg' +
+               ';--pi:' + (i * 0.09).toFixed(2) + 's'; /* time-typed: old Safari can't multiply number*time */
+      }
+      s += '<g class="petal" style="--a:' + a + 'deg;--i:' + i + ';--s:' + (0.94 + (i % 3) * 0.05).toFixed(2) + ';--d:' + delay + 's' + wind + '">' +
            '<path d="' + pd + '" fill="url(#' + g + ')"/>' +
            '<path d="' + pd + '" fill="none" stroke="#de789d" stroke-width="1.3" opacity=".22" filter="url(#sblush)"/>' +
            '<path d="M0 -2 C -1 -8, -1 -13, 0 -17" stroke="#e087a8" stroke-width=".45" fill="none" opacity=".45"/>' +
@@ -60,9 +104,9 @@
     return s;
   }
 
-  /* tulip-shaped bud */
+  /* tulip-shaped bud — the young generation; keeps its one-time bloom */
   function bud(size, delay) {
-    return '<svg class="sak" width="' + size + '" height="' + (size * 1.6) + '" viewBox="-12 -25 24 38" aria-hidden="true"><g filter="url(#sedge)">' +
+    return '<svg class="sak sak-bud" width="' + size + '" height="' + (size * 1.6) + '" viewBox="-12 -25 24 38" aria-hidden="true"><g filter="url(#sedge)">' +
       '<path class="petal" style="--a:-14deg;--i:0;--s:1;--d:' + delay + 's" d="M0 0 C -8.5 -4, -9.5 -15, -2.5 -21 C 2 -17, 3.5 -7, 0 0 Z" fill="url(#sgB)"/>' +
       '<path class="petal" style="--a:14deg;--i:1;--s:1;--d:' + delay + 's" d="M0 0 C 8.5 -4, 9.5 -15, 2.5 -21 C -2 -17, -3.5 -7, 0 0 Z" fill="#d96891"/>' +
       '<path class="petal" style="--a:0deg;--i:2;--s:.92;--d:' + (delay + .15) + 's" d="M0 0 C -6 -5, -6 -16, 0 -21 C 6 -16, 6 -5, 0 0 Z" fill="url(#sgB)" opacity=".95"/>' +
@@ -161,7 +205,12 @@
   }
 
   function driftPetal(i) {
-    return '<svg class="drift" style="--dl:' + (i * 2.8) + 's;--dur:' + (11 + (i % 5) * 2.6) + 's;left:' + (6 + i * 11) + 'vw" width="15" height="15" viewBox="-11 -22 22 24"><path d="' + SPETAL + '" fill="' + (i % 2 ? '#f6bfd0' : '#f0a3bd') + '" transform="scale(.62)" opacity=".85"/></svg>';
+    /* deterministic spread across the whole viewport (the old 6+i*11vw put
+       petals 8-14 offscreen) + negative delays so the weather is already
+       falling — prepopulated mid-air, released with go4 on envelope entries */
+    var left = (2 + srng() * 94).toFixed(1);
+    var dl = -(i * 1.9 + srng() * 2).toFixed(1);
+    return '<svg class="drift" style="--dl:' + dl + 's;--dur:' + (11 + (i % 5) * 2.6) + 's;left:' + left + 'vw" width="15" height="15" viewBox="-11 -22 22 24"><path d="' + SPETAL + '" fill="' + (i % 2 ? '#f6bfd0' : '#f0a3bd') + '" transform="scale(.62)" opacity=".85"/></svg>';
   }
 
   /* blush watercolor paper (deterministic canvas, Safari-safe) */

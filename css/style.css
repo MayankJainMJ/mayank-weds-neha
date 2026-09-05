@@ -1710,12 +1710,13 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 }
 .ck-open .ck-flap::after { opacity: 1; }
 .ck-open .ck-flaplogo { opacity: 0; transition: opacity .2s ease .38s; }
-/* the real logo on the flap — exactly as-is: no filters, no opacity dial */
-.ck-flaplogo { width: 73px; height: auto; margin-top: 1%; }
+/* the real logo on the flap — exactly as-is: no filters, no opacity dial.
+   Shifted 15px down per user direction; the seal stays at top 65%. */
+.ck-flaplogo { width: 73px; height: auto; margin-top: calc(1% + 15px); }
 
 /* wax seal — dusty rose, irregular, embossed */
 .ck-seal {
-  position: absolute; left: 50%; top: 65%;
+  position: absolute; left: 50%; top: calc(65% - 30px);
   width: clamp(61px, 16vw, 67px); height: clamp(61px, 16vw, 67px);
   margin: calc(clamp(61px, 16vw, 67px) / -2) 0 0 calc(clamp(61px, 16vw, 67px) / -2);
   padding: 0; background: none; border: none; cursor: pointer;
@@ -1809,7 +1810,7 @@ body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.g
 @media (max-height: 640px), (max-width: 340px) {
   .ck-ov { padding-bottom: 4vh; }
   .ck-env { width: clamp(255px, 78vw, 320px); }
-  .ck-flaplogo { width: 56px; }
+  .ck-flaplogo { width: 56px; margin-top: calc(1% + 15px); }
   /* seal keeps the non-negotiable 61-67px size; space recovered above */
   .ck-head { margin-bottom: 16px; }
   .ck-hint { margin-top: 18px; }
@@ -1838,3 +1839,45 @@ body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.g
   animation: inkwipe .85s cubic-bezier(.35, 0, .35, 1) .05s forwards;
 }
 @keyframes inkwipe { to { clip-path: inset(-12% -6% -12% -4%); } }
+
+/* ============ Blossom Season — perpetual bud -> bloom -> shed cycle ============
+   Invite page + sakura only (body.blossom-season, set by js/sakura.js).
+   One composite keyframe per petal; phases stratified per blossom (--cy),
+   durations 20-26s (--cdur) so the canopy desynchronizes naturally.
+   0-12% grow · 12-62% full + sway · 62-71% shed on the wind · rest dormant,
+   then the new bud appears. 100% state === 0% state (no seam). */
+.blossom-season .sak-bloom { overflow: visible; }
+/* NOTE: old-Safari safe — delays only ADD time values (--pi is emitted as a
+   time by JS; number*time calc needs Safari 18.2+), and scales compose as
+   scale(var(--s)) scale(k) instead of scale(calc(var(--s) * k)). */
+.blossom-season .sak-bloom .petal {
+  animation: season var(--cdur, 22s) linear infinite;
+  animation-delay: calc(var(--cy, 0s) + var(--d, 0s) + var(--pi, 0s));
+}
+@keyframes season {
+  0%    { opacity: .85; transform: translate(0, 0) rotate(var(--a)) scale(var(--s, 1)) scale(.14);
+          animation-timing-function: cubic-bezier(.18, .8, .28, 1); }
+  12%   { opacity: 1; transform: translate(0, 0) rotate(var(--a)) scale(var(--s, 1)) scale(1);
+          animation-timing-function: ease-in-out; }
+  34%   { opacity: 1; transform: translate(0, 0) rotate(calc(var(--a) + 2.5deg)) scale(var(--s, 1)) scale(1.03); }
+  50%   { opacity: 1; transform: translate(0, 0) rotate(calc(var(--a) - 2deg)) scale(var(--s, 1)) scale(1); }
+  62%   { opacity: 1; transform: translate(0, 0) rotate(var(--a)) scale(var(--s, 1)) scale(1);
+          animation-timing-function: cubic-bezier(.5, 0, .85, .5); }
+  71%   { opacity: 0; transform: translate(var(--dx, 26px), var(--dy, 48px)) rotate(calc(var(--a) + var(--spin, 90deg))) scale(var(--s, 1)) scale(.8); }
+  71.3%, 92%
+        { opacity: 0; transform: translate(0, 0) rotate(var(--a)) scale(var(--s, 1)) scale(.05); }
+  100%  { opacity: .85; transform: translate(0, 0) rotate(var(--a)) scale(var(--s, 1)) scale(.14); }
+}
+.blossom-season .sak-bloom .lotus-heart {
+  animation: seasonheart var(--cdur, 22s) linear infinite;
+  animation-delay: calc(var(--cy, 0s) + var(--d, 0s));
+}
+@keyframes seasonheart {
+  0%, 10%   { opacity: 0; }
+  16%, 60%  { opacity: 1; }
+  67%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blossom-season .sak-bloom .petal { animation: none; }      /* base transform = full bloom */
+  .blossom-season .sak-bloom .lotus-heart { animation: none; opacity: 1; }
+}
