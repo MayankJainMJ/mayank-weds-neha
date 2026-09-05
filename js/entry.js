@@ -12,13 +12,12 @@
   var card = document.querySelector('.invite-card');
   if (!card) return;
 
+  /* the envelope greets EVERY visit — only ?entry=0 (tests/deep-links)
+     and reduced-motion skip it */
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var skip = false;
   try {
-    if (sessionStorage.getItem('mwn.introSes') === '1') skip = true;
-    var q = new URLSearchParams(location.search).get('entry');
-    if (q === '0') skip = true;
-    if (q === '1') skip = false;   /* forces replay but NEVER overrides reduced-motion */
+    if (new URLSearchParams(location.search).get('entry') === '0') skip = true;
   } catch (e) {}
 
   /* ---------- countdown ---------- */
@@ -39,26 +38,6 @@
     d.className = 'card-logo';
     d.innerHTML = '<picture><source srcset="img/logo.webp" type="image/webp"><img src="img/logo.png" alt="Neha and Mayank" decoding="async"></picture>';
     card.insertBefore(d, card.firstChild);
-  }
-
-  function addReplay() {
-    if (document.getElementById('replayEntry')) return;
-    var links = document.querySelector('.inv-links');
-    if (!links) return;
-    var sep = document.createElement('span');
-    sep.setAttribute('aria-hidden', 'true');
-    sep.textContent = '\u00B7';
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.id = 'replayEntry';
-    b.className = 'linklike';
-    b.textContent = 'Replay opening';
-    b.addEventListener('click', function () {
-      try { sessionStorage.removeItem('mwn.introSes'); } catch (e) {}
-      play();
-    });
-    links.appendChild(sep);
-    links.appendChild(b);
   }
 
   /* ---------- names: handwritten, then kept as a faint gold watermark ---------- */
@@ -311,7 +290,6 @@
     ov.querySelector('.ck-seal').addEventListener('click', function () {
       if (opened) return;
       opened = true;
-      try { sessionStorage.setItem('mwn.introSes', '1'); } catch (e) {}
       try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {}
 
       var staleInk = document.querySelector('.ink-names');
@@ -397,7 +375,6 @@
 
   addCardLogo();
   addCountdown();
-  addReplay();
 
   if (!skip && !reduced) {
     var go = function () { play(); };
