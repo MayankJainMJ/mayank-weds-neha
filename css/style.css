@@ -1594,6 +1594,7 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .ck-ov {
   position: fixed; inset: 0; z-index: 80;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding-bottom: 7vh; /* lifts the composition ~3.5vh for vertical balance */
   opacity: 0; transition: opacity .45s ease;
   background: linear-gradient(170deg, #f8eff0 0%, #f6e9eb 55%, #f3e2e5 100%);
 }
@@ -1608,31 +1609,31 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 }
 .ck-branch { position: absolute; top: -6px; left: -14px; width: min(52vw, 230px); opacity: .85; }
 .ck-branch svg { width: 100%; height: auto; }
-.ck-loose { position: absolute; right: 6vw; bottom: 9vh; pointer-events: none; }
-.ck-loose i {
-  position: absolute; width: 14px; height: 14px; border-radius: 60% 40% 55% 45%;
-  background: #f0b4c7; filter: blur(2.5px); opacity: .55;
-  animation: ckfloat 7s ease-in-out infinite alternate;
-}
-.ck-loose i:nth-child(2) { right: 26px; bottom: 30px; width: 10px; height: 10px; background: #f5c9d6; animation-delay: -2s; }
-.ck-loose i:nth-child(3) { right: -18px; bottom: 52px; width: 8px; height: 8px; opacity: .4; animation-delay: -4s; }
-@keyframes ckfloat { from { transform: translateY(0) rotate(0); } to { transform: translateY(-9px) rotate(24deg); } }
+.ck-loose { position: absolute; right: 5vw; bottom: 8vh; pointer-events: none; }
+.ck-loose svg { animation: ckfloat 7s ease-in-out infinite alternate; }
+@keyframes ckfloat { from { transform: translateY(0) rotate(0); } to { transform: translateY(-8px) rotate(7deg); } }
 
 /* ceremonial introduction */
 .ck-head { text-align: center; margin-bottom: 26px; }
 .ck-eyebrow {
   font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600;
-  letter-spacing: .26em; text-transform: uppercase; color: #a08d8e; margin-bottom: 7px;
+  letter-spacing: .26em; text-transform: uppercase; color: #655557; margin-bottom: 7px;
 }
 .ck-topnames {
   font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 500;
-  letter-spacing: .14em; text-transform: uppercase; color: #77696a;
+  letter-spacing: .14em; text-transform: uppercase; color: #554648;
 }
-.bg-paper .ck-eyebrow { color: #8a6a5a; }
+.bg-paper .ck-eyebrow { color: #6b4534; }
 .bg-paper .ck-topnames { color: #5a3a2a; }
 
 /* the envelope — physical stationery */
-.ck-scene { perspective: 1150px; }
+.ck-scene { perspective: 1150px; position: relative; }
+/* ground contact shadow beneath the envelope */
+.ck-scene::after {
+  content: ''; position: absolute; left: 9%; right: 9%; bottom: -13px; height: 18px;
+  background: radial-gradient(50% 100% at 50% 0, rgba(84, 34, 49, .16), transparent 72%);
+  filter: blur(3px); pointer-events: none;
+}
 .ck-env {
   position: relative;
   width: clamp(300px, 82vw, 370px);
@@ -1660,34 +1661,45 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .ck-fold { position: absolute; inset: 0; border-radius: 7px; }
 .ck-fold-l {
   clip-path: polygon(0 0, 50% 58%, 0 100%);
-  background: linear-gradient(100deg, #eac4cf 0%, #edcad4 70%);
-  filter: drop-shadow(1px 0 0 rgba(255, 255, 255, .3));
+  background: linear-gradient(100deg, #e8c0cc 0%, #edcad4 70%);
+  filter: drop-shadow(1px 0 0 rgba(255, 255, 255, .55));
 }
 .ck-fold-r {
   clip-path: polygon(100% 0, 100% 100%, 50% 58%);
-  background: linear-gradient(260deg, #eac4cf 0%, #edcad4 70%);
-  filter: drop-shadow(-1px 0 0 rgba(255, 255, 255, .3));
+  background: linear-gradient(260deg, #e8c0cc 0%, #edcad4 70%);
+  filter: drop-shadow(-1px 0 0 rgba(255, 255, 255, .55));
 }
 .ck-fold-b {
   clip-path: polygon(0 100%, 50% 56%, 100% 100%);
-  background: linear-gradient(0deg, #efd0d9 0%, #eac4cf 90%);
-  filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, .35));
+  background: linear-gradient(0deg, #f0d3db 0%, #e8c0cc 90%);
+  filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, .6));
 }
 .ck-grain {
-  position: absolute; inset: 0; border-radius: 7px; opacity: .12; pointer-events: none;
+  position: absolute; inset: 0; border-radius: 7px; opacity: .15; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .27 0 0 0 0 .3 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .ck-flap {
   position: absolute; inset: 0; border-radius: 7px 7px 0 0;
   clip-path: polygon(0 0, 100% 0, 50% 62%);
-  background: linear-gradient(180deg, #e8bec9 0%, #e3b3c1 88%);
+  /* tonal separation from the body + its own paper grain */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .27 0 0 0 0 .3 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #e5b6c3 0%, #deabbb 88%);
   transform-origin: top center;
-  transition: transform .6s cubic-bezier(.34, .05, .18, 1.08) .2s, filter .4s ease .2s, z-index 0s .5s;
+  transition: transform .6s cubic-bezier(.34, .05, .18, 1.08) .2s, z-index 0s .5s;
   z-index: 3;
   display: flex; justify-content: center; align-items: flex-start;
-  filter: drop-shadow(0 3px 5px rgba(112, 67, 78, .14));
 }
-.ck-open .ck-flap { transform: rotateX(-172deg); filter: none; z-index: 1; }
+.ck-open .ck-flap { transform: rotateX(-172deg); z-index: 1; }
+/* the flap's cast shadow on the body — its own layer, opacity-only animation */
+.ck-flapcast {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  clip-path: polygon(0 1.5%, 100% 1.5%, 50% 65%);
+  background: linear-gradient(180deg, rgba(112, 67, 78, 0) 55%, rgba(112, 67, 78, .18) 96%);
+  filter: blur(2.5px);
+  transition: opacity .45s ease .2s;
+}
+.ck-open .ck-flapcast { opacity: 0; }
 /* paper lining: covers the flap face as it swings past edge-on, so the
    mid-rotation frame reads as the flap's underside, not a white glare */
 .ck-flap::after {
@@ -1698,30 +1710,26 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 }
 .ck-open .ck-flap::after { opacity: 1; }
 .ck-open .ck-flaplogo { opacity: 0; transition: opacity .2s ease .38s; }
-/* the real logo, printed into the flap paper (letterpress whisper) */
-.ck-flaplogo {
-  width: 68px; height: auto; margin-top: 7%; opacity: .96;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .5)) drop-shadow(0 -1px 1px rgba(84, 34, 49, .16));
-}
+/* the real logo on the flap — exactly as-is: no filters, no opacity dial */
+.ck-flaplogo { width: 73px; height: auto; margin-top: 1%; }
 
 /* wax seal — dusty rose, irregular, embossed */
 .ck-seal {
-  position: absolute; left: 50%; top: 62%;
-  width: clamp(68px, 18vw, 74px); height: clamp(68px, 18vw, 74px);
-  margin: calc(clamp(68px, 18vw, 74px) / -2) 0 0 calc(clamp(68px, 18vw, 74px) / -2);
+  position: absolute; left: 50%; top: 65%;
+  width: clamp(61px, 16vw, 67px); height: clamp(61px, 16vw, 67px);
+  margin: calc(clamp(61px, 16vw, 67px) / -2) 0 0 calc(clamp(61px, 16vw, 67px) / -2);
   padding: 0; background: none; border: none; cursor: pointer;
   z-index: 4;
   filter: drop-shadow(0 5px 9px rgba(84, 34, 49, .3));
 }
 .ck-seal::after { content: ''; position: absolute; inset: -8px; } /* 48px+ hit target */
 .ck-seal svg { width: 100%; height: 100%; overflow: visible; }
-.ck-wax { fill: #9f526b; stroke: #8a4159; stroke-width: 1.4; }
+.ck-wax { fill: url(#ckwaxg); stroke: #7c3a51; stroke-width: 1.2; }
 .ck-crack { stroke: #5c2438; stroke-width: 1.1; stroke-dasharray: 160; stroke-dashoffset: 160; opacity: 0; }
-/* embossed rim + dimple (plain wax, unstamped) */
-.ck-rim-sh { fill: none; stroke: rgba(84, 34, 49, .38); stroke-width: 2; }
-.ck-rim-hi { fill: none; stroke: rgba(255, 232, 218, .34); stroke-width: 1.4; }
-.ck-dimp { fill: rgba(84, 34, 49, .22); }
-.ck-dimp-hi { fill: rgba(255, 232, 218, .16); }
+/* NM monogram: warm-ivory emboss — top-left light, bottom-right inset shade */
+.ck-mg path { fill: #efe2d0; }
+.ck-mg-hi path { fill: rgba(255, 246, 232, .4); }
+.ck-mg-sh path { fill: rgba(74, 29, 46, .42); }
 .ck-sweep { fill: rgba(255, 236, 220, .28); opacity: 0; animation: cksweep 2.8s ease .9s 1; }
 @keyframes cksweep { 6% { opacity: 1; } 18% { transform: rotate(18deg) translateX(150px); opacity: 0; } 100% { opacity: 0; } }
 .ck-half { transition: transform .3s ease .18s; }
@@ -1738,7 +1746,7 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .ck-hint {
   margin-top: 30px; text-align: center;
   font-family: 'Playfair Display', Georgia, serif; font-style: italic;
-  font-size: 15px; color: #77696a;
+  font-size: 15px; color: #5d5051;
   opacity: 0; animation: hintin .7s ease 1.2s forwards;
   position: relative;
 }
@@ -1748,7 +1756,7 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
   animation: ckline 1s ease 1.5s forwards;
 }
 @keyframes ckline { to { width: 44px; } }
-.bg-paper .ck-hint { color: #6a4a38; }
+.bg-paper .ck-hint { color: #57402f; }
 /* the invitation obeyed — the hint leaves the moment the seal is pressed */
 .ck-ov.ck-crack .ck-hint { animation: none; opacity: 0; transition: opacity .3s ease; }
 .ck-ov.ck-crack .ck-hintline { animation: none; }
@@ -1765,6 +1773,8 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
    the same frame its transform animation starts, so we lower the envelope
    instead: physically truer anyway). */
 body.env-locked .invite-card { visibility: hidden; z-index: 90; will-change: transform; }
+/* nothing behind the envelope is reachable while it is up */
+body.env-locked .theme-toggle { visibility: hidden; }
 body.ck-flip .invite-card { visibility: visible; }
 body.ck-flip .ck-ov { z-index: 10; }
 
@@ -1780,11 +1790,21 @@ body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.g
 /* names: handwriting lifts and dissolves in one continuous motion,
    formal caps appear beneath — no watermark pause */
 .ink-names.ink-keep {
-  transition: transform .85s cubic-bezier(.3, 0, .3, 1), opacity .85s ease;
+  transition: transform .6s cubic-bezier(.3, 0, .3, 1), opacity .6s ease;
   transform: translateY(-14px) scale(.6);
   opacity: 0;
 }
 .ink-names .ink-line { animation-duration: 1.4s; }
+
+/* compact tier: short or very narrow screens */
+@media (max-height: 640px), (max-width: 340px) {
+  .ck-ov { padding-bottom: 4vh; }
+  .ck-env { width: clamp(255px, 78vw, 320px); }
+  .ck-flaplogo { width: 56px; }
+  /* seal keeps the non-negotiable 61-67px size; space recovered above */
+  .ck-head { margin-bottom: 16px; }
+  .ck-hint { margin-top: 18px; }
+}
 
 /* sequential content reveal after the card lands */
 .ck-g { transition: opacity .5s ease, transform .5s cubic-bezier(.2, .6, .2, 1); }
@@ -1806,6 +1826,6 @@ body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.g
 .ink-wipe {
   display: inline-block;
   clip-path: inset(-12% 100% -12% -4%);
-  animation: inkwipe 1s cubic-bezier(.35, 0, .35, 1) .05s forwards;
+  animation: inkwipe .85s cubic-bezier(.35, 0, .35, 1) .05s forwards;
 }
 @keyframes inkwipe { to { clip-path: inset(-12% -6% -12% -4%); } }
