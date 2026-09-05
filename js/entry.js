@@ -10,7 +10,7 @@
   'use strict';
 
   var card = document.querySelector('.invite-card');
-  if (!card || !window.LOGO) return;
+  if (!card) return;
 
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var skip = false;
@@ -86,17 +86,19 @@
   }
 
   /* ---------- wax seal: two halves + crack ---------- */
+  /* plain wax — no lettering competes with the real logo on the flap:
+     an embossed rim ring and a soft centre dimple, like an unstamped seal */
   function sealSVG() {
-    var mono = window.LOGO.seal(200, 'currentColor').replace(/<\/?svg[^>]*>/g, '');
     var L = 'M50 3 L46 22 L54 40 L47 60 L52 78 L47 97 C 30 96,14 86,7 70 C 1 55,3 36,12 22 C 21 9,34 4,50 3 Z';
     var R = 'M50 3 C 68 1,84 10,92 26 C 99 40,98 60,90 74 C 81 90,64 98,47 97 L52 78 L47 60 L54 40 L46 22 L50 3 Z';
     return '<svg viewBox="0 0 100 100" aria-hidden="true">' +
       '<g class="ck-half ck-half-l"><path class="ck-wax" d="' + L + '"/></g>' +
       '<g class="ck-half ck-half-r"><path class="ck-wax" d="' + R + '"/></g>' +
+      '<circle class="ck-rim-sh" cx="50" cy="51.2" r="33"/>' +
+      '<circle class="ck-rim-hi" cx="50" cy="49.6" r="33"/>' +
+      '<circle class="ck-dimp" cx="50" cy="50.6" r="9.5"/>' +
+      '<circle class="ck-dimp-hi" cx="50" cy="49.4" r="9.5"/>' +
       '<path class="ck-crack" d="M50 3 L46 22 L54 40 L47 60 L52 78 L47 97" fill="none"/>' +
-      '<g class="ck-mono-sh" transform="translate(21,25.4) scale(.29)">' + mono + '</g>' +
-      '<g class="ck-mono-hi" transform="translate(21,23.8) scale(.29)">' + mono + '</g>' +
-      '<g class="ck-mono" transform="translate(21,24.6) scale(.29)">' + mono + '</g>' +
       '<rect class="ck-sweep" x="-40" y="0" width="26" height="100" transform="rotate(18)"/>' +
       '</svg>';
   }
