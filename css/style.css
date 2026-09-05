@@ -1100,7 +1100,8 @@ body.bg-sakura {
   font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
   color: #fff;
 }
-.bg-sakura .inv-links { font-size: 11px; color: #8c7470; margin-top: 14px; gap: 14px; }
+.bg-sakura .inv-links { font-size: 11px; color: #8c7470; margin-top: 6px; gap: 10px; }
+.bg-paper .inv-links { font-size: 11px; margin-top: 6px; gap: 10px; }
 .bg-sakura .inv-champ { font-size: 11px; color: #8c7470; margin-top: 10px; }
 
 /* rsvp panel: clean stationery column */
@@ -1588,3 +1589,216 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .sc-le { left: -12px; top: 15vh; width: min(15vw, 64px); height: 58vh; transform-origin: 0 50%; }
 .sc-rm { right: -10px; top: 34vh; width: min(12vw, 52px); height: 20vh; transform-origin: 100% 50%; }
 .rsvp-page .sc-le, .rsvp-page .sc-rm { opacity: .8; }
+
+/* ============ Cherry Blossom Keepsake — entry v2 ============ */
+.ck-ov {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .45s ease;
+  background: linear-gradient(170deg, #f8eff0 0%, #f6e9eb 55%, #f3e2e5 100%);
+}
+.bg-paper .ck-ov { background: linear-gradient(168deg, #f0ddd2 0%, #ecd4c8 100%); }
+.ck-ov.ck-in { opacity: 1; }
+.ck-vignette { position: absolute; inset: 0; box-shadow: inset 0 0 120px 30px rgba(112, 67, 78, .08); pointer-events: none; }
+.ck-glow {
+  position: absolute; left: 50%; top: 50%; width: 420px; height: 340px;
+  transform: translate(-50%, -54%);
+  background: radial-gradient(closest-side, rgba(255, 236, 228, .75), transparent 72%);
+  pointer-events: none;
+}
+.ck-branch { position: absolute; top: -6px; left: -14px; width: min(52vw, 230px); opacity: .85; }
+.ck-branch svg { width: 100%; height: auto; }
+.ck-loose { position: absolute; right: 6vw; bottom: 9vh; pointer-events: none; }
+.ck-loose i {
+  position: absolute; width: 14px; height: 14px; border-radius: 60% 40% 55% 45%;
+  background: #f0b4c7; filter: blur(2.5px); opacity: .55;
+  animation: ckfloat 7s ease-in-out infinite alternate;
+}
+.ck-loose i:nth-child(2) { right: 26px; bottom: 30px; width: 10px; height: 10px; background: #f5c9d6; animation-delay: -2s; }
+.ck-loose i:nth-child(3) { right: -18px; bottom: 52px; width: 8px; height: 8px; opacity: .4; animation-delay: -4s; }
+@keyframes ckfloat { from { transform: translateY(0) rotate(0); } to { transform: translateY(-9px) rotate(24deg); } }
+
+/* ceremonial introduction */
+.ck-head { text-align: center; margin-bottom: 26px; }
+.ck-eyebrow {
+  font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600;
+  letter-spacing: .26em; text-transform: uppercase; color: #a08d8e; margin-bottom: 7px;
+}
+.ck-topnames {
+  font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase; color: #77696a;
+}
+.bg-paper .ck-eyebrow { color: #8a6a5a; }
+.bg-paper .ck-topnames { color: #5a3a2a; }
+
+/* the envelope — physical stationery */
+.ck-scene { perspective: 1150px; }
+.ck-env {
+  position: relative;
+  width: clamp(300px, 82vw, 370px);
+  aspect-ratio: 1.48 / 1;
+  transform: translateY(8px);
+  transition: transform .35s ease .45s;
+  filter: drop-shadow(0 24px 55px rgba(112, 67, 78, .16)) drop-shadow(0 5px 14px rgba(112, 67, 78, .10));
+}
+.ck-in .ck-env { transform: translateY(0); }
+.ck-body { position: absolute; inset: 0; background: #edcad4; border-radius: 7px; }
+.ck-interior {
+  position: absolute; left: 3px; right: 3px; top: 3px; height: 58%;
+  background: linear-gradient(180deg, #dfaab9, #e6b8c5);
+  border-radius: 6px 6px 0 0;
+  box-shadow: inset 0 6px 14px rgba(84, 34, 49, .18);
+}
+.ck-insert {
+  position: absolute; left: 7%; right: 7%; top: 24%; height: 72%;
+  background: #fffbf8; border-radius: 4px;
+  box-shadow: 0 -2px 5px rgba(84, 34, 49, .10), 0 2px 10px rgba(84, 34, 49, .14);
+  transform: translateY(0);
+  transition: transform .5s cubic-bezier(.25, .6, .25, 1) .3s, opacity .3s ease;
+}
+.ck-open .ck-insert { transform: translateY(-62%); }
+.ck-fold { position: absolute; inset: 0; border-radius: 7px; }
+.ck-fold-l {
+  clip-path: polygon(0 0, 50% 58%, 0 100%);
+  background: linear-gradient(100deg, #eac4cf 0%, #edcad4 70%);
+  filter: drop-shadow(1px 0 0 rgba(255, 255, 255, .3));
+}
+.ck-fold-r {
+  clip-path: polygon(100% 0, 100% 100%, 50% 58%);
+  background: linear-gradient(260deg, #eac4cf 0%, #edcad4 70%);
+  filter: drop-shadow(-1px 0 0 rgba(255, 255, 255, .3));
+}
+.ck-fold-b {
+  clip-path: polygon(0 100%, 50% 56%, 100% 100%);
+  background: linear-gradient(0deg, #efd0d9 0%, #eac4cf 90%);
+  filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, .35));
+}
+.ck-grain {
+  position: absolute; inset: 0; border-radius: 7px; opacity: .12; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .27 0 0 0 0 .3 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.ck-flap {
+  position: absolute; inset: 0; border-radius: 7px 7px 0 0;
+  clip-path: polygon(0 0, 100% 0, 50% 62%);
+  background: linear-gradient(180deg, #e8bec9 0%, #e3b3c1 88%);
+  transform-origin: top center;
+  transition: transform .6s cubic-bezier(.34, .05, .18, 1.08) .2s, filter .4s ease .2s, z-index 0s .5s;
+  z-index: 3;
+  display: flex; justify-content: center; align-items: flex-start;
+  filter: drop-shadow(0 3px 5px rgba(112, 67, 78, .14));
+}
+.ck-open .ck-flap { transform: rotateX(-172deg); filter: none; z-index: 1; }
+/* paper lining: covers the flap face as it swings past edge-on, so the
+   mid-rotation frame reads as the flap's underside, not a white glare */
+.ck-flap::after {
+  content: ''; position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 62%);
+  background: linear-gradient(0deg, #dfaab9 0%, #e7bfca 90%);
+  opacity: 0; transition: opacity .22s ease .42s;
+}
+.ck-open .ck-flap::after { opacity: 1; }
+.ck-open .ck-flaplogo { opacity: 0; transition: opacity .2s ease .38s; }
+.ck-flaplogo { width: 54px; height: auto; margin-top: 3.5%; opacity: .92; }
+
+/* wax seal — dusty rose, irregular, embossed */
+.ck-seal {
+  position: absolute; left: 50%; top: 62%;
+  width: clamp(68px, 18vw, 74px); height: clamp(68px, 18vw, 74px);
+  margin: calc(clamp(68px, 18vw, 74px) / -2) 0 0 calc(clamp(68px, 18vw, 74px) / -2);
+  padding: 0; background: none; border: none; cursor: pointer;
+  z-index: 4;
+  filter: drop-shadow(0 5px 9px rgba(84, 34, 49, .3));
+}
+.ck-seal::after { content: ''; position: absolute; inset: -8px; } /* 48px+ hit target */
+.ck-seal svg { width: 100%; height: 100%; overflow: visible; }
+.ck-wax { fill: #9f526b; stroke: #8a4159; stroke-width: 1.4; }
+.ck-crack { stroke: #5c2438; stroke-width: 1.1; stroke-dasharray: 160; stroke-dashoffset: 160; opacity: 0; }
+.ck-mono { color: #f3dfd2; }
+.ck-mono-hi { color: rgba(255, 232, 218, .76); }
+.ck-mono-sh { color: rgba(84, 34, 49, .48); }
+.ck-sweep { fill: rgba(255, 236, 220, .28); opacity: 0; animation: cksweep 2.8s ease .9s 1; }
+@keyframes cksweep { 6% { opacity: 1; } 18% { transform: rotate(18deg) translateX(150px); opacity: 0; } 100% { opacity: 0; } }
+.ck-half { transition: transform .3s ease .18s; }
+.ck-crackt .ck-seal, .ck-crack .ck-seal { pointer-events: none; }
+.ck-crack .ck-seal svg { animation: ckpress .22s ease both; }
+@keyframes ckpress { 40% { transform: scale(.94); } 100% { transform: scale(1.03); } }
+.ck-crack .ck-crack { opacity: 1; animation: ckcrackdraw .24s ease .18s forwards; }
+@keyframes ckcrackdraw { to { stroke-dashoffset: 0; } }
+.ck-crack .ck-half-l { transform: translate(-4px, 1px) rotate(-2deg); }
+.ck-crack .ck-half-r { transform: translate(4px, -1px) rotate(1.5deg); }
+.ck-open .ck-seal { transition: opacity .4s ease .15s, transform .5s ease .15s; opacity: 0; transform: translateY(10px); }
+
+/* hint */
+.ck-hint {
+  margin-top: 30px; text-align: center;
+  font-family: 'Playfair Display', Georgia, serif; font-style: italic;
+  font-size: 15px; color: #77696a;
+  opacity: 0; animation: hintin .7s ease 1.2s forwards;
+  position: relative;
+}
+.ck-hintline {
+  display: block; height: 1px; width: 0; margin: 7px auto 0;
+  background: #bf8731;
+  animation: ckline 1s ease 1.5s forwards;
+}
+@keyframes ckline { to { width: 44px; } }
+.bg-paper .ck-hint { color: #6a4a38; }
+/* the invitation obeyed — the hint leaves the moment the seal is pressed */
+.ck-ov.ck-crack .ck-hint { animation: none; opacity: 0; transition: opacity .3s ease; }
+.ck-ov.ck-crack .ck-hintline { animation: none; }
+
+/* departure: envelope lowers and fades UNDER the flying card */
+.ck-away .ck-scene { transition: transform .75s ease, opacity .75s ease; transform: translateY(26px); opacity: 0; }
+.ck-away .ck-head, .ck-away .ck-hint, .ck-away .ck-branch, .ck-away .ck-loose { transition: opacity .5s ease; opacity: 0; }
+.ck-ov.ck-away { transition: opacity .8s ease .15s; opacity: 0; pointer-events: none; }
+
+/* shared-card FLIP: real card rides above the envelope while landing.
+   z-index + will-change are set for the WHOLE entry (env-locked), so only
+   visibility flips at FLIP time — and the overlay simultaneously DROPS below
+   the card (Chromium won't re-sort composited layers when the card's z rises
+   the same frame its transform animation starts, so we lower the envelope
+   instead: physically truer anyway). */
+body.env-locked .invite-card { visibility: hidden; z-index: 90; will-change: transform; }
+body.ck-flip .invite-card { visibility: visible; }
+body.ck-flip .ck-ov { z-index: 10; }
+
+/* staggered bloom release (hold-bloom pauses everything; go* classes free groups) */
+body.go1 .sc-tl .petal, body.go1 .sc-tl .twig path, body.go1 .sc-tl .lotus-stem, body.go1 .sc-tl .lotus-heart { animation-play-state: running !important; }
+body.go2 .sc-le .petal, body.go2 .sc-rm .petal, body.go2 .sc-le .lotus-heart, body.go2 .sc-rm .lotus-heart { animation-play-state: running !important; }
+body.go3 .sc-br .petal, body.go3 .sc-br .twig path, body.go3 .sband .petal, body.go3 .sc-br .lotus-heart, body.go3 .sband .lotus-heart, body.go3 .sc-bl .petal { animation-play-state: running !important; }
+body.go4 .lotus-fg .drift { animation-play-state: running !important; }
+/* lotus theme groups */
+body.go1 .lo-tl .petal, body.go1 .lo-ml .petal, body.go1 .lo-tl .lotus-stem, body.go1 .lo-ml .lotus-stem { animation-play-state: running !important; }
+body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.go3 .lo-bud1 .petal, body.go3 .lo .lotus-stem, body.go3 .lo .lotus-heart { animation-play-state: running !important; }
+
+/* names: handwriting becomes a faint gold watermark, formal caps appear beneath */
+.ink-names.ink-keep {
+  transition: transform .8s cubic-bezier(.3, 0, .3, 1), opacity .8s ease;
+  transform: translateY(-12px) scale(.52);
+  opacity: .17;
+}
+.ink-names .ink-line { animation-duration: 1.4s; }
+
+/* sequential content reveal after the card lands */
+.ck-g { transition: opacity .5s ease, transform .5s cubic-bezier(.2, .6, .2, 1); }
+.ck-g.ckh { opacity: 0; transform: translateY(10px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ck-ov { display: none !important; }
+  body.env-locked .invite-card { visibility: visible; }
+  .ck-g, .ck-g.ckh { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* ink rewrite: clip-path wipe (immune to ancestor transforms) */
+.ink-names .ink-line {
+  background: none !important;
+  color: #b88732;
+  animation: none !important;
+}
+.bg-paper .ink-names .ink-line { color: #6b1839; }
+.ink-wipe {
+  display: inline-block;
+  clip-path: inset(-12% 100% -12% -4%);
+  animation: inkwipe 1s cubic-bezier(.35, 0, .35, 1) .05s forwards;
+}
+@keyframes inkwipe { to { clip-path: inset(-12% -6% -12% -4%); } }
