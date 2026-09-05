@@ -937,7 +937,7 @@ body.bg-sakura {
 .scluster .twig { position: absolute; inset: 0; width: 100%; height: 100%; }
 .scluster .sp { position: absolute; }
 .sc-tl { top: -18px; left: -24px; width: min(42vw, 230px); height: min(34vw, 185px); transform-origin: 0 0; }
-.sc-br { bottom: -10px; right: -26px; width: min(64vw, 340px); height: min(40vw, 215px); transform-origin: 100% 100%; }
+.sc-br { bottom: -42px; right: -44px; width: min(48vw, 258px); height: min(30vw, 162px); transform-origin: 100% 100%; }
 .sband { position: absolute; left: 0; right: 0; bottom: 0; height: 20vh; pointer-events: none; }
 .sband .sp { position: absolute; }
 .rsvp-page .sc-tl { width: min(30vw, 160px); height: min(24vw, 130px); top: -22px; left: -20px; opacity: .9; }
@@ -1396,7 +1396,7 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .bg-sakura .env-flap { background: linear-gradient(180deg, #f0c3d2, #ecb5c8); }
 .bg-paper .env-flap { background: linear-gradient(180deg, #eddcb9, #e6d0a8); }
 .env-seal {
-  position: absolute; left: 50%; top: 44%; z-index: 4;
+  position: absolute; left: 50%; top: 64%; z-index: 4;
   width: 76px; height: 76px; margin: -38px 0 0 -38px;
   background: none; border: none; padding: 0; cursor: pointer;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .3));
@@ -1502,11 +1502,11 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .env-front svg { margin-bottom: 0; }
 
 /* critical-loop-1: entry refinement */
-.env { width: min(74vw, 315px); height: min(48vw, 202px); }
+.env { width: min(76vw, 322px); height: min(52vw, 218px); }
 .env-scene { margin-top: -8vh; }
 .env-back { box-shadow: 0 22px 54px rgba(90, 40, 60, .22); }
 .env-seal {
-  width: 98px; height: 98px; margin: -49px 0 0 -49px;
+  width: 88px; height: 88px; margin: -44px 0 0 -44px;
   animation: none;
   filter: drop-shadow(0 3px 7px rgba(0, 0, 0, .25));
 }
@@ -1562,11 +1562,11 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .env-names { margin-top: 2px; margin-bottom: 0; font-size: 1.15rem; }
 .env-logo { display: none; }
 .env-front { justify-content: flex-end; padding-bottom: 12px; }
-.env-names { margin-top: 12px; margin-bottom: 8px; font-size: 1.45rem; }
+.env-names { margin-top: 12px; margin-bottom: 4px; font-size: 1.2rem; }
 
 /* logo at codex-directed 116px */
 .card-logo img { width: 116px; }
-@media (max-height: 720px) { .card-logo img { width: 92px; } }
+@media (max-height: 720px) { .card-logo img { width: 98px; } .card-logo { margin: -10px 0 -2px; } .inv-note { margin: .5rem 0 .75rem; } }
 
 /* sakura: 50% deeper unfurl + the lotus breathing transition */
 .bg-sakura .sak .petal {
@@ -1579,3 +1579,12 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
   to   { transform: rotate(calc(var(--a) * .55)) scale(calc(var(--s, 1) * .86)); }
 }
 @media (prefers-reduced-motion: reduce) { .bg-sakura .sak .petal { animation: none; } }
+
+/* logo printed on the envelope flap (lifts away with it) */
+.env-flap { display: flex; justify-content: center; align-items: flex-start; }
+.flap-logo { width: 68px; height: auto; margin-top: 2.5%; opacity: .97; }
+
+/* reference-style side cascades — hug the edges, never the text */
+.sc-le { left: -12px; top: 15vh; width: min(15vw, 64px); height: 58vh; transform-origin: 0 50%; }
+.sc-rm { right: -10px; top: 34vh; width: min(12vw, 52px); height: 20vh; transform-origin: 100% 50%; }
+.rsvp-page .sc-le, .rsvp-page .sc-rm { opacity: .8; }

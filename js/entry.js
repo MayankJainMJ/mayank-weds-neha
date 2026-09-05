@@ -12,10 +12,13 @@
   if (!card || !window.LOGO) return;
 
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var seen = false;
-  try { seen = localStorage.getItem('mwn.intro') === '1'; } catch (e) {}
-  /* invisible preview override: ?entry=1 always replays the envelope */
-  try { if (new URLSearchParams(location.search).get('entry') === '1') { seen = false; reduced = false; } } catch (e) {}
+  /* envelope greets EVERY visit (couple's call). ?entry=0 skips (tests/deep links), ?entry=1 forces. */
+  var skip = false;
+  try {
+    var q = new URLSearchParams(location.search).get('entry');
+    if (q === '0') skip = true;
+    if (q === '1') { skip = false; reduced = false; }
+  } catch (e) {}
 
   var isSakura = document.body.classList.contains('bg-sakura');
 
@@ -67,8 +70,8 @@
         '<div class="env">' +
           '<div class="env-back"></div>' +
           '<div class="env-card"></div>' +
-          '<div class="env-front"><p class="env-names">Neha &amp; Mayank</p><div class="env-rule"></div></div>' +
-          '<div class="env-flap"></div>' +
+          '<div class="env-front"></div>' +
+          '<div class="env-flap"><picture><source srcset="img/logo.webp" type="image/webp"><img class="flap-logo" src="img/logo.png" alt=""></picture></div>' +
           '<button type="button" class="env-seal" aria-label="Break the seal and open your invitation">' +
             '<svg viewBox="0 0 100 100" aria-hidden="true">' +
               '<path class="wax-rim" d="M50 3 C 68 1, 84 10, 92 26 C 99 40, 98 60, 90 74 C 81 90, 64 98, 47 97 C 30 96, 14 86, 7 70 C 1 55, 3 36, 12 22 C 21 9, 34 4, 50 3 Z"/><path class="wax" transform="translate(50,50) scale(.92) translate(-50,-50)" d="M50 3 C 68 1, 84 10, 92 26 C 99 40, 98 60, 90 74 C 81 90, 64 98, 47 97 C 30 96, 14 86, 7 70 C 1 55, 3 36, 12 22 C 21 9, 34 4, 50 3 Z"/>' +
@@ -119,7 +122,7 @@
   addCardLogo();
   addCountdown();
 
-  if (!seen && !reduced) {
+  if (!skip && !reduced) {
     /* wait for fonts so the reveal is never half-dressed; cap the wait */
     var go = function () { play(false); };
     if (document.fonts && document.fonts.ready) {

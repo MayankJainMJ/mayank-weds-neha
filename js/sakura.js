@@ -85,17 +85,22 @@
 
   /* a cluster: twig + mix of blossoms/buds/leaves absolutely placed inside */
   function cluster(kind, delay) {
+    /* single continuous main strokes; sub-twigs originate ON the main curve
+       and overlap into it, so no joints or gaps are visible */
     var twigTL =
       '<svg class="twig" viewBox="0 0 160 130" aria-hidden="true" fill="none" filter="url(#sbr)">' +
-      '<path d="M-4 8 C 24 18, 46 30, 64 48" stroke="#654a38" stroke-width="5" stroke-linecap="round"/>' +
-      '<path d="M64 48 C 78 62, 88 72, 96 84" stroke="#654a38" stroke-width="2.6" stroke-linecap="round"/>' +
-      '<path d="M52 38 C 62 30, 74 28, 86 30 M 74 62 C 86 58, 98 60, 106 66 M 96 84 C 102 92, 104 98, 105 104" stroke="#654a38" stroke-width="1.4" stroke-linecap="round"/>' +
-      '<path d="M-4 8 C 24 18, 46 30, 64 48" stroke="#503728" stroke-width="1.2" opacity=".5"/></svg>';
+      '<path d="M-6 6 C 28 16, 60 36, 96 84 C 100 90, 102 96, 103 103" stroke="#654a38" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M38 23 C 50 17, 62 15, 74 17" stroke="#654a38" stroke-width="2.2" stroke-linecap="round"/>' +
+      '<path d="M74 17 C 80 14, 86 14, 90 16" stroke="#654a38" stroke-width="1.2" stroke-linecap="round"/>' +
+      '<path d="M64 42 C 76 38, 88 40, 96 46" stroke="#654a38" stroke-width="2" stroke-linecap="round"/>' +
+      '<path d="M-6 6 C 28 16, 60 36, 96 84" stroke="#503728" stroke-width="1" opacity=".45"/></svg>';
     var twigB =
       '<svg class="twig" viewBox="0 0 200 110" aria-hidden="true" fill="none" filter="url(#sbr)">' +
-      '<path d="M204 96 C 162 88, 126 72, 96 50" stroke="#654a38" stroke-width="5" stroke-linecap="round"/>' +
-      '<path d="M96 50 C 74 34, 58 24, 48 18" stroke="#654a38" stroke-width="2.4" stroke-linecap="round"/>' +
-      '<path d="M120 66 C 106 58, 96 46, 92 34 M 84 44 C 70 40, 60 32, 54 22 M 48 18 C 42 12, 38 8, 36 4" stroke="#654a38" stroke-width="1.4" stroke-linecap="round"/></svg>';
+      '<path d="M206 98 C 156 86, 112 62, 60 22 C 52 16, 46 11, 41 7" stroke="#654a38" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M150 83 C 139 71, 133 59, 133 48" stroke="#654a38" stroke-width="2.2" stroke-linecap="round"/>' +
+      '<path d="M100 53 C 89 45, 81 35, 79 26" stroke="#654a38" stroke-width="2" stroke-linecap="round"/>' +
+      '<path d="M133 48 C 132 42, 133 37, 136 33" stroke="#654a38" stroke-width="1.2" stroke-linecap="round"/>' +
+      '<path d="M206 98 C 156 86, 112 62, 60 22" stroke="#503728" stroke-width="1" opacity=".45"/></svg>';
     var h = '<div class="scluster sc-' + kind + ' lotus-sway ' + (kind === 'tl' ? '' : 's2') + '">';
     if (kind === 'tl') {
       h += twigTL +
@@ -119,6 +124,19 @@
         '<div class="sp" style="right:8%;top:44%">' + blossom(40, delay + .85, false) + '</div>' +
         '<div class="sp" style="right:60%;top:2%">' + blossom(32, delay + 1.0, true) + '</div>' +
         '<div class="sp" style="right:30%;top:60%">' + leaf(22, 120) + '</div>';
+    } else if (kind === 'le') { /* left edge column, reference-style cascade */
+      h += '<div class="sp" style="left:4%;top:0">' + blossom(40, delay, false) + '</div>' +
+        '<div class="sp" style="left:26%;top:13%">' + blossom(30, delay + .25, true) + '</div>' +
+        '<div class="sp" style="left:0;top:27%">' + blossom(44, delay + .5, false) + '</div>' +
+        '<div class="sp" style="left:30%;top:42%">' + bud(18, delay + .7) + '</div>' +
+        '<div class="sp" style="left:8%;top:52%">' + blossom(34, delay + .85, true) + '</div>' +
+        '<div class="sp" style="left:24%;top:66%">' + blossom(26, delay + 1.05, false) + '</div>' +
+        '<div class="sp" style="left:2%;top:78%">' + bud(16, delay + 1.2) + '</div>' +
+        '<div class="sp" style="left:16%;top:90%">' + leaf(20, 30) + '</div>';
+    } else if (kind === 'rm') { /* right mid sprig */
+      h += '<div class="sp" style="right:0;top:0">' + blossom(36, delay, true) + '</div>' +
+        '<div class="sp" style="right:30%;top:38%">' + bud(18, delay + .3) + '</div>' +
+        '<div class="sp" style="right:10%;top:64%">' + blossom(28, delay + .55, false) + '</div>';
     } else { /* bl small */
       h += '<div class="sp" style="left:0;top:22%">' + blossom(44, delay, false) + '</div>' +
         '<div class="sp" style="left:34%;top:0">' + bud(20, delay + .4) + '</div>' +
@@ -210,7 +228,7 @@
   fg.setAttribute('aria-hidden', 'true');
   var petals = '';
   for (var i = 0; i < 14; i++) petals += driftPetal(i);
-  fg.innerHTML = cluster('tl', .3) + cluster('br', .9) + bottomBand(1.2) + petals;
+  fg.innerHTML = cluster('tl', .3) + cluster('br', .9) + cluster('le', .7) + cluster('rm', 1.1) + bottomBand(1.2) + petals;
 
   document.body.insertBefore(bg, document.body.firstChild);
   document.body.appendChild(fg);
