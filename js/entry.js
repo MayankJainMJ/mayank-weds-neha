@@ -14,6 +14,8 @@
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var seen = false;
   try { seen = localStorage.getItem('mwn.intro') === '1'; } catch (e) {}
+  /* invisible preview override: ?entry=1 always replays the envelope */
+  try { if (new URLSearchParams(location.search).get('entry') === '1') { seen = false; reduced = false; } } catch (e) {}
 
   var isSakura = document.body.classList.contains('bg-sakura');
 
