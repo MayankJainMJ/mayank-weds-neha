@@ -78,10 +78,10 @@
     names.parentNode.appendChild(ink);
     setTimeout(function () {
       if (run.dead) return;
-      ink.classList.add('ink-keep');            /* rises + fades to watermark */
+      ink.classList.add('ink-keep');            /* lifts + dissolves, one motion */
       names.style.transition = 'opacity .45s ease';
       names.style.opacity = '1';
-      setTimeout(function () { ink.remove(); }, 2600); /* watermark lingers, then leaves quietly */
+      setTimeout(function () { ink.remove(); }, 900); /* gone the moment the fade completes */
     }, 1050);
   }
 

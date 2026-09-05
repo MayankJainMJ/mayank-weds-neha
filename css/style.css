@@ -1777,11 +1777,12 @@ body.go4 .lotus-fg .drift { animation-play-state: running !important; }
 body.go1 .lo-tl .petal, body.go1 .lo-ml .petal, body.go1 .lo-tl .lotus-stem, body.go1 .lo-ml .lotus-stem { animation-play-state: running !important; }
 body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.go3 .lo-bud1 .petal, body.go3 .lo .lotus-stem, body.go3 .lo .lotus-heart { animation-play-state: running !important; }
 
-/* names: handwriting becomes a faint gold watermark, formal caps appear beneath */
+/* names: handwriting lifts and dissolves in one continuous motion,
+   formal caps appear beneath — no watermark pause */
 .ink-names.ink-keep {
-  transition: transform .8s cubic-bezier(.3, 0, .3, 1), opacity .8s ease;
-  transform: translateY(-12px) scale(.52);
-  opacity: .17;
+  transition: transform .85s cubic-bezier(.3, 0, .3, 1), opacity .85s ease;
+  transform: translateY(-14px) scale(.6);
+  opacity: 0;
 }
 .ink-names .ink-line { animation-duration: 1.4s; }
 
