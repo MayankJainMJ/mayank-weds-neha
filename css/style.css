@@ -1711,12 +1711,12 @@ body.hold-bloom .lotus-fg .twig path { animation-play-state: paused !important; 
 .ck-open .ck-flap::after { opacity: 1; }
 .ck-open .ck-flaplogo { opacity: 0; transition: opacity .2s ease .38s; }
 /* the real logo on the flap — exactly as-is: no filters, no opacity dial.
-   Shifted 15px down per user direction; the seal stays at top 65%. */
-.ck-flaplogo { width: 73px; height: auto; margin-top: calc(1% + 15px); }
+   Net user-directed placement: +10px down (15 - 5). */
+.ck-flaplogo { width: 73px; height: auto; margin-top: calc(1% + 10px); }
 
 /* wax seal — dusty rose, irregular, embossed */
 .ck-seal {
-  position: absolute; left: 50%; top: calc(65% - 30px);
+  position: absolute; left: 50%; top: calc(65% - 20px);
   width: clamp(61px, 16vw, 67px); height: clamp(61px, 16vw, 67px);
   margin: calc(clamp(61px, 16vw, 67px) / -2) 0 0 calc(clamp(61px, 16vw, 67px) / -2);
   padding: 0; background: none; border: none; cursor: pointer;
@@ -1810,7 +1810,7 @@ body.go3 .lo-br1 .petal, body.go3 .lo-br2 .petal, body.go3 .lo-bl .petal, body.g
 @media (max-height: 640px), (max-width: 340px) {
   .ck-ov { padding-bottom: 4vh; }
   .ck-env { width: clamp(255px, 78vw, 320px); }
-  .ck-flaplogo { width: 56px; margin-top: calc(1% + 15px); }
+  .ck-flaplogo { width: 56px; margin-top: calc(1% + 10px); }
   /* seal keeps the non-negotiable 61-67px size; space recovered above */
   .ck-head { margin-bottom: 16px; }
   .ck-hint { margin-top: 18px; }
